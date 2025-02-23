@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core.Model
 {
+    /// <summary>
+    /// Join Table for Users who have admin access to Contests.
+    /// Multiple users can have admin access to one contest, but it always has one owner - stored in Contest.
+    /// </summary>
     class UserContest
     {
         private int Id { get; set; }
@@ -13,5 +17,8 @@ namespace Core.Model
         private User User { get; set; }
         private int ContestId { get; set; }
         private Contest Contest { get; set; }
+
+        // metadata
+        private DateTime Added { get; set; }
     }
 }
