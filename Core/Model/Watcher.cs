@@ -8,5 +8,9 @@ namespace Core.Model
 {
     class Watcher
     {
+        private int Id { get; set; }
+        private int ParentId { get; set; }
+        private User Parent { get; set; }
+        private string Name { get; set; }
     }
 }
