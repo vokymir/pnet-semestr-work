@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace Core.Services
 {
+    /// <summary>
+    /// CRUD operations for watcher.
+    /// </summary>
     class WatcherService
     {
-        public static bool CreateWatcher(string email, User user)
-        {
-            return true;
-        }
     }
 }

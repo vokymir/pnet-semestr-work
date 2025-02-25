@@ -14,11 +14,11 @@ namespace Core.Model
     {
         private int Id { get; set; }
         private int WatcherId { get; set; }
-        private Watcher Watcher { get; set; }
+        private Watcher Watcher { get; set; } = null!;
         private int ContestId { get; set; }
-        private Contest Contest { get; set; }
+        private Contest Contest { get; set; } = null!;
 
         // metadata
-        private DateTime Joined { get; set; }
+        private DateTime Joined { get; set; } = DateTime.Now;
     }
 }

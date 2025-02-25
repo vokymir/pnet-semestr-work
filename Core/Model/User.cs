@@ -22,8 +22,16 @@ namespace Core.Model
         /// </summary>
         private string PasswordHash { get; set; }
 
+
+        public User(string Email, string PasswordHash)
+        {
+            this.PasswordHash = PasswordHash;
+            this.Email = Email;
+        }
+
+
         // All User metadata follows.
 
-        private DateTime Created { get; set; }
+        private DateTime Created { get; set; } = DateTime.Now;
     }
 }

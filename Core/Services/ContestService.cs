@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core.Services
 {
+    /// <summary>
+    /// CRUD operations for Contest.
+    /// </summary>
     class ContestService
     {
-        public static bool CreateContest(string name, string description, DateTime startDate, DateTime endDate)
-        {
-            return true;
-        }
     }
 }

@@ -19,11 +19,11 @@ namespace Core.Model
         /// Parenthood can be transfered, but ultimately there is always one parent.
         /// </summary>
         private int ParentId { get; set; }
-        private User Parent { get; set; }
+        private User Parent { get; set; } = null!;
 
         // All Watcher metadata follows.
         
-        private string Name { get; set; }
-        private DateTime Created { get; set; }
+        private string Name { get; set; } = string.Empty;
+        private DateTime Created { get; set; } = DateTime.Now;
     }
 }

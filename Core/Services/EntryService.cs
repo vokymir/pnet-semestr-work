@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace Core.Services
 {
-    class RecordService
+    /// <summary>
+    /// CRUD operations for Entry.
+    /// </summary>
+    class EntryService
     {
-        public static bool CreateRecord(Watcher watcher, User user, string bird)
-        {
-            return true;
-        }
     }
 }

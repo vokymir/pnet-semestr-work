@@ -8,7 +8,7 @@ namespace Core.UI
 {
     public class ConsoleUI
     {
-        public static void Run(string[] args)
+        public void Run(string[] args)
         {
             Console.WriteLine("Hello World from ConsoleUI!");
         }

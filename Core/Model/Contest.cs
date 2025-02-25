@@ -21,16 +21,16 @@ namespace Core.Model
     {
         private int Id { get; set; }
         private int OwnerId { get; set; }
-        private User Owner { get; set; }
+        private User Owner { get; set; } = null!;
 
         // metadata
 
-        private string Name { get; set; }
-        private string Description { get; set; }
+        private string Name { get; set; } = string.Empty;
+        private string Description { get; set; } = string.Empty;
         // concept: if set to public, anybody can join
         private ContestVisibility Visibility { get; set; }
         // tracking time of creation
-        private DateTime Created { get; set; }
+        private DateTime Created { get; set; } = DateTime.Now;
         // tracking time of contest start and end
         private DateTime Start { get; set; }
         private DateTime End { get; set; }

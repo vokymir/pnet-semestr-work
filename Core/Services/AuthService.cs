@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core.Services
 {
+    /// <summary>
+    /// Registering, logging, validating email, hashing passwords.
+    /// </summary>
     class AuthService
     {
-        public static bool RegisterNewUser(string email, string password)
-        {
-            return true;
-        }
-        
-        public static bool LoginUser(string email, string password)
-        {
-            return true;
-        }
     }
 }

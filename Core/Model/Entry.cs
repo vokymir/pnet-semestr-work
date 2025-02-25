@@ -14,24 +14,24 @@ namespace Core.Model
     {
         // primary key
         private int ContestId { get; set; }
-        private Contest Contest { get; set; }
+        private Contest Contest { get; set; } = null!;
         private int WatcherId { get; set; }
-        private Watcher Watcher { get; set; }
+        private Watcher Watcher { get; set; } = null!;
         private DateTime Timestamp { get; set; }
 
         // Additional info
         private int CreatedById { get; set; }
-        private User CreatedBy { get; set; }
+        private User CreatedBy { get; set; } = null!;
 
         // bird may be a class, but for now it is a string
-        private string Bird { get; set; }
+        private string Bird { get; set; } = string.Empty;
         // bird metadata
-        private string Location { get; set; }
+        private string Location { get; set; } = string.Empty;
         // if will implement
         private int Count { get; set; }
 
         // admin editable area - to avoid merge conflicts, users and admins can't edit the same fields
-        private string AdminComment { get; set; }
+        private string AdminComment { get; set; } = string.Empty;
         private bool AdminDisapproved { get; set; }
     }
 }
