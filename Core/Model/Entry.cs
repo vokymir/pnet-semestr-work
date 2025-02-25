@@ -10,28 +10,28 @@ namespace Core.Model
     /// Represents one entry of a bird in a contest.
     /// Primary key is a combination of ContestId, WatcherId and Timestamp. !!! NOT IMPLEMENTED YET !!!
     /// </summary>
-    class Entry
+    public class Entry
     {
         // primary key
-        private int ContestId { get; set; }
-        private Contest Contest { get; set; } = null!;
-        private int WatcherId { get; set; }
-        private Watcher Watcher { get; set; } = null!;
-        private DateTime Timestamp { get; set; }
+        public int ContestId { get; set; }
+        public Contest Contest { get; set; } = null!;
+        public int WatcherId { get; set; }
+        public Watcher Watcher { get; set; } = null!;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
 
         // Additional info
-        private int CreatedById { get; set; }
-        private User CreatedBy { get; set; } = null!;
+        public int CreatedById { get; set; }
+        public User CreatedBy { get; set; } = null!;
 
         // bird may be a class, but for now it is a string
-        private string Bird { get; set; } = string.Empty;
+        public string Bird { get; set; } = string.Empty;
         // bird metadata
-        private string Location { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
         // if will implement
-        private int Count { get; set; }
+        public int Count { get; set; }
 
         // admin editable area - to avoid merge conflicts, users and admins can't edit the same fields
-        private string AdminComment { get; set; } = string.Empty;
-        private bool AdminDisapproved { get; set; }
+        public string AdminComment { get; set; } = string.Empty;
+        public bool AdminDisapproved { get; set; }
     }
 }

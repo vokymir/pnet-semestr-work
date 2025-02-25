@@ -13,7 +13,7 @@ namespace Core.Data
     /// Must have, for Entity Framework to work.
     /// Setup the tables of database kinda.
     /// </summary>
-    class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -29,5 +29,17 @@ namespace Core.Data
         public DbSet<UserWatcher> UserWatchers { get; set; }
         public DbSet<UserContest> UserContests { get; set; }
         public DbSet<WatcherContest> WatcherContests { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseInMemoryDatabase("TestDb");
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Entry>().HasKey(["ContestId", "WatcherId", "Timestamp"]);
+
+        }
     }
 }

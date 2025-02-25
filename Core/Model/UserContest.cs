@@ -10,15 +10,15 @@ namespace Core.Model
     /// Join Table for Users who have admin access to Contests.
     /// Multiple users can have admin access to one contest, but it always has one owner - stored in Contest.
     /// </summary>
-    class UserContest
+    public class UserContest
     {
-        private int Id { get; set; }
-        private int UserId { get; set; }
-        private User User { get; set; } = null!;
-        private int ContestId { get; set; }
-        private Contest Contest { get; set; } = null!;
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; } = null!;
+        public int ContestId { get; set; }
+        public Contest Contest { get; set; } = null!;
 
         // metadata
-        private DateTime Added { get; set; } = DateTime.Now;
+        public DateTime Added { get; set; } = DateTime.Now;
     }
 }

@@ -10,7 +10,7 @@ namespace Core.Services
     /// <summary>
     /// CRUD operations for Entry.
     /// </summary>
-    class EntryService
+    public class EntryService
     {
     }
 }

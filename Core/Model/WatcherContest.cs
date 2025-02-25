@@ -10,15 +10,15 @@ namespace Core.Model
     /// Join table for Watchers in Contests.
     /// One Watcher can join multiple contests, and one contest can have multiple watchers.
     /// </summary>
-    class WatcherContest
+    public class WatcherContest
     {
-        private int Id { get; set; }
-        private int WatcherId { get; set; }
-        private Watcher Watcher { get; set; } = null!;
-        private int ContestId { get; set; }
-        private Contest Contest { get; set; } = null!;
+        public int Id { get; set; }
+        public int WatcherId { get; set; }
+        public Watcher Watcher { get; set; } = null!;
+        public int ContestId { get; set; }
+        public Contest Contest { get; set; } = null!;
 
         // metadata
-        private DateTime Joined { get; set; } = DateTime.Now;
+        public DateTime Joined { get; set; } = DateTime.Now;
     }
 }

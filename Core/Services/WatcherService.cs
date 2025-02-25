@@ -10,7 +10,7 @@ namespace Core.Services
     /// <summary>
     /// CRUD operations for watcher.
     /// </summary>
-    class WatcherService
+    public class WatcherService
     {
     }
 }

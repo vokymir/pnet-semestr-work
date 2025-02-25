@@ -10,7 +10,7 @@ namespace Core.Services.Interfaces
     /// <summary>
     /// Service for managing the current session.
     /// </summary>
-    interface ISessionService
+    public interface ISessionService
     {
         // To store only minimal required information
         int? CurrentUserId { get; set; }

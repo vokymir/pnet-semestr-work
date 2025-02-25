@@ -10,23 +10,28 @@ namespace Core.Model
     /// User represents one physical person who can log in to the system.
     /// Each user can create multiple watchers and contests.
     /// </summary>
-    class User
+    public class User
     {
-        private int Id { get; set; }
+        public int Id { get; init; }
         /// <summary>
         /// Login email for the user.
         /// </summary>
-        private string Email { get; set; }
+        public string Email { get; set; }
         /// <summary>
         /// Users hashed password..
         /// </summary>
-        private string PasswordHash { get; set; }
+        public string PasswordHash { get; set; }
 
 
         public User(string Email, string PasswordHash)
         {
             this.PasswordHash = PasswordHash;
             this.Email = Email;
+        }
+
+        public override string ToString()
+        {
+            return $"{Id}: {Email} | {PasswordHash}";
         }
 
 

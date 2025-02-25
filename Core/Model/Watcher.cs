@@ -11,19 +11,19 @@ namespace Core.Model
     /// Each user can have multiple watchers, as well as one watcher can be controled by multiple users.
     /// Watcher can join multiple contests.
     /// </summary>
-    class Watcher
+    public class Watcher
     {
-        private int Id { get; set; }
+        public int Id { get; set; }
         /// <summary>
         /// Initially user who created this watcher.
         /// Parenthood can be transfered, but ultimately there is always one parent.
         /// </summary>
-        private int ParentId { get; set; }
-        private User Parent { get; set; } = null!;
+        public int ParentId { get; set; }
+        public User Parent { get; set; } = null!;
 
         // All Watcher metadata follows.
         
-        private string Name { get; set; } = string.Empty;
-        private DateTime Created { get; set; } = DateTime.Now;
+        public string Name { get; set; } = string.Empty;
+        public DateTime Created { get; set; } = DateTime.Now;
     }
 }

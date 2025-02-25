@@ -41,13 +41,13 @@ namespace Core
         private static void ConfigureServices(ServiceCollection services)
         {
             // add database
-            services.AddDbContext<AppDbContext>(options=> options.UseInMemoryDatabase("TestDb"));
+            services.AddDbContext<AppDbContext>();
 
             // add singleton = only one instance of the service will be created
             services.AddSingleton<ISessionService, SessionService>();
 
             // add transient = a new instance of the service will be created every time it is requested
-            services.AddTransient<AuthService>();
+            services.AddTransient<UserService>();
             services.AddTransient<EntryService>();
             services.AddTransient<ContestService>();
             services.AddTransient<WatcherService>();

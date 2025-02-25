@@ -12,7 +12,7 @@ namespace Core.Services
     /// Implementation of the session service. 
     /// This is here because I will probably use the browser session and this should scale better...
     /// </summary>
-    class SessionService : ISessionService
+    public class SessionService : ISessionService
     {
         public int? CurrentUserId { get; set; }
     }
