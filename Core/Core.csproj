@@ -12,10 +12,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="UI\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
