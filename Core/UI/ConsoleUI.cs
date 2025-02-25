@@ -20,8 +20,8 @@ namespace Core.UI
         public void Run(string[] args)
         {
             Console.WriteLine("Hello World from ConsoleUI!");
-            _userService.AddUser("voky", "aha", 1);
-            _userService.AddUser("vok", "aa", 2);
+            _userService.AddUserAsync("voky", "aha", 1);
+            _userService.AddUserAsync("vok", "aa", 2);
             Console.WriteLine("START");
             DisplayUsers();
             Console.WriteLine("WHAT");

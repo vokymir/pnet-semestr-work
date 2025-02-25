@@ -25,12 +25,12 @@ namespace Core.Services
         }
 
 
-        public void AddUser(string email, string passwordHash, int id)
+        public async void AddUserAsync(string email, string passwordHash, int id)
         {
             var user = new User(email, passwordHash) { Id = id };
             Console.WriteLine(user);
             _dbContext.Users.Add(user);
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
         public List<User> GetUsers()
         {
