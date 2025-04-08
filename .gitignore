@@ -8,6 +8,7 @@ bin
 bin/
 obj
 obj/
+.git
 
 # User-specific files
 *.rsuser
