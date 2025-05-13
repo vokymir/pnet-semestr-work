@@ -10,10 +10,4 @@ public class BirdWatcher
     public ICollection<BirdUser> Curators = new List<BirdUser>();
 
     public ICollection<BirdEvent> Participating = new List<BirdEvent>();
-
-    public BirdWatcher() { }
-    public BirdWatcher(BirdUser user)
-    {
-        MainCurator = user;
-    }
 }

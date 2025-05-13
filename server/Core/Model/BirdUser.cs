@@ -8,11 +8,4 @@ public class BirdUser
 
     public ICollection<BirdWatcher> Watchers { get; set; } = new List<BirdWatcher>();
     public ICollection<BirdEvent> Events { get; set; } = new List<BirdEvent>();
-
-    public BirdUser() { }
-    public BirdUser(string username, string passwordHash)
-    {
-        UserName = username;
-        PasswordHash = passwordHash;
-    }
 }

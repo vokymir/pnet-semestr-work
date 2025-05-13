@@ -2,8 +2,7 @@ namespace BirdWatching;
 
 public class BirdRecord
 {
-    public Bird Bird { get; set; } = new Bird("Neurceny", "Ptacek");
+    public int Id { get; set; }
+    public Bird Bird { get; set; } = new Bird();
     public DateTime DateSeen { get; set; } = DateTime.Now;
-
-    public BirdRecord() { }
 }

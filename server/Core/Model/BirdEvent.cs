@@ -11,14 +11,4 @@ public class BirdEvent
 
     public ICollection<BirdWatcher> Participants { get; set; } = new List<BirdWatcher>();
     public ICollection<BirdUser> Admins { get; set; } = new List<BirdUser>();
-
-    public BirdEvent() { }
-    public BirdEvent(BirdUser mainAdmin, string name, DateTime start, DateTime end, DateTime addingDeadline)
-    {
-        MainAdmin = mainAdmin;
-        Name = name;
-        Start = start;
-        End = end;
-        AddingDeadline = addingDeadline;
-    }
 }

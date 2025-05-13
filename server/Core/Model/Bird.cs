@@ -2,21 +2,11 @@ namespace BirdWatching;
 
 public class Bird
 {
+    public int Id { get; set; }
     // rodove jmeno, napr.: sykora
     public string Genus { get; set; } = "Neurceny";
     // druhove jmeno, napr.: konadra
     public string Species { get; set; } = "Ptacek";
-
-    public Bird() { }
-
-    /// <summary>
-    /// Create a new bird, where genus is e.g. "sykora" and species e.g. "konadra".
-    /// </summary>
-    public Bird(string genus, string species)
-    {
-        Genus = genus;
-        Species = species;
-    }
 
     public override string ToString() => $"{Genus} {Species}";
 
@@ -26,7 +16,7 @@ public class Bird
     {
         if (obj is not Bird) return false;
 
-        return ((Bird)obj).ToString().Equals(this.ToString());
+        return ((Bird)obj).Id == this.Id;
     }
 
 }
