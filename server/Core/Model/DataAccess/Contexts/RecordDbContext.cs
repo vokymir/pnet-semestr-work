@@ -5,7 +5,7 @@ public class RecordDbContext : DbContext
 {
     public DbSet<Record> Records { get; set; }
 
-    public RecordDbContext(DbContextOptions<BirdDbContext> options) : base(options)
+    public RecordDbContext(DbContextOptions<RecordDbContext> options) : base(options)
     {
 
     }

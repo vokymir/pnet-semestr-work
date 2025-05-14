@@ -5,7 +5,7 @@ public class WatcherDbContext : DbContext
 {
     public DbSet<Watcher> Watchers { get; set; }
 
-    public WatcherDbContext(DbContextOptions<BirdDbContext> options) : base(options)
+    public WatcherDbContext(DbContextOptions<WatcherDbContext> options) : base(options)
     {
 
     }
