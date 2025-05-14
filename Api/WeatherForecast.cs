@@ -1,4 +1,4 @@
-namespace BirdWatching.Api;
+namespace Api;
 
 public class WeatherForecast
 {
