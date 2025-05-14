@@ -1,7 +1,10 @@
-namespace BirdWatching;
+namespace BirdWatching.Core;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.Data.Sqlite;
+
+using BirdWatching.Shared;
 
 public class App
 {
