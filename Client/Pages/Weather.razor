@@ -1,4 +1,4 @@
-﻿@page "/weather"
+@page "/weather"
 @inject HttpClient Http
 
 <PageTitle>Weather</PageTitle>
@@ -37,11 +37,24 @@ else
 }
 
 @code {
+
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        try
+        {
+            var response = await Http.GetAsync("http://localhost:5069/api/WeatherForecast");
+
+            if (response.IsSuccessStatusCode)
+            {
+                forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("http://localhost:5069/api/WeatherForecast");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching weather data: {ex.Message}");
+        }
     }
 
     public class WeatherForecast

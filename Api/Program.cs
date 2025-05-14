@@ -1,5 +1,8 @@
+namespace BirdWatching.Api;
 
-namespace Api;
+using Microsoft.EntityFrameworkCore;
+
+using BirdWatching.Shared.Model;
 
 public class Program
 {
@@ -10,9 +13,18 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite("Data Source=birdwatching.db"));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        // Add CORS policy
+        builder.Services.AddCors(options => {
+            options.AddDefaultPolicy(policy => {
+                policy.WithOrigins("http://localhost:5284")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
 
         var app = builder.Build();
 
@@ -23,7 +35,10 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        app.UseCors();
+
+        if (!app.Environment.IsDevelopment())
+            app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
