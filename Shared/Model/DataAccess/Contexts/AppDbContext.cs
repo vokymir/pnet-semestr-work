@@ -1,4 +1,5 @@
-namespace BirdWatching;
+namespace BirdWatching.Shared.Model;
+
 using Microsoft.EntityFrameworkCore;
 
 public class AppDbContext : DbContext

@@ -1,4 +1,4 @@
-﻿namespace Shared;
+namespace BirdWatching.Shared;
 
 class Program
 {

@@ -1,4 +1,4 @@
-namespace BirdWatching;
+namespace BirdWatching.Shared.Model;
 
 public class EFRecordRepository : IRecordRepository
 {
