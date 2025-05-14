@@ -1,10 +1,10 @@
 namespace BirdWatching;
 
-public interface IRepository
+public interface IRepository<T>
 {
-    public void CreateBird(Bird bird);
-    public void UpdateBird(Bird bird);
-    public Bird ReadBird(int id);
-    public void DeleteBird(Bird bird);
-    public ICollection<Bird> ReadAllBirds();
+    public void Add(T item);
+    public void Update(T item);
+    public void Delete(T item);
+    public T? GetByID(int id);
+    public IReadOnlyCollection<T> GetAll();
 }
