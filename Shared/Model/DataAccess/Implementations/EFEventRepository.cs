@@ -9,13 +9,13 @@ public class EFEventRepository : IEventRepository
         _context = context;
     }
 
-    void Add(Event @event)
+    public void Add(Event @event)
     {
         _context.Events.Add(@event);
         _context.SaveChanges();
     }
 
-    void Update(Event @event)
+    public void Update(Event @event)
     {
         var dbEvent = _context.Events.Find(@event.Id);
 
@@ -26,7 +26,7 @@ public class EFEventRepository : IEventRepository
         _context.SaveChanges();
     }
 
-    void Delete(int id)
+    public void Delete(int id)
     {
         var @event = GetById(id);
 
@@ -36,7 +36,7 @@ public class EFEventRepository : IEventRepository
         _context.SaveChanges();
     }
 
-    Event? GetById(int id) => _context.Events.Find(id);
+    public Event? GetById(int id) => _context.Events.Find(id);
 
-    IEnumerable<Event> GetAll() => _context.Events.ToList();
+    public IEnumerable<Event> GetAll() => _context.Events.ToList();
 }

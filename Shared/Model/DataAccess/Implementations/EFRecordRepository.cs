@@ -9,13 +9,13 @@ public class EFRecordRepository : IRecordRepository
         _context = context;
     }
 
-    void Add(Record record)
+    public void Add(Record record)
     {
         _context.Records.Add(record);
         _context.SaveChanges();
     }
 
-    void Update(Record record)
+    public void Update(Record record)
     {
         var dbRecord = _context.Records.Find(record.Id);
 
@@ -26,7 +26,7 @@ public class EFRecordRepository : IRecordRepository
         _context.SaveChanges();
     }
 
-    void Delete(int id)
+    public void Delete(int id)
     {
         var record = GetById(id);
 
@@ -36,7 +36,7 @@ public class EFRecordRepository : IRecordRepository
         _context.SaveChanges();
     }
 
-    Record? GetById(int id) => _context.Records.Find(id);
+    public Record? GetById(int id) => _context.Records.Find(id);
 
-    IEnumerable<Record> GetAll() => _context.Records.ToList();
+    public IEnumerable<Record> GetAll() => _context.Records.ToList();
 }

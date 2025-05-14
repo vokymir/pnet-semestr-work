@@ -2,9 +2,9 @@ namespace BirdWatching.Shared.Model;
 
 public interface IEventRepository
 {
-    void Add(Event @event);
-    void Delete(int id);
-    void Update(Event @event);
-    Event? GetById(int id);
-    IEnumerable<Event> GetAll();
+    public void Add(Event @event);
+    public void Delete(int id);
+    public void Update(Event @event);
+    public Event? GetById(int id);
+    public IEnumerable<Event> GetAll();
 }

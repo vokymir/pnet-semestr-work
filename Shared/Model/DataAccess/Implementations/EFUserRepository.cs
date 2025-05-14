@@ -9,13 +9,13 @@ public class EFUserRepository : IUserRepository
         _context = context;
     }
 
-    void Add(User user)
+    public void Add(User user)
     {
         _context.Users.Add(user);
         _context.SaveChanges();
     }
 
-    void Update(User user)
+    public void Update(User user)
     {
         var dbUser = _context.Users.Find(user.Id);
 
@@ -26,7 +26,7 @@ public class EFUserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    void Delete(int id)
+    public void Delete(int id)
     {
         var user = GetById(id);
 
@@ -36,7 +36,7 @@ public class EFUserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    User? GetById(int id) => _context.Users.Find(id);
+    public User? GetById(int id) => _context.Users.Find(id);
 
-    IEnumerable<User> GetAll() => _context.Users.ToList();
+    public IEnumerable<User> GetAll() => _context.Users.ToList();
 }

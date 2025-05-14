@@ -7,5 +7,5 @@ public class User
     public string PasswordHash { get; set; } = "password";
 
     public ICollection<Watcher> Watchers { get; set; } = new List<Watcher>();
-    public ICollection<BirdWatching.Event> Events { get; set; } = new List<Event>();
+    public ICollection<Event> Events { get; set; } = new List<Event>();
 }

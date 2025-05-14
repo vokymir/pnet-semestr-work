@@ -9,13 +9,13 @@ public class EFWatcherRepository : IWatcherRepository
         _context = context;
     }
 
-    void Add(Watcher watcher)
+    public void Add(Watcher watcher)
     {
         _context.Watchers.Add(watcher);
         _context.SaveChanges();
     }
 
-    void Update(Watcher watcher)
+    public void Update(Watcher watcher)
     {
         var dbWatcher = _context.Watchers.Find(watcher.Id);
 
@@ -26,7 +26,7 @@ public class EFWatcherRepository : IWatcherRepository
         _context.SaveChanges();
     }
 
-    void Delete(int id)
+    public void Delete(int id)
     {
         var watcher = GetById(id);
 
@@ -36,7 +36,7 @@ public class EFWatcherRepository : IWatcherRepository
         _context.SaveChanges();
     }
 
-    Watcher? GetById(int id) => _context.Watchers.Find(id);
+    public Watcher? GetById(int id) => _context.Watchers.Find(id);
 
-    IEnumerable<Watcher> GetAll() => _context.Watchers.ToList();
+    public IEnumerable<Watcher> GetAll() => _context.Watchers.ToList();
 }

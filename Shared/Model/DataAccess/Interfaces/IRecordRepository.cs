@@ -2,9 +2,9 @@ namespace BirdWatching.Shared.Model;
 
 public interface IRecordRepository
 {
-    void Add(Record record);
-    void Delete(int id);
-    void Update(Record record);
-    Record? GetById(int id);
-    IEnumerable<Record> GetAll();
+    public void Add(Record record);
+    public void Delete(int id);
+    public void Update(Record record);
+    public Record? GetById(int id);
+    public IEnumerable<Record> GetAll();
 }

@@ -1,5 +1,7 @@
 namespace BirdWatching.Shared.Model;
 
+using Microsoft.EntityFrameworkCore;
+
 public class EFBirdRepository : IBirdRepository
 {
     private AppDbContext _context;
@@ -9,13 +11,13 @@ public class EFBirdRepository : IBirdRepository
         _context = context;
     }
 
-    void Add(Bird bird)
+    public void Add(Bird bird)
     {
         _context.Birds.Add(bird);
         _context.SaveChanges();
     }
 
-    void Update(Bird bird)
+    public void Update(Bird bird)
     {
         var dbBird = _context.Birds.Find(bird.Id);
 
@@ -26,7 +28,7 @@ public class EFBirdRepository : IBirdRepository
         _context.SaveChanges();
     }
 
-    void Delete(int id)
+    public void Delete(int id)
     {
         var bird = GetById(id);
 
@@ -36,7 +38,7 @@ public class EFBirdRepository : IBirdRepository
         _context.SaveChanges();
     }
 
-    Bird? GetById(int id) => _context.Birds.Find(id);
+    public Bird? GetById(int id) => _context.Birds.Find(id);
 
-    IEnumerable<Bird> GetAll() => _context.Birds.ToList();
+    public IEnumerable<Bird> GetAll() => _context.Birds.ToList();
 }

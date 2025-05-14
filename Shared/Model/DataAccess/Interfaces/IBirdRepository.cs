@@ -2,9 +2,9 @@ namespace BirdWatching.Shared.Model;
 
 public interface IBirdRepository
 {
-    void Add(Bird bird);
-    void Delete(int id);
-    void Update(Bird bird);
-    Bird? Get(int id);
-    IEnumerable<Bird> GetAll();
+    public void Add(Bird bird);
+    public void Delete(int id);
+    public void Update(Bird bird);
+    public Bird? GetById(int id);
+    public IEnumerable<Bird> GetAll();
 }
