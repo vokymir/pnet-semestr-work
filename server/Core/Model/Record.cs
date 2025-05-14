@@ -1,6 +1,6 @@
 namespace BirdWatching;
 
-public class BirdRecord
+public class Record
 {
     public int Id { get; set; }
     public Bird Bird { get; set; } = new Bird();
