@@ -2,9 +2,9 @@ namespace BirdWatching;
 
 public class EFRecordRepository : IRecordRepository
 {
-    private RecordDbContext _context;
+    private AppDbContext _context;
 
-    public EFRecordRepository(RecordDbContext context)
+    public EFRecordRepository(AppDbContext context)
     {
         _context = context;
     }

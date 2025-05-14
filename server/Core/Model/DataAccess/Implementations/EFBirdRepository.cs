@@ -2,9 +2,9 @@ namespace BirdWatching;
 
 public class EFBirdRepository : IBirdRepository
 {
-    private BirdDbContext _context;
+    private AppDbContext _context;
 
-    public EFBirdRepository(BirdDbContext context)
+    public EFBirdRepository(AppDbContext context)
     {
         _context = context;
     }

@@ -2,9 +2,9 @@ namespace BirdWatching;
 
 public class EFEventRepository : IEventRepository
 {
-    private EventDbContext _context;
+    private AppDbContext _context;
 
-    public EFEventRepository(EventDbContext context)
+    public EFEventRepository(AppDbContext context)
     {
         _context = context;
     }

@@ -2,9 +2,9 @@ namespace BirdWatching;
 
 public class EFWatcherRepository : IWatcherRepository
 {
-    private WatcherDbContext _context;
+    private AppDbContext _context;
 
-    public EFWatcherRepository(WatcherDbContext context)
+    public EFWatcherRepository(AppDbContext context)
     {
         _context = context;
     }

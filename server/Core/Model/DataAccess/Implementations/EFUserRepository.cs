@@ -2,9 +2,9 @@ namespace BirdWatching;
 
 public class EFUserRepository : IUserRepository
 {
-    private UserDbContext _context;
+    private AppDbContext _context;
 
-    public EFUserRepository(UserDbContext context)
+    public EFUserRepository(AppDbContext context)
     {
         _context = context;
     }
