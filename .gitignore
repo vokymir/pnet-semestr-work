@@ -3,11 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# =====
 # I added this
 bin
 bin/
 obj
 obj/
+# don't include database
+*.db
+
+# =====
 
 # User-specific files
 *.rsuser

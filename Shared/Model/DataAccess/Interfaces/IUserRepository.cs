@@ -6,5 +6,6 @@ public interface IUserRepository
     public void Delete(int id);
     public void Update(User user);
     public User? GetById(int id);
+    public User? GetByUsername(string username);
     public IEnumerable<User> GetAll();
 }

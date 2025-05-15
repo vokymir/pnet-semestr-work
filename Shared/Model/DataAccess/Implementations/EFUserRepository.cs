@@ -38,5 +38,7 @@ public class EFUserRepository : IUserRepository
 
     public User? GetById(int id) => _context.Users.Find(id);
 
+    public User? GetByUsername(string username) => _context.Users.FirstOrDefault(u => u.UserName == username);
+
     public IEnumerable<User> GetAll() => _context.Users.ToList();
 }
