@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace BirdWatching.Api.Controllers;
+using BirdWatching.Shared.Model;
 
 [ApiController]
 public class WeatherForecastController : BaseApiController
@@ -11,9 +12,11 @@ public class WeatherForecastController : BaseApiController
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
+    private readonly AppDbContext _context;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(AppDbContext context, ILogger<WeatherForecastController> logger)
     {
+        _context = context;
         _logger = logger;
     }
 
