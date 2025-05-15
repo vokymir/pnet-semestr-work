@@ -7,7 +7,9 @@ public class Event
     public DateTime Start { get; set; } = DateTime.Now;
     public DateTime End { get; set; } = DateTime.MaxValue;
     public DateTime AddingDeadline { get; set; } = DateTime.MaxValue;
-    public User MainAdmin { get; set; } = new User();
+
+    public int MainAdminId { get; set; }
+    public User MainAdmin { get; set; } = null!;
 
     public ICollection<Watcher> Participants { get; set; } = new List<Watcher>();
     public ICollection<User> Admins { get; set; } = new List<User>();

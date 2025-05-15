@@ -4,10 +4,10 @@ public class Watcher
 {
     public int Id { get; set; }
 
-    public ICollection<Record> Records = new List<Record>();
+    public int MainCuratorId { get; set; }
+    public User MainCurator { get; set; } = null!;
 
-    public User MainCurator { get; set; } = new User();
-    public ICollection<User> Curators = new List<User>();
-
-    public ICollection<Event> Participating = new List<Event>();
+    public ICollection<User> Curators { get; set; } = new List<User>();
+    public ICollection<Event> Participating { get; set; } = new List<Event>();
+    public ICollection<Record> Records { get; set; } = new List<Record>();
 }

@@ -11,7 +11,56 @@ public class AppDbContext : DbContext
     public DbSet<Watcher> Watchers { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
+    { Database.EnsureCreated(); }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // ————————————————
+        // Watcher ← MainCurator (1:N)
+        modelBuilder.Entity<Watcher>()
+            .HasOne(w => w.MainCurator)
+            .WithMany(u => u.Watchers)
+            .HasForeignKey(w => w.MainCuratorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Watcher ↔ Curators   (M:N)
+        modelBuilder.Entity<Watcher>()
+            .HasMany(w => w.Curators)
+            .WithMany(u => u.CuratedWatchers)
+            .UsingEntity(j => j.ToTable("WatcherCurators"));
+
+        // Event  ← MainAdmin   (1:N)
+        modelBuilder.Entity<Event>()
+            .HasOne(e => e.MainAdmin)
+            .WithMany(u => u.Events)
+            .HasForeignKey(e => e.MainAdminId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Event  ↔ Admins      (M:N)
+        modelBuilder.Entity<Event>()
+            .HasMany(e => e.Admins)
+            .WithMany(u => u.AdministeredEvents)
+            .UsingEntity(j => j.ToTable("EventAdmins"));
+
+        // Watcher ↔ Event      (M:N)
+        modelBuilder.Entity<Watcher>()
+            .HasMany(w => w.Participating)
+            .WithMany(e => e.Participants)
+            .UsingEntity(j => j.ToTable("EventParticipants"));
+
+        // Record → Bird (N:1)
+        modelBuilder.Entity<Record>()
+            .HasOne(r => r.Bird)
+            .WithMany()             // if you don’t track Bird→Records, leave it empty
+            .HasForeignKey("BirdId");
+
+        // Record → Watcher (N:1)
+        modelBuilder.Entity<Record>()
+            .HasOne<Watcher>()
+            .WithMany(w => w.Records)
+            .HasForeignKey("WatcherId");
+
+        base.OnModelCreating(modelBuilder);
     }
 }
+

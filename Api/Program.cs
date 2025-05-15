@@ -13,7 +13,7 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
-        builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite("Data Source=birdwatching.db"));
+        builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite("Data Source=birdwatching.db", b => b.MigrationsAssembly("Api")));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
