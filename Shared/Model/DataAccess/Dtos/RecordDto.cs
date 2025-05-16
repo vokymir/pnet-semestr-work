@@ -1,25 +1,25 @@
 namespace BirdWatching.Shared.Model;
 
-public class Record : IHaveDto<RecordDto>
+public class RecordDto : IAmDto<Record>
 {
     public int Id { get; set; }
     public DateTime DateSeen { get; set; }
 
     public int BirdId { get; set; }
-    public Bird Bird { get; set; } = null!;
+    public BirdDto Bird { get; set; } = null!;
 
     public int WatcherId { get; set; }
-    public Watcher Watcher { get; set; } = null!;
+    public WatcherDto Watcher { get; set; } = null!;
 
-    public RecordDto ToDto()
+    public Record ToEntity()
     {
-        var r = new RecordDto() {
+        var r = new Record() {
             Id = Id,
             DateSeen = DateSeen,
             BirdId = BirdId,
             WatcherId = WatcherId,
-            Bird = Bird.ToDto(),
-            Watcher = Watcher.ToDto()
+            Bird = Bird.ToEntity(),
+            Watcher = Watcher.ToEntity()
         };
 
         return r;

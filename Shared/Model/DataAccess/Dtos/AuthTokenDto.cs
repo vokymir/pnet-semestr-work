@@ -1,21 +1,18 @@
 namespace BirdWatching.Shared.Model;
 
-using Microsoft.EntityFrameworkCore;
-
-[PrimaryKey("Token")]
-public class AuthToken
+public class AuthTokenDto : IAmDto<AuthToken>
 {
     public string Token { get; set; } = string.Empty;
     public DateTime Created { get; set; } = DateTime.Now;
 
-    public User User { get; set; } = null!;
+    public UserDto User { get; set; } = null!;
 
-    public AuthTokenDto ToDto()
+    public AuthToken ToEntity()
     {
-        var a = new AuthTokenDto() {
+        var a = new AuthToken() {
             Token = Token,
             Created = Created,
-            User = User.ToDto()
+            User = User.ToEntity()
         };
 
         return a;

@@ -1,14 +1,14 @@
 namespace BirdWatching.Shared.Model;
 
-public class Bird : IHaveDto<BirdDto>
+public class BirdDto : IAmDto<Bird>
 {
     public int Id { get; set; }
     public string Genus { get; set; } = "Neurceny";
     public string Species { get; set; } = "Ptacek";
 
-    public BirdDto ToDto()
+    public Bird ToEntity()
     {
-        var b = new BirdDto() {
+        var b = new Bird() {
             Id = Id,
             Genus = Genus,
             Species = Species

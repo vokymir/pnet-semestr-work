@@ -21,7 +21,7 @@ public class UserController : BaseApiController
     [HttpPost("Create")]
     public IResult CreateUser(UserDto userDto)
     {
-        User user = new User() { UserName = userDto.username, PasswordHash = userDto.passwordhash };
+        User user = userDto.ToEntity();
 
         _userRepo.Add(user);
 
@@ -31,14 +31,14 @@ public class UserController : BaseApiController
     [HttpPost("Update/{token}")]
     public IResult UpdateUser(string token, UserDto userDto)
     {
-        IResult response = AuthUserByToken(token, userDto.id);
+        IResult response = AuthUserByToken(token, userDto.Id);
         if (!response.Equals(Results.Ok())) return response;
 
-        User? user = _userRepo.GetById(userDto.id);
+        User? user = _userRepo.GetById(userDto.Id);
         if (user is null) return Results.NotFound();
 
-        user.UserName = userDto.username;
-        user.PasswordHash = userDto.passwordhash;
+        user.UserName = userDto.UserName;
+        user.PasswordHash = userDto.PasswordHash;
 
         try
         {
@@ -80,12 +80,12 @@ public class UserController : BaseApiController
         if (user is null)
             return Results.NotFound();
 
-        UserDto userDto = new(user.Id, user.UserName, user.PasswordHash);
+        UserDto userDto = user.ToDto();
         return Results.Ok(userDto);
     }
 
     [HttpGet("GetAll")]
-    public IResult GetAllUsers()
+    public IResult GetAllUsersONLY_FOR_DEBUG__REMOVE_BEFORE_PUBLISHING()
     {
         User[] users = _userRepo.GetAll().ToArray();
         UserDto[] userDtos = new UserDto[users.Length];
@@ -93,7 +93,7 @@ public class UserController : BaseApiController
         for (int i = 0; i < users.Length; i++)
         {
             User user = users[i];
-            UserDto userDto = new(user.Id, user.UserName, user.PasswordHash);
+            UserDto userDto = user.ToDto();
             userDtos[i] = userDto;
         }
 
@@ -112,7 +112,7 @@ public class UserController : BaseApiController
         for (int i = 0; i < users.Length; i++)
         {
             User user = users[i];
-            UserDto userDto = new(user.Id, user.UserName, user.PasswordHash);
+            UserDto userDto = user.ToDto();
             userDtos[i] = userDto;
         }
 

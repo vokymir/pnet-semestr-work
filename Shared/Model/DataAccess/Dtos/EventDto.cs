@@ -1,6 +1,6 @@
 namespace BirdWatching.Shared.Model;
 
-public class Event : IHaveDto<EventDto>
+public class EventDto : IAmDto<Event>
 {
     public int Id { get; set; }
     public string Name { get; set; } = "Nepojmenovany event";
@@ -9,27 +9,27 @@ public class Event : IHaveDto<EventDto>
     public DateTime AddingDeadline { get; set; } = DateTime.MaxValue;
 
     public int MainAdminId { get; set; }
-    public User MainAdmin { get; set; } = null!;
+    public UserDto MainAdmin { get; set; } = null!;
 
-    public ICollection<Watcher> Participants { get; set; } = new List<Watcher>();
-    public ICollection<User> Admins { get; set; } = new List<User>();
+    public ICollection<WatcherDto> Participants { get; set; } = new List<WatcherDto>();
+    public ICollection<UserDto> Admins { get; set; } = new List<UserDto>();
 
-    public EventDto ToDto()
+    public Event ToEntity()
     {
-        var e = new EventDto() {
+        var e = new Event() {
             Id = Id,
             Name = Name,
             Start = Start,
             End = End,
             AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
-            MainAdmin = MainAdmin.ToDto()
+            MainAdmin = MainAdmin.ToEntity()
         };
 
         foreach (var w in Participants)
-            e.Participants.Add(w.ToDto());
+            e.Participants.Add(w.ToEntity());
         foreach (var u in Admins)
-            e.Admins.Add(u.ToDto());
+            e.Admins.Add(u.ToEntity());
 
         return e;
     }

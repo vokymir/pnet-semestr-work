@@ -22,10 +22,11 @@ public class AppDbContext : DbContext
             .HasOne(t => t.User)
             .WithMany(u => u.AuthTokens)
             .IsRequired();
+
         // Watcher ← MainCurator (1:N)
         modelBuilder.Entity<Watcher>()
-            .HasOne(w => w.MainCurator)
-            .WithMany(u => u.Watchers)
+            .HasOne<User>() // No navigation property on Watcher
+            .WithMany(u => u.Watchers) // Navigation property on User
             .HasForeignKey(w => w.MainCuratorId)
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -66,7 +67,7 @@ public class AppDbContext : DbContext
             .WithMany(w => w.Records)
             .HasForeignKey("WatcherId");
 
-        var usr = new User() { Id = -1, IsAdmin = true };
+        var usr = new User() { Id = -1, IsAdmin = true, UserName = "string", PasswordHash = "string" };
 
         modelBuilder.Entity<User>().HasData(usr);
 

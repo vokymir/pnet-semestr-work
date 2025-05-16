@@ -1,5 +1,7 @@
 namespace BirdWatching.Shared.Model;
 
+using Microsoft.EntityFrameworkCore;
+
 public class EFWatcherRepository : IWatcherRepository
 {
     private AppDbContext _context;
@@ -36,7 +38,11 @@ public class EFWatcherRepository : IWatcherRepository
         _context.SaveChanges();
     }
 
+    public Watcher[] GetByUser(User user) => _context.Watchers.Where(w => w.Curators.Contains(user)).ToArray();
+
     public Watcher? GetById(int id) => _context.Watchers.Find(id);
 
-    public IEnumerable<Watcher> GetAll() => _context.Watchers.ToList();
+    public IEnumerable<Watcher> GetAll() => _context.Watchers
+        .Include(w => w.Curators)
+        .ToArray();
 }
