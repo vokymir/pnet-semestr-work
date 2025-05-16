@@ -20,11 +20,8 @@ public class Watcher : IHaveDto<WatcherDto>
             FirstName = FirstName,
             LastName = LastName,
             MainCuratorId = MainCuratorId,
-            MainCurator = MainCurator.ToDto()
         };
 
-        foreach (var c in Curators)
-            w.Curators.Add(c.ToDto());
         foreach (var p in Participating)
             w.Participating.Add(p.ToDto());
         foreach (var r in Records)

@@ -25,8 +25,8 @@ public class AppDbContext : DbContext
 
         // Watcher ← MainCurator (1:N)
         modelBuilder.Entity<Watcher>()
-            .HasOne<User>() // No navigation property on Watcher
-            .WithMany(u => u.Watchers) // Navigation property on User
+            .HasOne(w => w.MainCurator)
+            .WithMany(u => u.Watchers)
             .HasForeignKey(w => w.MainCuratorId)
             .OnDelete(DeleteBehavior.Restrict);
 

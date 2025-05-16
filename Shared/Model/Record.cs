@@ -19,7 +19,6 @@ public class Record : IHaveDto<RecordDto>
             BirdId = BirdId,
             WatcherId = WatcherId,
             Bird = Bird.ToDto(),
-            Watcher = Watcher.ToDto()
         };
 
         return r;

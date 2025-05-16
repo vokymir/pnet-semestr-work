@@ -9,7 +9,6 @@ public class RecordDto : IAmDto<Record>
     public BirdDto Bird { get; set; } = null!;
 
     public int WatcherId { get; set; }
-    public WatcherDto Watcher { get; set; } = null!;
 
     public Record ToEntity()
     {
@@ -19,7 +18,6 @@ public class RecordDto : IAmDto<Record>
             BirdId = BirdId,
             WatcherId = WatcherId,
             Bird = Bird.ToEntity(),
-            Watcher = Watcher.ToEntity()
         };
 
         return r;

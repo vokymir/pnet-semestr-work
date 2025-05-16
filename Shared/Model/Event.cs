@@ -23,13 +23,7 @@ public class Event : IHaveDto<EventDto>
             End = End,
             AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
-            MainAdmin = MainAdmin.ToDto()
         };
-
-        foreach (var w in Participants)
-            e.Participants.Add(w.ToDto());
-        foreach (var u in Admins)
-            e.Admins.Add(u.ToDto());
 
         return e;
     }

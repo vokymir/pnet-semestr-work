@@ -8,6 +8,7 @@ public class AuthToken
     public string Token { get; set; } = string.Empty;
     public DateTime Created { get; set; } = DateTime.Now;
 
+    public int UserId { get; set; }
     public User User { get; set; } = null!;
 
     public AuthTokenDto ToDto()
@@ -15,7 +16,7 @@ public class AuthToken
         var a = new AuthTokenDto() {
             Token = Token,
             Created = Created,
-            User = User.ToDto()
+            UserId = UserId
         };
 
         return a;
