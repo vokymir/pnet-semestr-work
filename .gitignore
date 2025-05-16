@@ -11,6 +11,7 @@ obj
 obj/
 # don't include database
 *.db
+*.db*
 
 # =====
 

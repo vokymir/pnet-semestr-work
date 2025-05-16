@@ -12,7 +12,6 @@ public class WeatherForecastController : BaseApiController
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
-    private readonly AppDbContext _context;
 
     public WeatherForecastController(AppDbContext context, ILogger<WeatherForecastController> logger)
     {

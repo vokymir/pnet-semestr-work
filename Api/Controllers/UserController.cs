@@ -8,14 +8,14 @@ using BirdWatching.Shared.Model;
 public class UserController : BaseApiController
 {
     private readonly ILogger<UserController> _logger;
-    private readonly AppDbContext _context;
-    private IUserRepository _repo;
+    private IUserRepository _userRepo;
 
     public UserController(AppDbContext context, ILogger<UserController> logger)
     {
         _context = context;
         _logger = logger;
-        _repo = new EFUserRepository(_context);
+        _userRepo = new EFUserRepository(_context);
+        _authRepo = new EFAuthTokenRepository(_context);
     }
 
     [HttpPost("Create")]
@@ -23,24 +23,26 @@ public class UserController : BaseApiController
     {
         User user = new User() { UserName = userDto.username, PasswordHash = userDto.passwordhash };
 
-        _repo.Add(user);
+        _userRepo.Add(user);
 
         return Results.Ok();
     }
 
-    [HttpPost("Update")]
-    public IResult UpdateUser(UserDto userDto)
+    [HttpPost("Update/{token}")]
+    public IResult UpdateUser(string token, UserDto userDto)
     {
-        User? user = _repo.GetById(userDto.id);
-        if (user is null)
-            return Results.NotFound();
+        IResult response = AuthUserByToken(token, userDto.id);
+        if (!response.Equals(Results.Ok())) return response;
+
+        User? user = _userRepo.GetById(userDto.id);
+        if (user is null) return Results.NotFound();
 
         user.UserName = userDto.username;
         user.PasswordHash = userDto.passwordhash;
 
         try
         {
-            _repo.Update(user);
+            _userRepo.Update(user);
         }
         catch (Exception e)
         {
@@ -50,12 +52,15 @@ public class UserController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpDelete("Delete")]
-    public IResult DeleteUser(int userId)
+    [HttpDelete("Delete/{token}")]
+    public IResult DeleteUser(string token, int userId)
     {
+        IResult response = AuthUserByToken(token, userId);
+        if (!response.Equals(Results.Ok())) return response;
+
         try
         {
-            _repo.Delete(userId);
+            _userRepo.Delete(userId);
         }
         catch (Exception e)
         {
@@ -65,10 +70,13 @@ public class UserController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpGet("Get")]
-    public IResult GetUser(int userId)
+    [HttpGet("Get/{token}")]
+    public IResult GetUser(string token, int userId)
     {
-        User? user = _repo.GetById(userId);
+        IResult response = AuthUserByToken(token, userId);
+        if (!response.Equals(Results.Ok())) return response;
+
+        User? user = _userRepo.GetById(userId);
         if (user is null)
             return Results.NotFound();
 
@@ -76,10 +84,13 @@ public class UserController : BaseApiController
         return Results.Ok(userDto);
     }
 
-    [HttpGet("GetAll")]
-    public IResult GetAllUsers()
+    [HttpGet("GetAll/{token}")]
+    public IResult GetAllUsers(string token)
     {
-        User[] users = _repo.GetAll().ToArray();
+        IResult response = AuthAdminByToken(token);
+        if (!response.Equals(Results.Ok())) return response;
+
+        User[] users = _userRepo.GetAll().ToArray();
         UserDto[] userDtos = new UserDto[users.Length];
 
         for (int i = 0; i < users.Length; i++)
