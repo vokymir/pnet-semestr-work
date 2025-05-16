@@ -66,6 +66,10 @@ public class AppDbContext : DbContext
             .WithMany(w => w.Records)
             .HasForeignKey("WatcherId");
 
+        var usr = new User() { Id = -1, IsAdmin = true };
+
+        modelBuilder.Entity<User>().HasData(usr);
+
         base.OnModelCreating(modelBuilder);
     }
 }

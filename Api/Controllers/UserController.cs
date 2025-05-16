@@ -84,6 +84,22 @@ public class UserController : BaseApiController
         return Results.Ok(userDto);
     }
 
+    [HttpGet("GetAll")]
+    public IResult GetAllUsers()
+    {
+        User[] users = _userRepo.GetAll().ToArray();
+        UserDto[] userDtos = new UserDto[users.Length];
+
+        for (int i = 0; i < users.Length; i++)
+        {
+            User user = users[i];
+            UserDto userDto = new(user.Id, user.UserName, user.PasswordHash);
+            userDtos[i] = userDto;
+        }
+
+        return Results.Ok(userDtos);
+    }
+
     [HttpGet("GetAll/{token}")]
     public IResult GetAllUsers(string token)
     {

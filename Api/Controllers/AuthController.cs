@@ -1,7 +1,7 @@
 namespace BirdWatching.Api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
+using System.Security.Cryptography;
 
 using BirdWatching.Shared.Model;
 
@@ -66,15 +66,13 @@ public class AuthController : BaseApiController
     {
         int size = 64;
 
-        StringBuilder builder = new StringBuilder();
-        Random random = new Random();
-        char ch;
-        for (int i = 0; i < size; i++)
+        byte[] data = new byte[size];
+        using (var rng = RandomNumberGenerator.Create())
         {
-            ch = Convert.ToChar(Convert.ToInt32(Math.Floor(32 * 8 * random.NextDouble())));
-            builder.Append(ch);
+            rng.GetBytes(data);
         }
-        return builder.ToString();
+
+        return Convert.ToBase64String(data).Replace("+", "-").Replace("/", "_").Replace("=", "");
     }
 
     // zde jde optimalizovat - předělat do SQL v Modelu, a bylo by to rychlejší

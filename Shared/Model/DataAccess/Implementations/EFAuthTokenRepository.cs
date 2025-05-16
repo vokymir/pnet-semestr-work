@@ -38,7 +38,15 @@ public class EFAuthTokenRepository : IAuthTokenRepository
         _context.SaveChanges();
     }
 
-    public AuthToken? GetByString(string token) => _context.AuthTokens.Find(token);
+    public AuthToken? GetByString(string token)
+    {
+        var tkn = _context.AuthTokens.Find(token);
+        if (tkn is null) return null;
+
+        _context.Entry(tkn).Reference("User").Load();
+        return tkn;
+
+    }
 
     public IEnumerable<AuthToken> GetAll() => _context.AuthTokens.ToList();
 }
