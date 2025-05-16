@@ -7,9 +7,11 @@ public class WatcherDto : IAmDto<Watcher>
     public string LastName { get; set; } = string.Empty;
 
     public int MainCuratorId { get; set; }
+    public UserDto? MainCurator { get; set; }
 
-    public ICollection<EventDto> Participating { get; set; } = new List<EventDto>();
-    public ICollection<RecordDto> Records { get; set; } = new List<RecordDto>();
+    public ICollection<UserDto>? Curators { get; set; }
+    public ICollection<EventDto>? Participating { get; set; }
+    public ICollection<RecordDto>? Records { get; set; }
 
     public Watcher ToEntity()
     {
@@ -19,11 +21,18 @@ public class WatcherDto : IAmDto<Watcher>
             LastName = LastName,
             MainCuratorId = MainCuratorId,
         };
+        if (MainCurator is not null)
+            w.MainCurator = MainCurator.ToEntity();
 
-        foreach (var p in Participating)
-            w.Participating.Add(p.ToEntity());
-        foreach (var r in Records)
-            w.Records.Add(r.ToEntity());
+        if (Curators is not null)
+            foreach (var c in Curators)
+                w.Curators.Add(c.ToEntity());
+        if (Participating is not null)
+            foreach (var p in Participating)
+                w.Participating.Add(p.ToEntity());
+        if (Records is not null)
+            foreach (var r in Records)
+                w.Records.Add(r.ToEntity());
 
         return w;
     }

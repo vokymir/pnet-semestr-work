@@ -9,7 +9,6 @@ using BirdWatching.Shared.Model;
 public class AuthController : BaseApiController
 {
     private readonly ILogger<AuthController> _logger;
-    private IUserRepository _userRepo;
 
     // valid for 1 hour
     public TimeSpan TokenTimeSpan = new TimeSpan(0, 1, 0, 0);
@@ -18,8 +17,7 @@ public class AuthController : BaseApiController
     {
         _context = context;
         _logger = logger;
-        _userRepo = new EFUserRepository(_context);
-        _authRepo = new EFAuthTokenRepository(_context);
+        Init();
     }
 
     [HttpPost("Login")]
@@ -76,7 +74,7 @@ public class AuthController : BaseApiController
     }
 
     // zde jde optimalizovat - předělat do SQL v Modelu, a bylo by to rychlejší
-    private void DeleteOldTokens()
+    public void DeleteOldTokens()
     {
         foreach (var token in _authRepo.GetAll())
             if (token.Created + TokenTimeSpan < DateTime.Now)

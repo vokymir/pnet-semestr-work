@@ -7,12 +7,12 @@ public class UserDto : IAmDto<User>
     public string PasswordHash { get; set; } = "password";
     public bool IsAdmin { get; set; } = false;
 
-    public ICollection<WatcherDto> Watchers { get; set; } = new List<WatcherDto>();
-    public ICollection<EventDto> Events { get; set; } = new List<EventDto>();
+    public ICollection<WatcherDto>? Watchers { get; set; }
+    public ICollection<EventDto>? Events { get; set; }
 
-    public ICollection<WatcherDto> CuratedWatchers { get; set; } = new List<WatcherDto>();
-    public ICollection<EventDto> AdministeredEvents { get; set; } = new List<EventDto>();
-    public ICollection<AuthTokenDto> AuthTokens { get; set; } = new List<AuthTokenDto>();
+    public ICollection<WatcherDto>? CuratedWatchers { get; set; }
+    public ICollection<EventDto>? AdministeredEvents { get; set; }
+    public ICollection<AuthTokenDto>? AuthTokens { get; set; }
 
     public User ToEntity()
     {
@@ -23,16 +23,21 @@ public class UserDto : IAmDto<User>
             IsAdmin = IsAdmin
         };
 
-        foreach (var w in Watchers)
-            u.Watchers.Add(w.ToEntity());
-        foreach (var e in Events)
-            u.Events.Add(e.ToEntity());
-        foreach (var w in CuratedWatchers)
-            u.CuratedWatchers.Add(w.ToEntity());
-        foreach (var e in AdministeredEvents)
-            u.AdministeredEvents.Add(e.ToEntity());
-        foreach (var a in AuthTokens)
-            u.AuthTokens.Add(a.ToEntity());
+        if (Watchers is not null)
+            foreach (var w in Watchers)
+                u.Watchers.Add(w.ToEntity());
+        if (Events is not null)
+            foreach (var e in Events)
+                u.Events.Add(e.ToEntity());
+        if (CuratedWatchers is not null)
+            foreach (var w in CuratedWatchers)
+                u.CuratedWatchers.Add(w.ToEntity());
+        if (AdministeredEvents is not null)
+            foreach (var e in AdministeredEvents)
+                u.AdministeredEvents.Add(e.ToEntity());
+        if (AuthTokens is not null)
+            foreach (var a in AuthTokens)
+                u.AuthTokens.Add(a.ToEntity());
 
         return u;
     }

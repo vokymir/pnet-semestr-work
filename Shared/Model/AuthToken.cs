@@ -3,7 +3,7 @@ namespace BirdWatching.Shared.Model;
 using Microsoft.EntityFrameworkCore;
 
 [PrimaryKey("Token")]
-public class AuthToken
+public class AuthToken : IHaveDto<AuthTokenDto>
 {
     public string Token { get; set; } = string.Empty;
     public DateTime Created { get; set; } = DateTime.Now;
@@ -17,6 +17,18 @@ public class AuthToken
             Token = Token,
             Created = Created,
             UserId = UserId
+        };
+
+        return a;
+    }
+
+    public AuthTokenDto ToFullDto()
+    {
+        var a = new AuthTokenDto() {
+            Token = Token,
+            Created = Created,
+            UserId = UserId,
+            User = User.ToDto()
         };
 
         return a;

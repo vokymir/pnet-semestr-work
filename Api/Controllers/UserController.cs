@@ -8,14 +8,12 @@ using BirdWatching.Shared.Model;
 public class UserController : BaseApiController
 {
     private readonly ILogger<UserController> _logger;
-    private IUserRepository _userRepo;
 
     public UserController(AppDbContext context, ILogger<UserController> logger)
     {
         _context = context;
         _logger = logger;
-        _userRepo = new EFUserRepository(_context);
-        _authRepo = new EFAuthTokenRepository(_context);
+        Init();
     }
 
     [HttpPost("Create")]

@@ -16,4 +16,6 @@ public class Bird : IHaveDto<BirdDto>
 
         return b;
     }
+
+    public BirdDto ToFullDto() => ToDto();
 }

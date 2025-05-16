@@ -7,14 +7,12 @@ using BirdWatching.Shared.Model;
 public class WatcherController : BaseApiController
 {
     private readonly ILogger<WatcherController> _logger;
-    private IWatcherRepository _watcherRepo;
 
     public WatcherController(AppDbContext context, ILogger<WatcherController> logger)
     {
         _context = context;
         _logger = logger;
-        _authRepo = new EFAuthTokenRepository(_context);
-        _watcherRepo = new EFWatcherRepository(_context);
+        Init();
     }
 
     [HttpPost("Create/{token}")]

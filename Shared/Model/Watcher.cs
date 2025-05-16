@@ -22,6 +22,20 @@ public class Watcher : IHaveDto<WatcherDto>
             MainCuratorId = MainCuratorId,
         };
 
+        return w;
+    }
+    public WatcherDto ToFullDto()
+    {
+        var w = new WatcherDto() {
+            Id = Id,
+            FirstName = FirstName,
+            LastName = LastName,
+            MainCuratorId = MainCuratorId,
+            MainCurator = MainCurator.ToDto()
+        };
+
+        foreach (var c in Curators)
+            w.Curators.Add(c.ToDto());
         foreach (var p in Participating)
             w.Participating.Add(p.ToDto());
         foreach (var r in Records)

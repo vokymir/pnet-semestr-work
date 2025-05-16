@@ -18,7 +18,20 @@ public class Record : IHaveDto<RecordDto>
             DateSeen = DateSeen,
             BirdId = BirdId,
             WatcherId = WatcherId,
+        };
+
+        return r;
+    }
+
+    public RecordDto ToFullDto()
+    {
+        var r = new RecordDto() {
+            Id = Id,
+            DateSeen = DateSeen,
+            BirdId = BirdId,
+            WatcherId = WatcherId,
             Bird = Bird.ToDto(),
+            Watcher = Watcher.ToDto()
         };
 
         return r;

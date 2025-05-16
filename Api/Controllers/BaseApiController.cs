@@ -8,8 +8,23 @@ using BirdWatching.Shared.Model;
 [Route("api/[controller]")]
 public class BaseApiController : ControllerBase
 {
-    protected IAuthTokenRepository _authRepo = null!;
     protected AppDbContext _context = null!;
+    protected IAuthTokenRepository _authRepo = null!;
+    protected IBirdRepository _birdRepo = null!;
+    protected IEventRepository _eventRepo = null!;
+    protected IRecordRepository _recordRepo = null!;
+    protected IUserRepository _userRepo = null!;
+    protected IWatcherRepository _watcherRepo = null!;
+
+    protected void Init()
+    {
+        _authRepo = new EFAuthTokenRepository(_context);
+        _birdRepo = new EFBirdRepository(_context);
+        _eventRepo = new EFEventRepository(_context);
+        _recordRepo = new EFRecordRepository(_context);
+        _userRepo = new EFUserRepository(_context);
+        _watcherRepo = new EFWatcherRepository(_context);
+    }
 
     protected IResult AuthUserByToken(string token, int userId)
     {

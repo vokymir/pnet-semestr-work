@@ -9,6 +9,10 @@ public class EventDto : IAmDto<Event>
     public DateTime AddingDeadline { get; set; } = DateTime.MaxValue;
 
     public int MainAdminId { get; set; }
+    public UserDto? MainAdmin { get; set; }
+
+    public ICollection<WatcherDto>? Participants { get; set; }
+    public ICollection<UserDto>? Admins { get; set; }
 
     public Event ToEntity()
     {
@@ -20,6 +24,15 @@ public class EventDto : IAmDto<Event>
             AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
         };
+        if (MainAdmin is not null)
+            e.MainAdmin = MainAdmin.ToEntity();
+
+        if (Participants is not null)
+            foreach (var w in Participants)
+                e.Participants.Add(w.ToEntity());
+        if (Admins is not null)
+            foreach (var u in Admins)
+                e.Admins.Add(u.ToEntity());
 
         return e;
     }

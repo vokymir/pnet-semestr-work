@@ -25,6 +25,17 @@ public class User : IHaveDto<UserDto>
             IsAdmin = IsAdmin
         };
 
+        return u;
+    }
+    public UserDto ToFullDto()
+    {
+        var u = new UserDto() {
+            Id = Id,
+            UserName = UserName,
+            PasswordHash = PasswordHash,
+            IsAdmin = IsAdmin
+        };
+
         foreach (var w in Watchers)
             u.Watchers.Add(w.ToDto());
         foreach (var e in Events)

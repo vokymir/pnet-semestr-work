@@ -6,9 +6,10 @@ public class RecordDto : IAmDto<Record>
     public DateTime DateSeen { get; set; }
 
     public int BirdId { get; set; }
-    public BirdDto Bird { get; set; } = null!;
+    public BirdDto? Bird { get; set; }
 
     public int WatcherId { get; set; }
+    public WatcherDto? Watcher { get; set; }
 
     public Record ToEntity()
     {
@@ -17,8 +18,12 @@ public class RecordDto : IAmDto<Record>
             DateSeen = DateSeen,
             BirdId = BirdId,
             WatcherId = WatcherId,
-            Bird = Bird.ToEntity(),
         };
+
+        if (Bird is not null)
+            r.Bird = Bird.ToEntity();
+        if (Watcher is not null)
+            r.Watcher = Watcher.ToEntity();
 
         return r;
     }

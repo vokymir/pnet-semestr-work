@@ -10,6 +10,7 @@ public class BirdController : BaseApiController
     public BirdController(ILogger<BirdController> logger)
     {
         _logger = logger;
+        Init();
     }
 
 }

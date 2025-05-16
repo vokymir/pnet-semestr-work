@@ -27,4 +27,24 @@ public class Event : IHaveDto<EventDto>
 
         return e;
     }
+
+    public EventDto ToFullDto()
+    {
+        var e = new EventDto() {
+            Id = Id,
+            Name = Name,
+            Start = Start,
+            End = End,
+            AddingDeadline = AddingDeadline,
+            MainAdminId = MainAdminId,
+            MainAdmin = MainAdmin.ToDto()
+        };
+
+        foreach (var w in Participants)
+            e.Participants.Add(w.ToDto());
+        foreach (var u in Admins)
+            e.Admins.Add(u.ToDto());
+
+        return e;
+    }
 }

@@ -6,6 +6,7 @@ public class AuthTokenDto : IAmDto<AuthToken>
     public DateTime Created { get; set; } = DateTime.Now;
 
     public int UserId { get; set; }
+    public UserDto? User { get; set; }
 
     public AuthToken ToEntity()
     {
@@ -13,6 +14,9 @@ public class AuthTokenDto : IAmDto<AuthToken>
             Token = Token,
             Created = Created,
         };
+
+        if (User is not null)
+            a.User = User.ToEntity();
 
         return a;
     }
