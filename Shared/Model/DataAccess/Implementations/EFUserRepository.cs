@@ -1,8 +1,21 @@
 namespace BirdWatching.Shared.Model;
+using Microsoft.EntityFrameworkCore;
 
 public class EFUserRepository : IUserRepository
 {
     private AppDbContext _context;
+
+    public IQueryable<User> UsersWithDetails {
+        get {
+            return _context.Users
+                .Include(u => u.CuratedWatchers)
+                .Include(u => u.Watchers)
+                .Include(u => u.Events)
+                .Include(u => u.AdministeredEvents)
+                .Include(u => u.AuthTokens);
+        }
+        set { }
+    }
 
     public EFUserRepository(AppDbContext context)
     {
@@ -36,9 +49,9 @@ public class EFUserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    public User? GetById(int id) => _context.Users.Find(id);
+    public User? GetById(int id) => UsersWithDetails.First(u => u.Id == id);
 
-    public User? GetByUsername(string username) => _context.Users.FirstOrDefault(u => u.UserName == username);
+    public User? GetByUsername(string username) => UsersWithDetails.First(u => u.UserName == username);
 
-    public IEnumerable<User> GetAll() => _context.Users.ToList();
+    public IEnumerable<User> GetAll() => UsersWithDetails.ToList();
 }

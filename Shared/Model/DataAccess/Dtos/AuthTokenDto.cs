@@ -15,9 +15,6 @@ public class AuthTokenDto : IAmDto<AuthToken>
             Created = Created,
         };
 
-        if (User is not null)
-            a.User = User.ToEntity();
-
         return a;
     }
 }

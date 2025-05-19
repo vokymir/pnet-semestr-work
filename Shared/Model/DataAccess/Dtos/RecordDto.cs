@@ -16,14 +16,7 @@ public class RecordDto : IAmDto<Record>
         var r = new Record() {
             Id = Id,
             DateSeen = DateSeen,
-            BirdId = BirdId,
-            WatcherId = WatcherId,
         };
-
-        if (Bird is not null)
-            r.Bird = Bird.ToEntity();
-        if (Watcher is not null)
-            r.Watcher = Watcher.ToEntity();
 
         return r;
     }

@@ -16,6 +16,9 @@ public class UserController : BaseApiController
         Init();
     }
 
+    /// <summary>
+    /// Create new user.
+    /// </summary>
     [HttpPost("Create")]
     public IResult CreateUser(UserDto userDto)
     {
@@ -26,6 +29,9 @@ public class UserController : BaseApiController
         return Results.Ok();
     }
 
+    /// <summary>
+    /// Update self, or if admin any user.
+    /// </summary>
     [HttpPost("Update/{token}")]
     public IResult UpdateUser(string token, UserDto userDto)
     {
@@ -55,6 +61,9 @@ public class UserController : BaseApiController
         return Results.Ok();
     }
 
+    /// <summary>
+    /// Delete self or if admin anyone.
+    /// </summary>
     [HttpDelete("Delete/{token}")]
     public IResult DeleteUser(string token, int userId)
     {
@@ -78,6 +87,9 @@ public class UserController : BaseApiController
         return Results.Ok();
     }
 
+    /// <summary>
+    /// Get all info about user, if you.
+    /// </summary>
     [HttpGet("Get/{token}")]
     public IResult GetUser(string token)
     {
@@ -94,6 +106,9 @@ public class UserController : BaseApiController
         return Results.Ok(userDto);
     }
 
+    /// <summary>
+    /// Get info about user, either self or must be admin.
+    /// </summary>
     [HttpGet("Get/{token}/{userId}")]
     public IResult GetUser(string token, int userId)
     {
@@ -115,6 +130,9 @@ public class UserController : BaseApiController
         return Results.Ok(userDto);
     }
 
+    /// <summary>
+    /// Get all users if you are admin.
+    /// </summary>
     [HttpGet("GetAll/{token}")]
     public IResult GetAllUsers(string token)
     {

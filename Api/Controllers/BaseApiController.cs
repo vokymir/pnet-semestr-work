@@ -40,7 +40,8 @@ public class BaseApiController : ControllerBase
         AuthToken? auth = _authRepo.GetByString(token);
         if (auth is null) return (Results.BadRequest("Cannot find user by token."), null);
         if (auth.User is null) return (Results.Problem("User not set as reference."), null);
-        return (Results.Ok(), auth.User);
+        var u = _userRepo.GetById(auth.User.Id);
+        return (Results.Ok(), u);
     }
 
     protected IResult AuthAdminByToken(string token)

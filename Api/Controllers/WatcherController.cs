@@ -15,6 +15,9 @@ public class WatcherController : BaseApiController
         Init();
     }
 
+    /// <summary>
+    /// Create a new watcher and assing it to current user.
+    /// </summary>
     [HttpPost("Create/{token}")]
     public IResult CreateWatcher(string token, WatcherDto watcherDto)
     {
@@ -25,13 +28,10 @@ public class WatcherController : BaseApiController
         try
         {
             var watcher = watcherDto.ToEntity();
-            watcher.MainCurator = user;
+            watcher.MainCuratorId = user.Id;
             watcher.Curators.Add(user);
-            _watcherRepo.Add(watcher);
 
-            user.Watchers.Add(watcher);
-            user.CuratedWatchers.Add(watcher);
-            _userRepo.Update(user);
+            _watcherRepo.Add(watcher);
         }
         catch (Exception e)
         {
@@ -41,6 +41,9 @@ public class WatcherController : BaseApiController
         return Results.Ok();
     }
 
+    /// <summary>
+    /// Get absolutely all watchers, if you are admin.
+    /// </summary>
     [HttpGet("GetAll/{token}")]
     public IResult GetAllIfAdmin(string token)
     {
@@ -55,7 +58,10 @@ public class WatcherController : BaseApiController
         return Results.Ok(watcherDtos);
     }
 
-    [HttpPost("AllUserHave/{token}")]
+    /// <summary>
+    /// Get all watchers a user can edit.
+    /// </summary>
+    [HttpGet("AllUserHave/{token}")]
     public IResult GetUserWatchers(string token)
     {
         var gettingUser = AuthUserByToken(token);

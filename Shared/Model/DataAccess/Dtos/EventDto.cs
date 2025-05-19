@@ -22,17 +22,7 @@ public class EventDto : IAmDto<Event>
             Start = Start,
             End = End,
             AddingDeadline = AddingDeadline,
-            MainAdminId = MainAdminId,
         };
-        if (MainAdmin is not null)
-            e.MainAdmin = MainAdmin.ToEntity();
-
-        if (Participants is not null)
-            foreach (var w in Participants)
-                e.Participants.Add(w.ToEntity());
-        if (Admins is not null)
-            foreach (var u in Admins)
-                e.Admins.Add(u.ToEntity());
 
         return e;
     }

@@ -58,14 +58,14 @@ public class AppDbContext : DbContext
         // Record → Bird (N:1)
         modelBuilder.Entity<Record>()
             .HasOne(r => r.Bird)
-            .WithMany()             // if you don’t track Bird→Records, leave it empty
-            .HasForeignKey("BirdId");
+            .WithMany()
+            .HasForeignKey(r => r.BirdId);
 
         // Record → Watcher (N:1)
         modelBuilder.Entity<Record>()
-            .HasOne<Watcher>()
+            .HasOne<Watcher>(r => r.Watcher)
             .WithMany(w => w.Records)
-            .HasForeignKey("WatcherId");
+            .HasForeignKey(r => r.WatcherId);
 
         var usr = new User() { Id = -1, IsAdmin = true, UserName = "string", PasswordHash = "string" };
 
