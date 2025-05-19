@@ -74,6 +74,7 @@ public class AuthController : BaseApiController
     }
 
     // zde jde optimalizovat - předělat do SQL v Modelu, a bylo by to rychlejší
+    [HttpPost("DeleteOldTokens")]
     public void DeleteOldTokens()
     {
         foreach (var token in _authRepo.GetAll())

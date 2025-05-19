@@ -18,7 +18,6 @@ public class WatcherController : BaseApiController
     [HttpPost("Create/{token}")]
     public IResult CreateWatcher(string token, WatcherDto watcherDto)
     {
-
         var gettingUser = AuthUserByToken(token);
         if (!gettingUser.Result.Equals(Results.Ok())) return gettingUser.Result;
         User user = gettingUser.User!;
@@ -26,9 +25,13 @@ public class WatcherController : BaseApiController
         try
         {
             var watcher = watcherDto.ToEntity();
+            watcher.MainCurator = user;
             watcher.Curators.Add(user);
-
             _watcherRepo.Add(watcher);
+
+            user.Watchers.Add(watcher);
+            user.CuratedWatchers.Add(watcher);
+            _userRepo.Update(user);
         }
         catch (Exception e)
         {
@@ -47,7 +50,7 @@ public class WatcherController : BaseApiController
         var watchers = _watcherRepo.GetAll();
         var watcherDtos = new List<WatcherDto>();
         foreach (var w in watchers)
-            watcherDtos.Add(w.ToDto());
+            watcherDtos.Add(w.ToFullDto());
 
         return Results.Ok(watcherDtos);
     }
@@ -62,7 +65,7 @@ public class WatcherController : BaseApiController
         Watcher[] watchers = _watcherRepo.GetByUser(user);
         var watcherDtos = new List<WatcherDto>();
         foreach (var w in watchers)
-            watcherDtos.Add(w.ToDto());
+            watcherDtos.Add(w.ToFullDto());
 
         return Results.Ok(watcherDtos);
     }

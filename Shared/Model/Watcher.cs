@@ -31,8 +31,10 @@ public class Watcher : IHaveDto<WatcherDto>
             FirstName = FirstName,
             LastName = LastName,
             MainCuratorId = MainCuratorId,
-            MainCurator = MainCurator.ToDto()
         };
+
+        if (MainCurator is not null)
+            w.MainCurator = MainCurator.ToDto();
 
         if (w.Curators is null) w.Curators = new List<UserDto>();
         foreach (var c in Curators)

@@ -30,7 +30,12 @@ public class UserController : BaseApiController
     public IResult UpdateUser(string token, UserDto userDto)
     {
         IResult response = AuthUserByToken(token, userDto.Id);
-        if (!response.Equals(Results.Ok())) return response;
+        if (!response.Equals(Results.Ok()))
+        {
+            var adminResponse = AuthAdminByToken(token);
+            if (!adminResponse.Equals(Results.Ok()))
+                return response;
+        }
 
         User? user = _userRepo.GetById(userDto.Id);
         if (user is null) return Results.NotFound();
@@ -54,7 +59,12 @@ public class UserController : BaseApiController
     public IResult DeleteUser(string token, int userId)
     {
         IResult response = AuthUserByToken(token, userId);
-        if (!response.Equals(Results.Ok())) return response;
+        if (!response.Equals(Results.Ok()))
+        {
+            var adminResponse = AuthAdminByToken(token);
+            if (!adminResponse.Equals(Results.Ok()))
+                return response;
+        }
 
         try
         {
@@ -69,33 +79,40 @@ public class UserController : BaseApiController
     }
 
     [HttpGet("Get/{token}")]
+    public IResult GetUser(string token)
+    {
+        var response = AuthUserByToken(token);
+        if (!response.Result.Equals(Results.Ok())) return response.Result;
+
+        User? user = response.User;
+        if (user is null)
+            return Results.NotFound();
+
+        UserDto userDto = user.ToFullDto();
+        userDto.AuthTokens = null;
+
+        return Results.Ok(userDto);
+    }
+
+    [HttpGet("Get/{token}/{userId}")]
     public IResult GetUser(string token, int userId)
     {
         IResult response = AuthUserByToken(token, userId);
-        if (!response.Equals(Results.Ok())) return response;
+        if (!response.Equals(Results.Ok()))
+        {
+            var adminResponse = AuthAdminByToken(token);
+            if (!adminResponse.Equals(Results.Ok()))
+                return response;
+        }
 
         User? user = _userRepo.GetById(userId);
         if (user is null)
             return Results.NotFound();
 
-        UserDto userDto = user.ToDto();
+        UserDto userDto = user.ToFullDto();
+        userDto.AuthTokens = null;
+
         return Results.Ok(userDto);
-    }
-
-    [HttpGet("GetAll")]
-    public IResult GetAllUsersONLY_FOR_DEBUG__REMOVE_BEFORE_PUBLISHING()
-    {
-        User[] users = _userRepo.GetAll().ToArray();
-        UserDto[] userDtos = new UserDto[users.Length];
-
-        for (int i = 0; i < users.Length; i++)
-        {
-            User user = users[i];
-            UserDto userDto = user.ToDto();
-            userDtos[i] = userDto;
-        }
-
-        return Results.Ok(userDtos);
     }
 
     [HttpGet("GetAll/{token}")]
@@ -110,7 +127,8 @@ public class UserController : BaseApiController
         for (int i = 0; i < users.Length; i++)
         {
             User user = users[i];
-            UserDto userDto = user.ToDto();
+            UserDto userDto = user.ToFullDto();
+            userDto.AuthTokens = null;
             userDtos[i] = userDto;
         }
 

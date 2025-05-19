@@ -27,9 +27,11 @@ public class WatcherDto : IAmDto<Watcher>
         if (Curators is not null)
             foreach (var c in Curators)
                 w.Curators.Add(c.ToEntity());
+
         if (Participating is not null)
             foreach (var p in Participating)
                 w.Participating.Add(p.ToEntity());
+
         if (Records is not null)
             foreach (var r in Records)
                 w.Records.Add(r.ToEntity());
