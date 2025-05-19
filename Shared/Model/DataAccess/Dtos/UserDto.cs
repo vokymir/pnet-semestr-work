@@ -26,15 +26,19 @@ public class UserDto : IAmDto<User>
         if (Watchers is not null)
             foreach (var w in Watchers)
                 u.Watchers.Add(w.ToEntity());
+
         if (Events is not null)
             foreach (var e in Events)
                 u.Events.Add(e.ToEntity());
+
         if (CuratedWatchers is not null)
             foreach (var w in CuratedWatchers)
                 u.CuratedWatchers.Add(w.ToEntity());
+
         if (AdministeredEvents is not null)
             foreach (var e in AdministeredEvents)
                 u.AdministeredEvents.Add(e.ToEntity());
+
         if (AuthTokens is not null)
             foreach (var a in AuthTokens)
                 u.AuthTokens.Add(a.ToEntity());

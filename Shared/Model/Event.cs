@@ -40,8 +40,11 @@ public class Event : IHaveDto<EventDto>
             MainAdmin = MainAdmin.ToDto()
         };
 
+        if (e.Participants is null) e.Participants = new List<WatcherDto>();
         foreach (var w in Participants)
             e.Participants.Add(w.ToDto());
+
+        if (e.Admins is null) e.Admins = new List<UserDto>();
         foreach (var u in Admins)
             e.Admins.Add(u.ToDto());
 

@@ -36,14 +36,23 @@ public class User : IHaveDto<UserDto>
             IsAdmin = IsAdmin
         };
 
+        if (u.Watchers is null) u.Watchers = new List<WatcherDto>();
         foreach (var w in Watchers)
             u.Watchers.Add(w.ToDto());
+
+        if (u.Events is null) u.Events = new List<EventDto>();
         foreach (var e in Events)
             u.Events.Add(e.ToDto());
+
+        if (u.CuratedWatchers is null) u.CuratedWatchers = new List<WatcherDto>();
         foreach (var w in CuratedWatchers)
             u.CuratedWatchers.Add(w.ToDto());
+
+        if (u.AdministeredEvents is null) u.AdministeredEvents = new List<EventDto>();
         foreach (var e in AdministeredEvents)
             u.AdministeredEvents.Add(e.ToDto());
+
+        if (u.AuthTokens is null) u.AuthTokens = new List<AuthTokenDto>();
         foreach (var a in AuthTokens)
             u.AuthTokens.Add(a.ToDto());
 

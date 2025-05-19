@@ -34,10 +34,15 @@ public class Watcher : IHaveDto<WatcherDto>
             MainCurator = MainCurator.ToDto()
         };
 
+        if (w.Curators is null) w.Curators = new List<UserDto>();
         foreach (var c in Curators)
             w.Curators.Add(c.ToDto());
+
+        if (w.Participating is null) w.Participating = new List<EventDto>();
         foreach (var p in Participating)
             w.Participating.Add(p.ToDto());
+
+        if (w.Records is null) w.Records = new List<RecordDto>();
         foreach (var r in Records)
             w.Records.Add(r.ToDto());
 
