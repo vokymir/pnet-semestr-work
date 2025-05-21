@@ -1,10 +1,4 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using BirdWatching.Shared.Model;
-using Newtonsoft.Json;
 
 public class Program
 {
@@ -69,7 +63,9 @@ public class Program
         if (response.IsSuccessStatusCode)
         {
             var u = await response.Content.ReadAsAsync<UserDto>();
-            Console.WriteLine($"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | W: {u.Watchers.Count} E: {u.Events.Count} | MainAdmin of W: {u.CuratedWatchers.Count} E: {u.AdministeredEvents.Count}");
+            if (u is null) Console.WriteLine($"VERY BAD");
+            else Console.WriteLine(
+$"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | W: {u.Watchers?.Count ?? -69} E: {u.Events?.Count ?? -69} | MainAdmin of W: {u.CuratedWatchers?.Count ?? -69} E: {u.AdministeredEvents?.Count ?? -69}");
         }
         else
         {
