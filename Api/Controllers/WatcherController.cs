@@ -42,6 +42,13 @@ public class WatcherController : BaseApiController
             watcher.MainCuratorId = user.Id;
             watcher.Curators.Add(user);
 
+            var wStrings = _watcherRepo.GetAllPublicIdentifiers();
+            string identificator;
+            do
+                identificator = GenerateUrlSafeString(8);
+            while (wStrings.ContainsKey(identificator));
+            watcher.PublicIdentifier = identificator;
+
             _watcherRepo.Add(watcher);
         }
         catch (Exception e)

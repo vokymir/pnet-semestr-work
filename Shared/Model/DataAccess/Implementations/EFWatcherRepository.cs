@@ -45,4 +45,6 @@ public class EFWatcherRepository : IWatcherRepository
     public IEnumerable<Watcher> GetAll() => _context.Watchers
         .Include(w => w.Curators)
         .ToArray();
+
+    public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Watchers.ToDictionary(w => w.PublicIdentifier, w => true);
 }

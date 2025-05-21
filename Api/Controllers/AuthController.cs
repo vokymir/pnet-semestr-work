@@ -1,7 +1,6 @@
 namespace BirdWatching.Api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
 
 using BirdWatching.Shared.Model;
 
@@ -37,7 +36,7 @@ public class AuthController : BaseApiController
 
         string token;
         do
-            token = GenerateAuthToken();
+            token = GenerateUrlSafeString(64);
         while (!IsUnique(token));
 
         AddAuthToken(token, user);
@@ -74,19 +73,6 @@ public class AuthController : BaseApiController
     {
         var existing = _authRepo.GetByString(token);
         return existing is null;
-    }
-
-    private string GenerateAuthToken()
-    {
-        int size = 64;
-
-        byte[] data = new byte[size];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(data);
-        }
-
-        return Convert.ToBase64String(data).Replace("+", "-").Replace("/", "_").Replace("=", "");
     }
 
     // zde jde optimalizovat - předělat do SQL v Modelu, a bylo by to rychlejší

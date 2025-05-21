@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace BirdWatching.Api.Controllers;
+using System.Security.Cryptography;
 
 using BirdWatching.Shared.Model;
 
@@ -51,5 +52,16 @@ public class BaseApiController : ControllerBase
         if (auth.User is null) return Results.Problem("User not set as reference.");
         if (!auth.User.IsAdmin) return Results.BadRequest("Don't have permission to do this.");
         return Results.Ok();
+    }
+
+    protected string GenerateUrlSafeString(int length)
+    {
+        byte[] data = new byte[length];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(data);
+        }
+
+        return Convert.ToBase64String(data).Replace("+", "-").Replace("/", "_").Replace("=", "");
     }
 }
