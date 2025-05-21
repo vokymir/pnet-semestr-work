@@ -3,6 +3,7 @@ namespace BirdWatching.Shared.Model;
 public class Event : IHaveDto<EventDto>
 {
     public int Id { get; set; }
+    public string PublicIdentifier { get; set; } = string.Empty;
     public string Name { get; set; } = "Nepojmenovany event";
     public DateTime Start { get; set; } = DateTime.Now;
     public DateTime End { get; set; } = DateTime.MaxValue;
@@ -23,6 +24,7 @@ public class Event : IHaveDto<EventDto>
             End = End,
             AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
+            PublicIdentifier = PublicIdentifier
         };
 
         return e;
@@ -37,7 +39,8 @@ public class Event : IHaveDto<EventDto>
             End = End,
             AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
-            MainAdmin = MainAdmin.ToDto()
+            MainAdmin = MainAdmin.ToDto(),
+            PublicIdentifier = PublicIdentifier
         };
 
         if (e.Participants is null) e.Participants = new List<WatcherDto>();

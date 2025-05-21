@@ -3,6 +3,7 @@ namespace BirdWatching.Shared.Model;
 public class Watcher : IHaveDto<WatcherDto>
 {
     public int Id { get; set; }
+    public string PublicIdentifier { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
 
@@ -20,6 +21,7 @@ public class Watcher : IHaveDto<WatcherDto>
             FirstName = FirstName,
             LastName = LastName,
             MainCuratorId = MainCuratorId,
+            PublicIdentifier = PublicIdentifier
         };
 
         return w;
@@ -31,6 +33,7 @@ public class Watcher : IHaveDto<WatcherDto>
             FirstName = FirstName,
             LastName = LastName,
             MainCuratorId = MainCuratorId,
+            PublicIdentifier = PublicIdentifier
         };
 
         if (MainCurator is not null)

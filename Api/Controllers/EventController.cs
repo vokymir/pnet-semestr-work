@@ -8,7 +8,8 @@ using BirdWatching.Shared.Model;
 /// Can do:
 /// -
 /// Should do:
-/// - create/update/get event
+/// - create/get event (public)
+/// - update (admin)
 /// - get all watchers and their bird-count of valid birds
 /// </summary>
 [ApiController]
