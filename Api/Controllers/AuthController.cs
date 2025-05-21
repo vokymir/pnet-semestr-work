@@ -5,6 +5,12 @@ using System.Security.Cryptography;
 
 using BirdWatching.Shared.Model;
 
+/// <summary>
+/// Can do:
+/// - LogIN/OUT
+/// - give new authTokens
+/// - delete old tokens when asked to
+/// </summary>
 [ApiController]
 public class AuthController : BaseApiController
 {
@@ -29,7 +35,11 @@ public class AuthController : BaseApiController
         else if (user.PasswordHash != login.passwordhash)
             return Results.NotFound();
 
-        string token = GenerateAuthToken();
+        string token;
+        do
+            token = GenerateAuthToken();
+        while (!IsUnique(token));
+
         AddAuthToken(token, user);
 
         return Results.Ok(token);
@@ -58,6 +68,12 @@ public class AuthController : BaseApiController
                     User = user,
                     Created = DateTime.Now
                 });
+    }
+
+    private bool IsUnique(string token)
+    {
+        var existing = _authRepo.GetByString(token);
+        return existing is null;
     }
 
     private string GenerateAuthToken()

@@ -3,6 +3,17 @@ namespace BirdWatching.Api.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using BirdWatching.Shared.Model;
 
+/// <summary>
+/// Can do the following:
+/// - Create watcher and bind it to current user.
+/// - Get all watchers belonging to user (or all if admin).
+/// Should do:
+/// - Update watcher.
+/// - Add/remove curators???
+/// - Change mainUser.
+/// Also:
+/// - participate in event + leave
+/// </summary>
 [ApiController]
 public class WatcherController : BaseApiController
 {

@@ -2,6 +2,13 @@ namespace BirdWatching.Api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 
+/// <summary>
+/// Can do:
+/// -
+/// Should do:
+/// - Create, Get (public)
+/// - Update, delete (admin)
+/// </summary>
 [ApiController]
 public class BirdController : BaseApiController
 {

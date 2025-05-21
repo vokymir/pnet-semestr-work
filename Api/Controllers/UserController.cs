@@ -4,6 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 using BirdWatching.Shared.Model;
 
+/// <summary>
+/// Can do following:
+/// - Create new user from dto.
+/// - Update and delete self (or any if admin).
+/// - List all users (Admin only).
+/// - Get info about current user (or any if admin).
+/// </summary>
 [ApiController]
 public class UserController : BaseApiController
 {
