@@ -1,5 +1,7 @@
 namespace BirdWatching.Shared.Model;
 
+using Microsoft.EntityFrameworkCore;
+
 public class EFEventRepository : IEventRepository
 {
     private AppDbContext _context;
@@ -41,4 +43,8 @@ public class EFEventRepository : IEventRepository
     public IEnumerable<Event> GetAll() => _context.Events.ToList();
 
     public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Events.ToDictionary(e => e.PublicIdentifier, e => true);
+
+    public IEnumerable<Watcher>? GetParticipants(int id) =>
+        _context.Events.Include(e => e.Participants).First(e => e.Id == id)?
+        .Participants ?? null; // if event doesn't exist, return null
 }

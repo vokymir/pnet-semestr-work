@@ -90,4 +90,16 @@ public class EventController : BaseApiController
 
         return Results.Ok();
     }
+
+    [HttpGet("Participants")]
+    public IResult GetWatchers(int eventId)
+    {
+        var ws = _eventRepo.GetParticipants(eventId);
+        if (ws is null) return Results.NotFound();
+
+        List<WatcherDto> wsd = new();
+        foreach (var w in ws) wsd.Add(w.ToFullDto());
+
+        return Results.Ok(wsd);
+    }
 }

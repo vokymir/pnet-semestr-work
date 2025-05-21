@@ -8,4 +8,5 @@ public interface IEventRepository
     public Event? GetById(int id);
     public IEnumerable<Event> GetAll();
     public Dictionary<string, bool> GetAllPublicIdentifiers();
+    public IEnumerable<Watcher>? GetParticipants(int id);
 }
