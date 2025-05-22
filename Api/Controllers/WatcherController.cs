@@ -7,9 +7,10 @@ using BirdWatching.Shared.Model;
 /// Can do the following:
 /// - Create watcher and bind it to current user.
 /// - Get all watchers belonging to user (or all if admin).
+/// - join event
+/// - Add/remove curators??? = done in users
 /// Should do:
 /// - Update watcher.
-/// - Add/remove curators???
 /// - Change mainUser.
 /// Also:
 /// - participate in event + leave

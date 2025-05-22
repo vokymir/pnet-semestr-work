@@ -4,6 +4,7 @@ public class Record : IHaveDto<RecordDto>
 {
     public int Id { get; set; }
     public DateTime DateSeen { get; set; }
+    public string Comment { get; set; } = string.Empty;
 
     public int BirdId { get; set; }
     public Bird Bird { get; set; } = null!;
@@ -18,6 +19,7 @@ public class Record : IHaveDto<RecordDto>
             DateSeen = DateSeen,
             BirdId = BirdId,
             WatcherId = WatcherId,
+            Comment = Comment,
         };
 
         return r;
@@ -30,6 +32,7 @@ public class Record : IHaveDto<RecordDto>
             DateSeen = DateSeen,
             BirdId = BirdId,
             WatcherId = WatcherId,
+            Comment = Comment,
             Bird = Bird.ToDto(),
             Watcher = Watcher.ToDto()
         };
