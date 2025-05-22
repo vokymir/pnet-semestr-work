@@ -1,8 +1,18 @@
 namespace BirdWatching.Shared.Model;
 
+using Microsoft.EntityFrameworkCore;
+
 public class EFAuthTokenRepository : IAuthTokenRepository
 {
     private AppDbContext _context;
+
+    public IQueryable<AuthToken> AuthTokensWithDetails {
+        get {
+            return _context.AuthTokens
+                .Include(a => a.User);
+        }
+        set { }
+    }
 
     public EFAuthTokenRepository(AppDbContext context)
     {
@@ -17,7 +27,7 @@ public class EFAuthTokenRepository : IAuthTokenRepository
 
     public void Update(AuthToken authtoken)
     {
-        var dbAuthToken = _context.AuthTokens.Find(authtoken.Token);
+        var dbAuthToken = AuthTokensWithDetails.First(a => a.Token.Equals(authtoken));
 
         if (dbAuthToken is null)
             throw new InvalidOperationException($"AuthToken {authtoken.Token} is not in the database and cannot be updated.");
@@ -40,7 +50,7 @@ public class EFAuthTokenRepository : IAuthTokenRepository
 
     public AuthToken? GetByString(string token)
     {
-        var tkn = _context.AuthTokens.Find(token);
+        var tkn = AuthTokensWithDetails.First(a => a.Token.Equals(token));
         if (tkn is null) return null;
 
         _context.Entry(tkn).Reference("User").Load();
@@ -48,5 +58,5 @@ public class EFAuthTokenRepository : IAuthTokenRepository
 
     }
 
-    public IEnumerable<AuthToken> GetAll() => _context.AuthTokens.ToList();
+    public IEnumerable<AuthToken> GetAll() => AuthTokensWithDetails.ToArray();
 }

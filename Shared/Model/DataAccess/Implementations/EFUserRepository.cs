@@ -30,10 +30,11 @@ public class EFUserRepository : IUserRepository
 
     public void Update(User user)
     {
-        var dbUser = _context.Users.Find(user.Id);
+        var dbUser = UsersWithDetails.First(u => u.Id == user.Id);
 
         if (dbUser is null)
             throw new InvalidOperationException($"User with ID = {user.Id} is not in the database and cannot be updated.");
+
         dbUser = user;
         _context.Update(dbUser);
         _context.SaveChanges();
@@ -45,6 +46,7 @@ public class EFUserRepository : IUserRepository
 
         if (user is null)
             throw new InvalidOperationException($"User with ID = {id} is not in the database and cannot be deleted.");
+
         _context.Users.Remove(user);
         _context.SaveChanges();
     }

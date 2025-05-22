@@ -6,6 +6,16 @@ public class EFEventRepository : IEventRepository
 {
     private AppDbContext _context;
 
+    public IQueryable<Event> EventsWithDetails {
+        get {
+            return _context.Events
+                .Include(e => e.Participants)
+                .Include(e => e.MainAdmin)
+                .Include(e => e.Admins);
+        }
+        set { }
+    }
+
     public EFEventRepository(AppDbContext context)
     {
         _context = context;
@@ -19,10 +29,11 @@ public class EFEventRepository : IEventRepository
 
     public void Update(Event @event)
     {
-        var dbEvent = _context.Events.Find(@event.Id);
+        var dbEvent = EventsWithDetails.First(e => e.Id == @event.Id);
 
         if (dbEvent is null)
             throw new InvalidOperationException($"Event with ID = {@event.Id} is not in the database and cannot be updated.");
+
         dbEvent = @event;
         _context.Update(dbEvent);
         _context.SaveChanges();
@@ -38,11 +49,11 @@ public class EFEventRepository : IEventRepository
         _context.SaveChanges();
     }
 
-    public Event? GetById(int id) => _context.Events.Find(id);
+    public Event? GetById(int id) => EventsWithDetails.First(e => e.Id == id);
 
-    public Event? GetByPublicId(string publicId) => _context.Events.First(e => e.PublicIdentifier == publicId);
+    public Event? GetByPublicId(string publicId) => EventsWithDetails.First(e => e.PublicIdentifier == publicId);
 
-    public IEnumerable<Event> GetAll() => _context.Events.ToList();
+    public IEnumerable<Event> GetAll() => EventsWithDetails.ToList();
 
     public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Events.ToDictionary(e => e.PublicIdentifier, e => true);
 
