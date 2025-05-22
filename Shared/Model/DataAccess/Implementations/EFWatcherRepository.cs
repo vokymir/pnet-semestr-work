@@ -53,6 +53,8 @@ public class EFWatcherRepository : IWatcherRepository
 
     public Watcher? GetById(int id) => WatcherWithDetails.First(w => w.Id == id);
 
+    public Watcher? GetByPublicId(string publicId) => WatcherWithDetails.First(w => w.PublicIdentifier.Equals(publicId));
+
     public IEnumerable<Watcher> GetAll() => _context.Watchers
         .Include(w => w.Curators)
         .ToArray();

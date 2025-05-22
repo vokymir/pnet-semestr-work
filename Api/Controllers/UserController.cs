@@ -159,4 +159,30 @@ public class UserController : BaseApiController
 
         return Results.Ok(userDtos);
     }
+
+    [HttpPost("AddWatcher/{token}/{watcherPublicId}")]
+    public IResult AddWatcher(string token, string watcherPublicId)
+    {
+        var response = AuthUserByToken(token);
+        if (!response.Result.Equals(Results.Ok())) return response.Result;
+
+        User? user = response.User;
+        if (user is null)
+            return Results.NotFound("User not found.");
+
+        Watcher? watcher = _watcherRepo.GetByPublicId(watcherPublicId);
+        if (watcher is null) return Results.NotFound("Watcher not found.");
+
+        try
+        {
+            watcher.Curators.Add(user);
+            _watcherRepo.Update(watcher);
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
+
+        return Results.Ok();
+    }
 }
