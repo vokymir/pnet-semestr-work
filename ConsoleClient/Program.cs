@@ -8,17 +8,26 @@ public class Program
 
     static async Task Main()
     {
+        // login user
         User user = new User() { UserName = "string", PasswordHash = "string" };
         string token = await Login(user);
         await ShowUserInfo(token);
 
+        // create watcher
         List<WatcherDto> watchers = await ListUserWatchers(token);
-
         WatcherDto watcher = new WatcherDto() { FirstName = "Jarda", LastName = $"Sáček {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
         await CreateNewWatcher(token, watcher);
         watchers = await ListUserWatchers(token);
 
         await ShowUserInfo(token);
+
+        // create bird
+
+        // create record
+
+        // create event
+
+        // add watcher to event
     }
 
     public static async Task<string> Login(User user)

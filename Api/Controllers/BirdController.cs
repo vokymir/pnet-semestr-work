@@ -37,8 +37,35 @@ public class BirdController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpGet("Get")]
-    public IResult Get(int id)
+    [HttpGet("GetAll")]
+    public IResult GetAll()
+    {
+        var bs = _birdRepo.GetAll();
+        if (bs is null) return Results.NotFound("No bird exists.");
+        else
+        {
+            List<BirdDto> bds = new();
+            foreach (var b in bs)
+                bds.Add(b.ToFullDto());
+            return Results.Ok(bds);
+        }
+    }
+
+    [HttpGet("GetByPrefix/{prefix}")]
+    public IResult GetByPrefix(string prefix)
+    {
+        var bs = _birdRepo.GetByPrefix(prefix);
+        if (bs is null) return Results.NotFound("No bird with such prefix found...");
+
+        List<BirdDto> bds = new();
+        foreach (var b in bs)
+            bds.Add(b.ToFullDto());
+
+        return Results.Ok(bds);
+    }
+
+    [HttpGet("GetById")]
+    public IResult GetById(int id)
     {
         Bird? b = _birdRepo.GetById(id);
         if (b is null) return Results.NotFound();

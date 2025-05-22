@@ -52,5 +52,8 @@ public class EFBirdRepository : IBirdRepository
 
     public Bird? GetById(int id) => BirdsWithDetails.First(b => b.Id == id);
 
+    public IEnumerable<Bird> GetByPrefix(string prefix) => BirdsWithDetails.Where(b => b.FullName.StartsWith(prefix)).ToArray();
+    public IEnumerable<Bird> GetByPrefixFast(string prefix) => _context.Birds.Where(b => b.FullName.StartsWith(prefix)).ToArray();
+
     public IEnumerable<Bird> GetAll() => BirdsWithDetails.ToArray();
 }

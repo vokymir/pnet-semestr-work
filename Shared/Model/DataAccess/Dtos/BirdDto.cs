@@ -5,6 +5,9 @@ public class BirdDto : IAmDto<Bird>
     public int Id { get; set; }
     public string Genus { get; set; } = "Neurceny";
     public string Species { get; set; } = "Ptacek";
+    public string FullName {
+        get => $"{Genus} {Species}";
+    }
 
     public string Comment { get; set; } = string.Empty;
 

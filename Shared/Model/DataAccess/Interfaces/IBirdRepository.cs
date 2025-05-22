@@ -7,4 +7,6 @@ public interface IBirdRepository
     public void Update(Bird bird);
     public Bird? GetById(int id);
     public IEnumerable<Bird> GetAll();
+    public IEnumerable<Bird> GetByPrefix(string prefix);
+    public IEnumerable<Bird> GetByPrefixFast(string prefix);
 }
