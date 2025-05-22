@@ -1,4 +1,4 @@
-namespace BirdWatching.Core;
+namespace BirdWatching;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
@@ -14,8 +14,7 @@ public class App
     {
         Console.WriteLine("Hello birdwatcher!");
 
-        var connection = new SqliteConnectionStringBuilder()
-        {
+        var connection = new SqliteConnectionStringBuilder() {
             DataSource = "db.db"
         };
 

@@ -1,6 +1,6 @@
 namespace BirdWatching.Shared.Model;
 
-using Microsoft.EntityFrameworkCore;
+// using Microsoft.EntityFrameworkCore;
 
 public class EFBirdRepository : IBirdRepository
 {
@@ -8,10 +8,8 @@ public class EFBirdRepository : IBirdRepository
 
     public IQueryable<Bird> BirdsWithDetails {
         get {
-            return _context.Birds
-                .Include(b => b.Id); // unnecessary, to avoid warning of not using EF
+            return _context.Birds;
         }
-        set { }
     }
 
     public EFBirdRepository(AppDbContext context)
@@ -35,7 +33,7 @@ public class EFBirdRepository : IBirdRepository
             throw new InvalidOperationException($"Bird with ID = {bird.Id} is not in the database and cannot be updated.");
 
         dbBird = bird;
-        _context.Update(dbBird);
+        _context.Entry(dbBird).CurrentValues.SetValues(bird);
         _context.SaveChanges();
     }
 

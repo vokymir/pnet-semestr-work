@@ -16,8 +16,9 @@ public class RecordController : BaseApiController
 {
     private readonly ILogger<RecordController> _logger;
 
-    public RecordController(ILogger<RecordController> logger)
+    public RecordController(AppDbContext context, ILogger<RecordController> logger)
     {
+        _context = context;
         _logger = logger;
         Init();
     }

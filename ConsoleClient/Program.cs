@@ -22,6 +22,7 @@ public class Program
         await ShowUserInfo(token);
 
         // create bird
+        await ShowAllBirds();
 
         // create record
 
@@ -73,13 +74,29 @@ public class Program
         if (response.IsSuccessStatusCode)
         {
             var u = await response.Content.ReadAsAsync<UserDto>();
-            if (u is null) Console.WriteLine($"VERY BAD");
+            if (u is null) Console.WriteLine($"VERY BAD, invalid user");
             else Console.WriteLine(
-$"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | W: {u.Watchers?.Count ?? -69} E: {u.Events?.Count ?? -69} | MainAdmin of W: {u.CuratedWatchers?.Count ?? -69} E: {u.AdministeredEvents?.Count ?? -69}");
+$"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | W: {u.Watchers?.Count ?? -69} E: {u.Events?.Count ?? -69} | MainAdmin of W: {u.CuratedWatchers?.Count ?? -69} E: {u.AdministeredEvents?.Count ?? -69}\n=====");
         }
         else
         {
             Console.WriteLine("Cannot show user info.");
         }
+    }
+
+    public static async Task ShowAllBirds()
+    {
+        string uri = $"{Prefix}Bird/GetAll";
+        var response = await client.GetAsync(uri);
+        if (response.IsSuccessStatusCode)
+        {
+            var bs = await response.Content.ReadAsAsync<BirdDto[]>();
+            if (bs is null) Console.WriteLine("No bird, simple null");
+            else
+                foreach (var b in bs)
+                    Console.WriteLine($"{b.Id}\t{b.FullName}\t{b.Comment}");
+            Console.WriteLine("=====");
+        }
+        else Console.WriteLine("NOTSUCCESSFULL get all birds");
     }
 }

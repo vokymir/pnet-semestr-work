@@ -15,8 +15,9 @@ public class BirdController : BaseApiController
 {
     private readonly ILogger<BirdController> _logger;
 
-    public BirdController(ILogger<BirdController> logger)
+    public BirdController(AppDbContext context, ILogger<BirdController> logger)
     {
+        _context = context;
         _logger = logger;
         Init();
     }
