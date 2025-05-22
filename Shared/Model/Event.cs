@@ -4,16 +4,19 @@ public class Event : IHaveDto<EventDto>
 {
     public int Id { get; set; }
     public string PublicIdentifier { get; set; } = string.Empty;
+
     public string Name { get; set; } = "Nepojmenovany event";
+    // event parameters
     public DateTime Start { get; set; } = DateTime.Now;
     public DateTime End { get; set; } = DateTime.MaxValue;
-    public DateTime AddingDeadline { get; set; } = DateTime.MaxValue;
+    public bool AllowDuplicates { get; set; } = false; // wheter to allow having the same bird twice in an event
+    public string GenusRegex { get; set; } = "*";
+    public string SpeciesRegex { get; set; } = "*";
 
     public int MainAdminId { get; set; }
     public User MainAdmin { get; set; } = null!;
 
     public ICollection<Watcher> Participants { get; set; } = new List<Watcher>();
-    public ICollection<User> Admins { get; set; } = new List<User>();
 
     public EventDto ToDto()
     {
@@ -22,9 +25,11 @@ public class Event : IHaveDto<EventDto>
             Name = Name,
             Start = Start,
             End = End,
-            AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
-            PublicIdentifier = PublicIdentifier
+            PublicIdentifier = PublicIdentifier,
+            AllowDuplicates = AllowDuplicates,
+            GenusRegex = GenusRegex,
+            SpeciesRegex = SpeciesRegex,
         };
 
         return e;
@@ -37,19 +42,17 @@ public class Event : IHaveDto<EventDto>
             Name = Name,
             Start = Start,
             End = End,
-            AddingDeadline = AddingDeadline,
             MainAdminId = MainAdminId,
             MainAdmin = MainAdmin.ToDto(),
-            PublicIdentifier = PublicIdentifier
+            PublicIdentifier = PublicIdentifier,
+            AllowDuplicates = AllowDuplicates,
+            GenusRegex = GenusRegex,
+            SpeciesRegex = SpeciesRegex,
         };
 
         if (e.Participants is null) e.Participants = new List<WatcherDto>();
         foreach (var w in Participants)
             e.Participants.Add(w.ToDto());
-
-        if (e.Admins is null) e.Admins = new List<UserDto>();
-        foreach (var u in Admins)
-            e.Admins.Add(u.ToDto());
 
         return e;
     }

@@ -50,12 +50,11 @@ public class EFAuthTokenRepository : IAuthTokenRepository
 
     public AuthToken? GetByString(string token)
     {
-        var tkn = AuthTokensWithDetails.First(a => a.Token.Equals(token));
+        var tkn = AuthTokensWithDetails.FirstOrDefault(a => a.Token.Equals(token));
         if (tkn is null) return null;
 
-        _context.Entry(tkn).Reference("User").Load();
+        _context.Entry(tkn).Reference(a => a.User).Load();
         return tkn;
-
     }
 
     public IEnumerable<AuthToken> GetAll() => AuthTokensWithDetails.ToArray();

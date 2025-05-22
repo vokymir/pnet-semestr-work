@@ -10,6 +10,7 @@ public class Program
     {
         User user = new User() { UserName = "string", PasswordHash = "string" };
         string token = await Login(user);
+        await ShowUserInfo(token);
 
         List<WatcherDto> watchers = await ListUserWatchers(token);
 

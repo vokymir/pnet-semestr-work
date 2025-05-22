@@ -43,12 +43,6 @@ public class AppDbContext : DbContext
             .HasForeignKey(e => e.MainAdminId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Event  ↔ Admins      (M:N)
-        modelBuilder.Entity<Event>()
-            .HasMany(e => e.Admins)
-            .WithMany(u => u.AdministeredEvents)
-            .UsingEntity(j => j.ToTable("EventAdmins"));
-
         // Watcher ↔ Event      (M:N)
         modelBuilder.Entity<Watcher>()
             .HasMany(w => w.Participating)

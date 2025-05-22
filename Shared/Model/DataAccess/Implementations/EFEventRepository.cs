@@ -10,8 +10,7 @@ public class EFEventRepository : IEventRepository
         get {
             return _context.Events
                 .Include(e => e.Participants)
-                .Include(e => e.MainAdmin)
-                .Include(e => e.Admins);
+                .Include(e => e.MainAdmin);
         }
         set { }
     }

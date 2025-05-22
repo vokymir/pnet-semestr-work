@@ -8,13 +8,14 @@ public class EventDto : IAmDto<Event>
     public string Name { get; set; } = "Nepojmenovany event";
     public DateTime Start { get; set; } = DateTime.Now;
     public DateTime End { get; set; } = DateTime.MaxValue;
-    public DateTime AddingDeadline { get; set; } = DateTime.MaxValue;
+    public bool AllowDuplicates { get; set; } = false; // wheter to allow having the same bird twice in an event
+    public string GenusRegex { get; set; } = "*";
+    public string SpeciesRegex { get; set; } = "*";
 
     public int MainAdminId { get; set; }
     public UserDto? MainAdmin { get; set; }
 
     public ICollection<WatcherDto>? Participants { get; set; }
-    public ICollection<UserDto>? Admins { get; set; }
 
     public Event ToEntity()
     {
@@ -23,8 +24,10 @@ public class EventDto : IAmDto<Event>
             Name = Name,
             Start = Start,
             End = End,
-            AddingDeadline = AddingDeadline,
-            PublicIdentifier = PublicIdentifier
+            PublicIdentifier = PublicIdentifier,
+            AllowDuplicates = AllowDuplicates,
+            GenusRegex = GenusRegex,
+            SpeciesRegex = SpeciesRegex,
         };
 
         return e;
