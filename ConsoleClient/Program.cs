@@ -23,6 +23,9 @@ public class Program
 
         // create bird
         await ShowAllBirds();
+        BirdDto bird = new() { Genus = "Gen", Species = $"Spec {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
+        await NewBird(bird);
+        await ShowAllBirds();
 
         // create record
 
@@ -54,7 +57,7 @@ public class Program
         {
             var watchers = await response.Content.ReadAsAsync<List<WatcherDto>>();
             foreach (var w in watchers)
-                Console.WriteLine($"{w.Id} | {w.FirstName} {w.LastName}");
+                Console.WriteLine($"{w.Id}\t{w.FirstName}\t{w.LastName}\t{w.PublicIdentifier}");
             Console.WriteLine("=====");
             return watchers;
         }
@@ -97,6 +100,19 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
                     Console.WriteLine($"{b.Id}\t{b.FullName}\t{b.Comment}");
             Console.WriteLine("=====");
         }
-        else Console.WriteLine("NOTSUCCESSFULL get all birds");
+        else Console.WriteLine("NOTSUCCESSFULL get all birds\n=====");
+    }
+
+    public static async Task NewBird(BirdDto bdto)
+    {
+        string uri = $"{Prefix}Bird/Create";
+        var response = await client.PostAsJsonAsync(uri, bdto);
+        if (response.IsSuccessStatusCode) Console.WriteLine("Adding bird was a success.");
+        else
+        {
+            var smth = response.Content.ReadAsAsync<string>();
+            Console.WriteLine($"Error when adding bird: {smth}");
+        }
+        Console.WriteLine("=====");
     }
 }
