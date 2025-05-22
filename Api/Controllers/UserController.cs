@@ -10,6 +10,9 @@ using BirdWatching.Shared.Model;
 /// - Update and delete self (or any if admin).
 /// - List all users (Admin only).
 /// - Get info about current user (or any if admin).
+/// - Add curated watcher to existing user.
+/// Should do:
+/// -
 /// </summary>
 [ApiController]
 public class UserController : BaseApiController
@@ -160,8 +163,8 @@ public class UserController : BaseApiController
         return Results.Ok(userDtos);
     }
 
-    [HttpPost("AddWatcher/{token}/{watcherPublicId}")]
-    public IResult AddWatcher(string token, string watcherPublicId)
+    [HttpPost("AddCuratedWatcher/{token}/{watcherPublicId}")]
+    public IResult AddCuratedWatcher(string token, string watcherPublicId)
     {
         var response = AuthUserByToken(token);
         if (!response.Result.Equals(Results.Ok())) return response.Result;

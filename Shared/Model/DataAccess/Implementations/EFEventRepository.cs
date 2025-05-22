@@ -40,6 +40,8 @@ public class EFEventRepository : IEventRepository
 
     public Event? GetById(int id) => _context.Events.Find(id);
 
+    public Event? GetByPublicId(string publicId) => _context.Events.First(e => e.PublicIdentifier == publicId);
+
     public IEnumerable<Event> GetAll() => _context.Events.ToList();
 
     public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Events.ToDictionary(e => e.PublicIdentifier, e => true);

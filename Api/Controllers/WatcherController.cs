@@ -104,4 +104,31 @@ public class WatcherController : BaseApiController
 
         return Results.Ok(wDto);
     }
+
+    [HttpPost("JoinEvent/{token}")]
+    public IResult JoinEvent(string token, int watcherId, string eventPublicId)
+    {
+        var gettingUser = AuthUserByToken(token);
+        if (!gettingUser.Result.Equals(Results.Ok())) return gettingUser.Result;
+        User user = gettingUser.User!;
+
+        Watcher? watcher = _watcherRepo.GetById(watcherId);
+        if (watcher is null) return Results.NotFound("Watcher not found.");
+        if (!watcher.Curators.Contains(user)) return Results.Problem("Don't have permission to edit watcher.");
+
+        Event? e = _eventRepo.GetByPublicId(eventPublicId);
+        if (e is null) return Results.NotFound("Event not found.");
+
+        try
+        {
+            watcher.Participating.Add(e);
+            _watcherRepo.Update(watcher);
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
+
+        return Results.Ok();
+    }
 }
