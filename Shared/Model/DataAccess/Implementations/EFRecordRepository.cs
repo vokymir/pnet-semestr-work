@@ -1,5 +1,7 @@
 namespace BirdWatching.Shared.Model;
 
+// using Microsoft.EntityFrameworkCore;
+
 public class EFRecordRepository : IRecordRepository
 {
     private AppDbContext _context;
@@ -39,4 +41,6 @@ public class EFRecordRepository : IRecordRepository
     public Record? GetById(int id) => _context.Records.Find(id);
 
     public IEnumerable<Record> GetAll() => _context.Records.ToList();
+
+    public IEnumerable<Record> GetWatcherRecords(int watcherId) => _context.Records.Where(r => r.WatcherId == watcherId).ToArray();
 }

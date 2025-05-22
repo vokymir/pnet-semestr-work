@@ -93,4 +93,15 @@ public class WatcherController : BaseApiController
 
         return Results.Ok(watcherDtos);
     }
+
+    [HttpGet("Get")]
+    public IResult GetById(int id)
+    {
+        var w = _watcherRepo.GetById(id);
+        if (w is null) return Results.NotFound();
+
+        WatcherDto wDto = w.ToFullDto();
+
+        return Results.Ok(wDto);
+    }
 }

@@ -7,4 +7,5 @@ public interface IRecordRepository
     public void Update(Record record);
     public Record? GetById(int id);
     public IEnumerable<Record> GetAll();
+    public IEnumerable<Record> GetWatcherRecords(int watcherId);
 }

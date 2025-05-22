@@ -6,6 +6,17 @@ public class EFWatcherRepository : IWatcherRepository
 {
     private AppDbContext _context;
 
+    public IQueryable<Watcher> WatcherWithDetails {
+        get {
+            return _context.Watchers
+                .Include(w => w.Records)
+                .Include(w => w.Curators)
+                .Include(w => w.Participating)
+                .Include(w => w.MainCurator);
+        }
+        set { }
+    }
+
     public EFWatcherRepository(AppDbContext context)
     {
         _context = context;
@@ -40,7 +51,7 @@ public class EFWatcherRepository : IWatcherRepository
 
     public Watcher[] GetByUser(User user) => _context.Watchers.Where(w => w.Curators.Contains(user)).ToArray();
 
-    public Watcher? GetById(int id) => _context.Watchers.Find(id);
+    public Watcher? GetById(int id) => WatcherWithDetails.First(w => w.Id == id);
 
     public IEnumerable<Watcher> GetAll() => _context.Watchers
         .Include(w => w.Curators)
