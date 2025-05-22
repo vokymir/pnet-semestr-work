@@ -5,11 +5,11 @@ using BirdWatching.Shared.Model;
 
 /// <summary>
 /// Can do:
+/// - Create, read (public)
+/// - update comment (public)
 /// -
 /// Should do:
-/// - Create, read (public)
 /// - update, delete (private)
-/// - update comment (public)
 /// </summary>
 [ApiController]
 public class RecordController : BaseApiController
@@ -46,7 +46,7 @@ public class RecordController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpGet("Get")]
+    [HttpGet("GetById")]
     public IResult Get(int recordId)
     {
         var r = _recordRepo.GetById(recordId);
@@ -54,9 +54,65 @@ public class RecordController : BaseApiController
         else return Results.Ok(r.ToFullDto());
     }
 
-    [HttpGet("GetWatchers")]
-    public IResult GetWatchers(int watcherId)
+    [HttpGet("GetByWatcher")]
+    public IResult GetWatchersRecords(int watcherId)
     {
-        throw new NotImplementedException();
+        var records = _recordRepo.GetWatcherRecords(watcherId);
+
+        List<RecordDto> rds = new();
+        foreach (var r in records)
+            rds.Add(r.ToFullDto());
+
+        return Results.Ok(rds);
+    }
+
+    [HttpPatch("AddToComment")]
+    public IResult ProlongComment(int recordId, string comment)
+    {
+        var r = _recordRepo.GetById(recordId);
+        if (r is null) return Results.NotFound();
+        r.Comment += comment;
+        try
+        {
+            _recordRepo.Update(r);
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
+        return Results.Ok();
+    }
+
+    [HttpPatch("EditComment/{token}")]
+    public IResult EditComment(string token, int recordId, string comment)
+    {
+        var r = _recordRepo.GetById(recordId);
+        if (r is null) return Results.NotFound("Record not found.");
+
+        // if either is owner of record or is admin
+        var response = AuthUserByToken(token);
+        if (!response.Result.Equals(Results.Ok()))
+        {
+            var adminResponse = AuthAdminByToken(token);
+            if (!adminResponse.Equals(Results.Ok()))
+                return adminResponse;
+        }
+        else
+        {
+            if (!response.User!.Watchers.Contains(r.Watcher))
+                return Results.Problem("Don't have permission to edit this comment.");
+        }
+
+        r.Comment = comment;
+
+        try
+        {
+            _recordRepo.Update(r);
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
+        return Results.Ok();
     }
 }

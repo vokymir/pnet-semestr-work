@@ -57,7 +57,7 @@ public class EFEventRepository : IEventRepository
 
     public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Events.ToDictionary(e => e.PublicIdentifier, e => true);
 
-    public IEnumerable<Watcher>? GetParticipants(int id) =>
-        _context.Events.Include(e => e.Participants).First(e => e.Id == id)?
+    public IEnumerable<Watcher>? GetParticipants(int eventId) =>
+        _context.Events.Include(e => e.Participants).First(e => e.Id == eventId)?
         .Participants ?? null; // if event doesn't exist, return null
 }
