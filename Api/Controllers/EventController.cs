@@ -91,7 +91,8 @@ public class EventController : BaseApiController
 
         List<EventDto> evds = new();
         foreach (var e in evs)
-            evds.Add(e.ToFullDto());
+            evds.Add(_eventRepo.GetById(e.Id)?.ToFullDto() ?? new EventDto() { Name = "CHYBA" });
+        // can be optimized in making just one SQL call, in eventRepo... the same with following method
 
         return Results.Ok(evds);
     }
@@ -106,7 +107,7 @@ public class EventController : BaseApiController
 
         List<EventDto> evds = new();
         foreach (var e in evs)
-            evds.Add(e.ToFullDto());
+            evds.Add(_eventRepo.GetById(e.Id)?.ToFullDto() ?? new EventDto() { Name = "CHYBA" });
 
         return Results.Ok(evds);
     }

@@ -106,7 +106,7 @@ public class WatcherController : BaseApiController
         return Results.Ok(wDto);
     }
 
-    [HttpPost("JoinEvent/{token}")]
+    [HttpPost("JoinEvent/{token}/{watcherId}/{eventPublicId}")]
     public IResult JoinEvent(string token, int watcherId, string eventPublicId)
     {
         var gettingUser = AuthUserByToken(token);

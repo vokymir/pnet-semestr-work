@@ -43,12 +43,14 @@ public class Program
         await ShowWatcherEvents(w);
         EventDto e = new() { MainAdminId = u.Id, Name = $"E: {DateTime.Now.ToString("yyyy-mm-dd HH:ss")}" };
         await CreateEvent(token, e);
+        e = await GetEventById(1);
         await ShowUserEvents(u.Id);
-        // await JoinEvent(token, w, e);
+
+        // add watcher to event
+        await JoinEvent(token, w, e);
         await ShowWatcherEvents(w);
         await ShowAllEvents();
 
-        // add watcher to event
     }
 
     public static async Task<string> Login(UserDto user)
@@ -65,7 +67,8 @@ public class Program
             return wtf;
         }
         else
-            return string.Empty;
+            Console.WriteLine("=====");
+        return string.Empty;
     }
 
     public static async Task<List<WatcherDto>> ListUserWatchers(string token)
@@ -89,6 +92,7 @@ public class Program
         Console.WriteLine("START: Create new watcher...");
         string uri = $"{Prefix}Watcher/Create/{token}";
         var response = await client.PostAsJsonAsync(uri, watcherInfo);
+        Console.WriteLine("=====");
     }
 
     public static async Task<UserDto> ShowUserInfo(string token)
@@ -106,7 +110,7 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         }
         else
         {
-            Console.WriteLine("Cannot show user info.");
+            Console.WriteLine("Cannot show user info.\n=====");
             return new UserDto();
         }
     }
@@ -215,7 +219,7 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
             if (smth is null) Console.WriteLine("ajaja, events are null...");
             else
                 foreach (var e in smth)
-                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}\t{e.PublicIdentifier}");
         }
         Console.WriteLine("=====");
     }
@@ -233,7 +237,7 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
             if (evs is null) Console.WriteLine("ajaj Events are null...");
             else
                 foreach (var e in evs)
-                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}\t{e.PublicIdentifier}");
         }
         Console.WriteLine("=====");
     }
@@ -258,6 +262,33 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         else
             foreach (var e in await response.Content.ReadAsAsync<EventDto[]>())
                 Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+
+        Console.WriteLine("=====");
+    }
+
+    public static async Task<EventDto> GetEventById(int id)
+    {
+        Console.WriteLine("START: Get event by id...");
+        string uri = $"{Prefix}Event/Get/{id}";
+        var response = await client.GetAsync(uri);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("cannot get event by id\n=====");
+            return new EventDto() { Name = "NENE" };
+        }
+        else
+            Console.WriteLine("=====");
+        return await response.Content.ReadAsAsync<EventDto>();
+    }
+
+    public static async Task JoinEvent(string token, WatcherDto w, EventDto e)
+    {
+        Console.WriteLine($"START: Join event... {e.PublicIdentifier}");
+        string uri = $"{Prefix}Watcher/JoinEvent/{token}/{w.Id}/{e.PublicIdentifier}";
+        var response = await client.PostAsync(uri, null);
+
+        if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot join event.");
 
         Console.WriteLine("=====");
     }
