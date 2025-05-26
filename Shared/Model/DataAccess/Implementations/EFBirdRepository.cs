@@ -27,7 +27,7 @@ public class EFBirdRepository : IBirdRepository
 
     public void Update(Bird bird)
     {
-        var dbBird = BirdsWithDetails.First(b => b.Id == bird.Id);
+        var dbBird = BirdsWithDetails.FirstOrDefault(b => b.Id == bird.Id);
 
         if (dbBird is null)
             throw new InvalidOperationException($"Bird with ID = {bird.Id} is not in the database and cannot be updated.");
@@ -48,7 +48,7 @@ public class EFBirdRepository : IBirdRepository
         _context.SaveChanges();
     }
 
-    public Bird? GetById(int id) => BirdsWithDetails.First(b => b.Id == id);
+    public Bird? GetById(int id) => BirdsWithDetails.FirstOrDefault(b => b.Id == id);
 
     public IEnumerable<Bird> GetByPrefix(string prefix) => BirdsWithDetails.Where(b => b.FullName.StartsWith(prefix)).ToArray();
     public IEnumerable<Bird> GetByPrefixFast(string prefix) => _context.Birds.Where(b => b.FullName.StartsWith(prefix)).ToArray();

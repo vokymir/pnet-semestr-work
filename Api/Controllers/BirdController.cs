@@ -65,7 +65,7 @@ public class BirdController : BaseApiController
         return Results.Ok(bds);
     }
 
-    [HttpGet("GetById")]
+    [HttpGet("GetById/{id}")]
     public IResult GetById(int id)
     {
         Bird? b = _birdRepo.GetById(id);

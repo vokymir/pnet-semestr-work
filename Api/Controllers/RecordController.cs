@@ -29,12 +29,16 @@ public class RecordController : BaseApiController
         var response = AuthUserByToken(token);
         if (!response.Result.Equals(Results.Ok())) return response.Result;
 
-        Record r = recordDto.ToEntity();
+        var bird = _birdRepo.GetById(recordDto.BirdId);
+        if (bird == null) return Results.NotFound("Bird not found.");
 
-        var w = _watcherRepo.GetById(r.WatcherId);
-        if (w is null) return Results.NotFound("Watcher not found.");
+        var w = _watcherRepo.GetById(recordDto.WatcherId);
+        if (w == null) return Results.NotFound("Watcher not found.");
         if (!w.Curators.Contains(response.User!)) return Results.Problem("Don't have permission to edit watcher.");
 
+        Record r = recordDto.ToEntity();
+        r.Watcher = w;
+        r.Bird = bird;
         try
         {
             _recordRepo.Add(r);
@@ -47,7 +51,18 @@ public class RecordController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpGet("GetById")]
+    [HttpGet("GetAll")]
+    public IResult GetAll()
+    {
+        var rs = _recordRepo.GetAll();
+        if (rs is null) return Results.NotFound();
+        List<RecordDto> rds = new();
+        foreach (var r in rs)
+            rds.Add(r.ToFullDto());
+        return Results.Ok(rds);
+    }
+
+    [HttpGet("GetById/{recordId}")]
     public IResult Get(int recordId)
     {
         var r = _recordRepo.GetById(recordId);
@@ -55,16 +70,22 @@ public class RecordController : BaseApiController
         else return Results.Ok(r.ToFullDto());
     }
 
-    [HttpGet("GetByWatcher")]
+    [HttpGet("GetByWatcher/{watcherId}")]
     public IResult GetWatchersRecords(int watcherId)
     {
-        var records = _recordRepo.GetWatcherRecords(watcherId);
+        try
+        {
+            var records = _recordRepo.GetWatcherRecords(watcherId);
+            List<RecordDto> rds = new();
+            foreach (var r in records)
+                rds.Add(r.ToFullDto());
 
-        List<RecordDto> rds = new();
-        foreach (var r in records)
-            rds.Add(r.ToFullDto());
-
-        return Results.Ok(rds);
+            return Results.Ok(rds);
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
     }
 
     [HttpPatch("AddToComment")]

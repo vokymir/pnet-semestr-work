@@ -53,9 +53,9 @@ public class EFWatcherRepository : IWatcherRepository
 
     public Watcher[] GetByUser(User user) => WatcherWithDetails.Where(w => w.Curators.Contains(user)).ToArray();
 
-    public Watcher? GetById(int id) => WatcherWithDetails.First(w => w.Id == id);
+    public Watcher? GetById(int id) => WatcherWithDetails.FirstOrDefault(w => w.Id == id);
 
-    public Watcher? GetByPublicId(string publicId) => WatcherWithDetails.First(w => w.PublicIdentifier.Equals(publicId));
+    public Watcher? GetByPublicId(string publicId) => WatcherWithDetails.FirstOrDefault(w => w.PublicIdentifier.Equals(publicId));
 
     public IEnumerable<Watcher> GetAll() => WatcherWithDetails.ToArray();
 

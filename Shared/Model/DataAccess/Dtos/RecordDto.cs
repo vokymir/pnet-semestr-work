@@ -3,7 +3,7 @@ namespace BirdWatching.Shared.Model;
 public class RecordDto : IAmDto<Record>
 {
     public int Id { get; set; }
-    public DateTime DateSeen { get; set; }
+    public DateTime DateSeen { get; set; } = DateTime.Now;
 
     public string Comment { get; set; } = string.Empty;
 

@@ -95,7 +95,7 @@ public class WatcherController : BaseApiController
         return Results.Ok(watcherDtos);
     }
 
-    [HttpGet("Get")]
+    [HttpGet("Get/{id}")]
     public IResult GetById(int id)
     {
         var w = _watcherRepo.GetById(id);
