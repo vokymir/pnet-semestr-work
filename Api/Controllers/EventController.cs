@@ -68,6 +68,7 @@ public class EventController : BaseApiController
 
         return Results.Ok(eds);
     }
+
     [HttpGet("Get/{id}")]
     public IResult Get(int id)
     {
@@ -77,6 +78,22 @@ public class EventController : BaseApiController
 
         EventDto eDto = e.ToFullDto();
         return Results.Ok(eDto);
+    }
+
+    [HttpGet("GetByUserId/{userId}")]
+    public IResult GetByUserId(int userId)
+    {
+        var usr = _userRepo.GetById(userId);
+        if (usr is null) return Results.NotFound("User not found...");
+
+        var evs = usr.Events;
+        if (evs is null) return Results.NotFound("User have no events...");
+
+        List<EventDto> evds = new();
+        foreach (var e in evs)
+            evds.Add(e.ToFullDto());
+
+        return Results.Ok(evds);
     }
 
     [HttpPatch("Update/{token}/{id}")]
@@ -104,7 +121,7 @@ public class EventController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpGet("Participants")]
+    [HttpGet("Participants/{eventId}")]
     public IResult GetWatchers(int eventId)
     {
         var ws = _eventRepo.GetParticipants(eventId);

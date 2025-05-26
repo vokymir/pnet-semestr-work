@@ -9,9 +9,9 @@ public class Program
     static async Task Main()
     {
         // login user
-        UserDto user = new() { UserName = "string", PasswordHash = "string" };
-        string token = await Login(user);
-        user = await ShowUserInfo(token);
+        UserDto u = new() { UserName = "string", PasswordHash = "string" };
+        string token = await Login(u);
+        u = await ShowUserInfo(token);
 
         // create watcher
         List<WatcherDto> watchers = await ListUserWatchers(token);
@@ -32,18 +32,18 @@ public class Program
         // create record
         await ShowAllRecords();
         await ShowWatcherRecords(w.Id);
-        RecordDto record = new() { WatcherId = w.Id, BirdId = b.Id };
-        await AddRecordToWatcher(token, record);
+        RecordDto r = new() { WatcherId = w.Id, BirdId = b.Id };
+        await AddRecordToWatcher(token, r);
         await ShowWatcherRecords(w.Id);
         await ShowAllRecords();
 
         // create event
         await ShowAllEvents();
-        // await ShowUserEvents();
+        await ShowUserEvents(u.Id);
         // await ShowWatcherEvents();
-        // EventDto e = new() { MainAdminId = user.Id };
-        // await CreateEvent(token, e);
-        // await ShowUserEvents();
+        EventDto e = new() { MainAdminId = u.Id, Name = $"E: {DateTime.Now.ToString("yyyy-mm-dd HH:ss")}" };
+        await CreateEvent(token, e);
+        await ShowUserEvents(u.Id);
         // await JoinEvent(token, w, e);
         // await ShowWatcherEvents();
         await ShowAllEvents();
@@ -169,7 +169,7 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         {
             var rds = await response.Content.ReadAsAsync<RecordDto[]>();
             foreach (var rd in rds)
-                Console.WriteLine($"{rd.Id}\tB:{rd.Bird?.FullName ?? "miss"}\tW:{rd.Watcher?.FirstName ?? "miss"} {rd.Watcher?.LastName ?? "miss"}\t{rd.DateSeen.ToString("YYYY-MM-DD HH:ss")}");
+                Console.WriteLine($"{rd.Id}\tB:{rd.Bird?.FullName ?? "miss"}\tW:{rd.Watcher?.FirstName ?? "miss"} {rd.Watcher?.LastName ?? "miss"}\t{rd.DateSeen.ToString("yyyy-MM-dd HH:ss")}");
         }
         Console.WriteLine("=====");
     }
@@ -217,6 +217,34 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
                 foreach (var e in smth)
                     Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
         }
+        Console.WriteLine("=====");
+    }
+
+    public static async Task ShowUserEvents(int id)
+    {
+        Console.WriteLine("START: Show all events belonging to user...");
+        string uri = $"{Prefix}Event/GetByUserId/{id}";
+        var response = await client.GetAsync(uri);
+
+        if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot get events related to user.");
+        else
+        {
+            var evs = await response.Content.ReadAsAsync<EventDto[]>();
+            if (evs is null) Console.WriteLine("ajaj Events are null...");
+            else
+                foreach (var e in evs)
+                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+        }
+        Console.WriteLine("=====");
+    }
+
+    public static async Task CreateEvent(string token, EventDto e)
+    {
+        Console.WriteLine("START: Create event...");
+        string uri = $"{Prefix}Event/Create/{token}";
+        var response = await client.PostAsJsonAsync(uri, e);
+
+        if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot create event: {await response.Content.ReadAsStringAsync()}");
         Console.WriteLine("=====");
     }
 }
