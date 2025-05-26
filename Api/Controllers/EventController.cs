@@ -96,6 +96,21 @@ public class EventController : BaseApiController
         return Results.Ok(evds);
     }
 
+    [HttpGet("GetByWatcherId/{watcherId}")]
+    public IResult GetByWatcherId(int watcherId)
+    {
+        var w = _watcherRepo.GetById(watcherId);
+        if (w is null) return Results.NotFound("Watcher not found");
+
+        var evs = w.Participating;
+
+        List<EventDto> evds = new();
+        foreach (var e in evs)
+            evds.Add(e.ToFullDto());
+
+        return Results.Ok(evds);
+    }
+
     [HttpPatch("Update/{token}/{id}")]
     public IResult Update(string token, int id, EventDto eDto)
     {

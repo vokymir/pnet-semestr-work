@@ -40,12 +40,12 @@ public class Program
         // create event
         await ShowAllEvents();
         await ShowUserEvents(u.Id);
-        // await ShowWatcherEvents();
+        await ShowWatcherEvents(w);
         EventDto e = new() { MainAdminId = u.Id, Name = $"E: {DateTime.Now.ToString("yyyy-mm-dd HH:ss")}" };
         await CreateEvent(token, e);
         await ShowUserEvents(u.Id);
         // await JoinEvent(token, w, e);
-        // await ShowWatcherEvents();
+        await ShowWatcherEvents(w);
         await ShowAllEvents();
 
         // add watcher to event
@@ -169,7 +169,7 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         {
             var rds = await response.Content.ReadAsAsync<RecordDto[]>();
             foreach (var rd in rds)
-                Console.WriteLine($"{rd.Id}\tB:{rd.Bird?.FullName ?? "miss"}\tW:{rd.Watcher?.FirstName ?? "miss"} {rd.Watcher?.LastName ?? "miss"}\t{rd.DateSeen.ToString("yyyy-MM-dd HH:ss")}");
+                Console.WriteLine($"{rd.Id}\tB:{rd.Bird?.FullName ?? "miss"}\tW:{rd.Watcher?.FirstName ?? "miss"} {rd.Watcher?.LastName ?? "miss"}\t{rd.DateSeen.ToString("yyyy-mm-dd HH:ss")}");
         }
         Console.WriteLine("=====");
     }
@@ -245,6 +245,20 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         var response = await client.PostAsJsonAsync(uri, e);
 
         if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot create event: {await response.Content.ReadAsStringAsync()}");
+        Console.WriteLine("=====");
+    }
+
+    public static async Task ShowWatcherEvents(WatcherDto w)
+    {
+        Console.WriteLine("START: Show events in which watcher participates...");
+        string uri = $"{Prefix}Event/GetByWatcherId/{w.Id}";
+        var response = await client.GetAsync(uri);
+
+        if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot show watchers events");
+        else
+            foreach (var e in await response.Content.ReadAsAsync<EventDto[]>())
+                Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+
         Console.WriteLine("=====");
     }
 }
