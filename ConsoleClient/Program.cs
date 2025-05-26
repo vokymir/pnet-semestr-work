@@ -9,26 +9,25 @@ public class Program
     static async Task Main()
     {
         // login user
-        User user = new User() { UserName = "string", PasswordHash = "string" };
+        UserDto user = new() { UserName = "string", PasswordHash = "string" };
         string token = await Login(user);
-        await ShowUserInfo(token);
+        user = await ShowUserInfo(token);
 
         // create watcher
         List<WatcherDto> watchers = await ListUserWatchers(token);
-        WatcherDto watcher = new WatcherDto() { FirstName = "Jarda", LastName = $"Sáček {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
-        await CreateNewWatcher(token, watcher);
+        WatcherDto w = new WatcherDto() { FirstName = "Jarda", LastName = $"Sáček {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
+        await CreateNewWatcher(token, w);
         watchers = await ListUserWatchers(token);
 
         await ShowUserInfo(token);
 
         // create bird
         await ShowAllBirds();
-        BirdDto bird = new() { Genus = "Gen", Species = $"Spec {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
-        await NewBird(bird);
+        BirdDto b = new() { Genus = "Gen", Species = $"Spec {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
+        await NewBird(b);
         await ShowAllBirds();
-        BirdDto b;
         b = await GetBirdById(1);
-        WatcherDto w = watchers[0];
+        w = watchers[0];
 
         // create record
         await ShowAllRecords();
@@ -39,15 +38,25 @@ public class Program
         await ShowAllRecords();
 
         // create event
+        // await ShowAllEvents();
+        // await ShowUserEvents();
+        // await ShowWatcherEvents();
+        // EventDto e = new() { MainAdminId = user.Id };
+        // await CreateEvent(token, e);
+        // await ShowUserEvents();
+        // await JoinEvent(token, w, e);
+        // await ShowWatcherEvents();
+        // await ShowAllEvents();
 
         // add watcher to event
     }
 
-    public static async Task<string> Login(User user)
+    public static async Task<string> Login(UserDto user)
     {
         Console.WriteLine("START: Logging in...");
         string uri = Prefix + "Auth/Login";
-        HttpResponseMessage msg = await client.PostAsJsonAsync(uri, user);
+        LoginDto l = new(user.UserName, user.PasswordHash);
+        HttpResponseMessage msg = await client.PostAsJsonAsync(uri, l);
 
         if (msg.IsSuccessStatusCode)
         {
@@ -82,7 +91,7 @@ public class Program
         var response = await client.PostAsJsonAsync(uri, watcherInfo);
     }
 
-    public static async Task ShowUserInfo(string token)
+    public static async Task<UserDto> ShowUserInfo(string token)
     {
         Console.WriteLine("START: Show info about one user...");
         string uri = $"{Prefix}User/Get/{token}";
@@ -93,10 +102,12 @@ public class Program
             if (u is null) Console.WriteLine($"VERY BAD, invalid user");
             else Console.WriteLine(
 $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | W: {u.Watchers?.Count ?? -69} E: {u.Events?.Count ?? -69} | MainAdmin of W: {u.CuratedWatchers?.Count ?? -69} E: {u.AdministeredEvents?.Count ?? -69}\n=====");
+            return u ?? new UserDto();
         }
         else
         {
             Console.WriteLine("Cannot show user info.");
+            return new UserDto();
         }
     }
 
