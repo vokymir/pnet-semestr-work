@@ -55,7 +55,20 @@ public class EventController : BaseApiController
         return Results.Ok();
     }
 
-    [HttpGet("Get")]
+    [HttpGet("GetAll")]
+    public IResult GetAll()
+    {
+        var es = _eventRepo.GetAll();
+        if (es is null)
+            return Results.NotFound();
+
+        List<EventDto> eds = new();
+        foreach (var e in es)
+            eds.Add(e.ToFullDto());
+
+        return Results.Ok(eds);
+    }
+    [HttpGet("Get/{id}")]
     public IResult Get(int id)
     {
         Event? e = _eventRepo.GetById(id);

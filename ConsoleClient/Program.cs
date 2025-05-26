@@ -38,7 +38,7 @@ public class Program
         await ShowAllRecords();
 
         // create event
-        // await ShowAllEvents();
+        await ShowAllEvents();
         // await ShowUserEvents();
         // await ShowWatcherEvents();
         // EventDto e = new() { MainAdminId = user.Id };
@@ -46,7 +46,7 @@ public class Program
         // await ShowUserEvents();
         // await JoinEvent(token, w, e);
         // await ShowWatcherEvents();
-        // await ShowAllEvents();
+        await ShowAllEvents();
 
         // add watcher to event
     }
@@ -199,6 +199,24 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         var response = await client.PostAsJsonAsync(uri, r);
 
         if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot add record of birdId {r.BirdId} to watcherId {r.WatcherId}: {await response.Content.ReadAsStringAsync()}");
+        Console.WriteLine("=====");
+    }
+
+    public static async Task ShowAllEvents()
+    {
+        Console.WriteLine("START: Show all events...");
+        string uri = $"{Prefix}Event/GetAll";
+        var response = await client.GetAsync(uri);
+
+        if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot get events");
+        else
+        {
+            var smth = await response.Content.ReadAsAsync<EventDto[]>();
+            if (smth is null) Console.WriteLine("ajaja, events are null...");
+            else
+                foreach (var e in smth)
+                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+        }
         Console.WriteLine("=====");
     }
 }
