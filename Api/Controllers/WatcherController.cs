@@ -2,6 +2,8 @@ namespace BirdWatching.Api.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using BirdWatching.Shared.Model;
+    using System.Threading.Tasks;
+    using System.Linq;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -20,14 +22,14 @@ namespace BirdWatching.Api.Controllers
         /// Create a new watcher and assign it to current user.
         /// </summary>
         [HttpPost("Create/{token}")]
-        public IActionResult CreateWatcher(string token, [FromBody] WatcherDto watcherDto)
+        public async Task<IActionResult> CreateWatcher(string token, [FromBody] WatcherDto watcherDto)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest("Token must be provided.");
             if (watcherDto == null)
                 return BadRequest("Watcher data must be provided.");
 
-            var auth = AuthUserByToken(token);
+            var auth = await AuthUserByTokenAsync(token);
             if (!IsAuthorized(auth.Result))
                 return Unauthorized("Invalid or expired token.");
 
@@ -39,7 +41,7 @@ namespace BirdWatching.Api.Controllers
                 watcher.Curators.Add(user);
 
                 // Generate unique public identifier
-                var existing = _watcherRepo.GetAllPublicIdentifiers();
+                var existing = await _watcherRepo.GetAllPublicIdentifiersAsync();
                 string id;
                 do
                 {
@@ -47,7 +49,7 @@ namespace BirdWatching.Api.Controllers
                 } while (existing.ContainsKey(id));
                 watcher.PublicIdentifier = id;
 
-                _watcherRepo.Add(watcher);
+                await _watcherRepo.AddAsync(watcher);
 
                 var resultDto = watcher.ToFullDto();
                 return Ok(resultDto);
@@ -63,16 +65,16 @@ namespace BirdWatching.Api.Controllers
         /// Get absolutely all watchers, if admin.
         /// </summary>
         [HttpGet("GetAll/{token}")]
-        public IActionResult GetAllIfAdmin(string token)
+        public async Task<IActionResult> GetAllIfAdmin(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest("Token must be provided.");
 
-            var auth = AuthAdminByToken(token);
+            var auth = await AuthAdminByTokenAsync(token);
             if (!IsAuthorized(auth))
                 return Unauthorized("Admin privileges required.");
 
-            var watchers = _watcherRepo.GetAll()
+            var watchers = (await _watcherRepo.GetAllAsync())
                 .Select(w => w.ToFullDto())
                 .ToList();
 
@@ -83,17 +85,17 @@ namespace BirdWatching.Api.Controllers
         /// Get watchers that current user can edit.
         /// </summary>
         [HttpGet("AllUserHave/{token}")]
-        public IActionResult GetUserWatchers(string token)
+        public async Task<IActionResult> GetUserWatchers(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest("Token must be provided.");
 
-            var auth = AuthUserByToken(token);
+            var auth = await AuthUserByTokenAsync(token);
             if (!IsAuthorized(auth.Result))
                 return Unauthorized("Invalid or expired token.");
 
             var user = auth.User!;
-            var watchers = _watcherRepo.GetByUser(user)
+            var watchers = (await _watcherRepo.GetByUserAsync(user))
                 .Select(w => w.ToFullDto())
                 .ToList();
 
@@ -104,12 +106,12 @@ namespace BirdWatching.Api.Controllers
         /// Get watcher by ID.
         /// </summary>
         [HttpGet("Get/{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
                 return BadRequest("Invalid watcher ID.");
 
-            var watcher = _watcherRepo.GetById(id);
+            var watcher = await _watcherRepo.GetByIdAsync(id);
             if (watcher == null)
                 return NotFound("Watcher not found.");
 
@@ -120,23 +122,23 @@ namespace BirdWatching.Api.Controllers
         /// Join a watcher to an event.
         /// </summary>
         [HttpPost("JoinEvent/{token}/{watcherId}/{eventPublicId}")]
-        public IActionResult JoinEvent(string token, int watcherId, string eventPublicId)
+        public async Task<IActionResult> JoinEvent(string token, int watcherId, string eventPublicId)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest("Token must be provided.");
 
-            var auth = AuthUserByToken(token);
+            var auth = await AuthUserByTokenAsync(token);
             if (!IsAuthorized(auth.Result))
                 return Unauthorized("Invalid or expired token.");
 
             var user = auth.User!;
-            var watcher = _watcherRepo.GetById(watcherId);
+            var watcher = await _watcherRepo.GetByIdAsync(watcherId);
             if (watcher == null)
                 return NotFound("Watcher not found.");
             if (!watcher.Curators.Contains(user))
                 return Forbid("You do not have permission to modify this watcher.");
 
-            var e = _eventRepo.GetByPublicId(eventPublicId);
+            var e = await _eventRepo.GetByPublicIdAsync(eventPublicId);
             if (e == null)
                 return NotFound("Event not found.");
 
@@ -146,7 +148,7 @@ namespace BirdWatching.Api.Controllers
                     return Conflict("Watcher is already participating in this event.");
 
                 watcher.Participating.Add(e);
-                _watcherRepo.Update(watcher);
+                await _watcherRepo.UpdateAsync(watcher);
                 return NoContent();
             }
             catch (Exception ex)

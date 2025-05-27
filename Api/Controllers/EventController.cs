@@ -2,6 +2,7 @@ namespace BirdWatching.Api.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using BirdWatching.Shared.Model;
+    using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -20,14 +21,14 @@ namespace BirdWatching.Api.Controllers
         /// Create a new event. Current user becomes MainAdmin.
         /// </summary>
         [HttpPost("Create/{token}")]
-        public IActionResult Create(string token, [FromBody] EventDto eventDto)
+        public async Task<IActionResult> Create(string token, [FromBody] EventDto eventDto)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest("Token is required.");
             if (eventDto == null)
                 return BadRequest("Event data must be provided.");
 
-            var auth = AuthUserByToken(token);
+            var auth = await AuthUserByTokenAsync(token);
             if (!IsAuthorized(auth.Result))
                 return Unauthorized("Invalid or expired token.");
 
@@ -39,7 +40,7 @@ namespace BirdWatching.Api.Controllers
                 e.MainAdminId = user.Id;
 
                 // Generate unique public identifier
-                var existing = _eventRepo.GetAllPublicIdentifiers();
+                var existing = await _eventRepo.GetAllPublicIdentifiersAsync();
                 string pubId;
                 do
                 {
@@ -47,7 +48,7 @@ namespace BirdWatching.Api.Controllers
                 } while (existing.ContainsKey(pubId));
                 e.PublicIdentifier = pubId;
 
-                _eventRepo.Add(e);
+                await _eventRepo.AddAsync(e);
 
                 var createdDto = e.ToFullDto();
                 return Ok(createdDto);
@@ -63,9 +64,9 @@ namespace BirdWatching.Api.Controllers
         /// Get all public events.
         /// </summary>
         [HttpGet("GetAll")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var events = _eventRepo.GetAll()?.ToList();
+            var events = (await _eventRepo.GetAllAsync())?.ToList();
             if (events == null || !events.Any())
                 return Ok(new EventDto[0]);
 
@@ -77,12 +78,12 @@ namespace BirdWatching.Api.Controllers
         /// Get event by internal ID.
         /// </summary>
         [HttpGet("Get/{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
                 return BadRequest("Invalid event ID.");
 
-            var e = _eventRepo.GetById(id);
+            var e = await _eventRepo.GetByIdAsync(id);
             if (e == null)
                 return NotFound("Event not found.");
 
@@ -93,12 +94,12 @@ namespace BirdWatching.Api.Controllers
         /// Get event by public identifier.
         /// </summary>
         [HttpGet("GetByPublicId/{publicId}")]
-        public IActionResult GetByPublicId(string publicId)
+        public async Task<IActionResult> GetByPublicId(string publicId)
         {
             if (string.IsNullOrWhiteSpace(publicId))
                 return BadRequest("Public identifier must be provided.");
 
-            var e = _eventRepo.GetByPublicId(publicId);
+            var e = await _eventRepo.GetByPublicIdAsync(publicId);
             if (e == null)
                 return NotFound("Event not found.");
 
@@ -109,16 +110,16 @@ namespace BirdWatching.Api.Controllers
         /// Get events administered by a given user.
         /// </summary>
         [HttpGet("GetByUserId/{userId}")]
-        public IActionResult GetByUserId(int userId)
+        public async Task<IActionResult> GetByUserId(int userId)
         {
             if (userId <= 0 && userId != -1) // -1 only for testing purposes
                 return BadRequest("Invalid user ID.");
 
-            var user = _userRepo.GetById(userId);
+            var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return NotFound("User not found.");
 
-            var events = _eventRepo.GetByUserId(userId);
+            var events = await _eventRepo.GetByUserIdAsync(userId);
             if (events is null)
                 return NotFound("User not found.");
 
@@ -135,16 +136,16 @@ namespace BirdWatching.Api.Controllers
         /// Get events a watcher is participating in.
         /// </summary>
         [HttpGet("GetByWatcherId/{watcherId}")]
-        public IActionResult GetByWatcherId(int watcherId)
+        public async Task<IActionResult> GetByWatcherId(int watcherId)
         {
             if (watcherId <= 0)
                 return BadRequest("Invalid watcher ID.");
 
-            var w = _watcherRepo.GetById(watcherId);
+            var w = await _watcherRepo.GetByIdAsync(watcherId);
             if (w == null)
                 return NotFound("Watcher not found.");
 
-            var events = _eventRepo.GetByWatcherId(watcherId);
+            var events = await _eventRepo.GetByWatcherIdAsync(watcherId);
             if (events is null)
                 return NotFound("Watcher not found.");
 
@@ -161,7 +162,7 @@ namespace BirdWatching.Api.Controllers
         /// Update an existing event (only its MainAdmin).
         /// </summary>
         [HttpPatch("Update/{token}/{id}")]
-        public IActionResult Update(string token, int id, [FromBody] EventDto dto)
+        public async Task<IActionResult> Update(string token, int id, [FromBody] EventDto dto)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest("Token required.");
@@ -170,12 +171,12 @@ namespace BirdWatching.Api.Controllers
             if (id <= 0)
                 return BadRequest("Invalid event ID.");
 
-            var auth = AuthUserByToken(token);
+            var auth = await AuthUserByTokenAsync(token);
             if (!IsAuthorized(auth.Result))
                 return Unauthorized("Invalid or expired token.");
 
             var user = auth.User!;
-            var existing = _eventRepo.GetById(id);
+            var existing = await _eventRepo.GetByIdAsync(id);
             if (existing == null)
                 return NotFound("Event not found.");
             if (existing.MainAdminId != user.Id)
@@ -191,7 +192,7 @@ namespace BirdWatching.Api.Controllers
                 existing.GenusRegex = dto.GenusRegex;
                 existing.SpeciesRegex = dto.SpeciesRegex;
 
-                _eventRepo.Update(existing);
+                await _eventRepo.UpdateAsync(existing);
                 return NoContent();
             }
             catch (Exception ex)
@@ -205,12 +206,12 @@ namespace BirdWatching.Api.Controllers
         /// Get participants (watchers) of an event.
         /// </summary>
         [HttpGet("Participants/{eventId}")]
-        public IActionResult GetWatchers(int eventId)
+        public async Task<IActionResult> GetWatchers(int eventId)
         {
             if (eventId <= 0)
                 return BadRequest("Invalid event ID.");
 
-            var watchers = _eventRepo.GetParticipants(eventId);
+            var watchers = await _eventRepo.GetParticipantsAsync(eventId);
             if (watchers == null)
                 return NotFound("Event not found or has no participants.");
 

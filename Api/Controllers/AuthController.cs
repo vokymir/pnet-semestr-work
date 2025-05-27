@@ -1,8 +1,7 @@
-namespace BirdWatching.Api.Controllers;
-
 using Microsoft.AspNetCore.Mvc;
-
 using BirdWatching.Shared.Model;
+
+namespace BirdWatching.Api.Controllers;
 
 /// <summary>
 /// Can do:
@@ -16,7 +15,7 @@ public class AuthController : BaseApiController
     private readonly ILogger<AuthController> _logger;
 
     // valid for 1 hour
-    public TimeSpan TokenTimeSpan = new TimeSpan(0, 1, 0, 0);
+    public TimeSpan TokenTimeSpan = TimeSpan.FromHours(1);
 
     public AuthController(AppDbContext context, ILogger<AuthController> logger)
     {
@@ -26,61 +25,66 @@ public class AuthController : BaseApiController
     }
 
     [HttpPost("Login")]
-    public IActionResult Login(LoginDto login)
+    public async Task<IActionResult> Login([FromBody] LoginDto login)
     {
-        User? user = _userRepo.GetByUsername(login.username);
-        if (user is null)
-            return NotFound();
-        else if (user.PasswordHash != login.passwordhash)
+        var user = await _userRepo.GetByUsernameAsync(login.username);
+        if (user is null || user.PasswordHash != login.passwordhash)
             return NotFound();
 
         string token;
         do
+        {
             token = GenerateUrlSafeString(64);
-        while (!IsUnique(token));
+        }
+        while (!await IsUniqueAsync(token));
 
-        AddAuthToken(token, user);
-
+        await AddAuthTokenAsync(token, user);
         return Ok(token);
     }
 
     [HttpPost("Logout/{token}")]
-    public IActionResult Logout(string token)
+    public async Task<IActionResult> Logout(string token)
     {
         try
         {
-            _authRepo.Delete(token);
+            await _authRepo.DeleteAsync(token);
+            return Ok();
         }
         catch (Exception e)
         {
             return Problem(e.Message);
         }
-
-        return Ok();
     }
 
-    private void AddAuthToken(string token, User user)
+    private async Task AddAuthTokenAsync(string token, User user)
     {
-        _authRepo.Add(
-                new AuthToken() {
-                    Token = token,
-                    User = user,
-                    Created = DateTime.Now
-                });
+        var authToken = new AuthToken {
+            Token = token,
+            User = user,
+            Created = DateTime.Now
+        };
+
+        await _authRepo.AddAsync(authToken);
     }
 
-    private bool IsUnique(string token)
+    private async Task<bool> IsUniqueAsync(string token)
     {
-        var existing = _authRepo.GetByString(token);
+        var existing = await _authRepo.GetByStringAsync(token);
         return existing is null;
     }
 
-    // zde jde optimalizovat - předělat do SQL v Modelu, a bylo by to rychlejší
     [HttpPost("DeleteOldTokens")]
-    public void DeleteOldTokens()
+    public async Task<IActionResult> DeleteOldTokens()
     {
-        foreach (var token in _authRepo.GetAll())
+        var tokens = await _authRepo.GetAllAsync();
+        foreach (var token in tokens)
+        {
             if (token.Created + TokenTimeSpan < DateTime.Now)
-                _authRepo.Delete(token.Token);
+            {
+                await _authRepo.DeleteAsync(token.Token);
+            }
+        }
+
+        return Ok();
     }
 }

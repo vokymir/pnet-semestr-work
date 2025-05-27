@@ -2,6 +2,7 @@ namespace BirdWatching.Api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using BirdWatching.Shared.Model;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -20,7 +21,7 @@ public class UserController : BaseApiController
     /// Create new user.
     /// </summary>
     [HttpPost("Create")]
-    public IActionResult CreateUser([FromBody] UserDto userDto)
+    public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
     {
         if (userDto == null)
             return BadRequest("User data must be provided.");
@@ -28,7 +29,7 @@ public class UserController : BaseApiController
         try
         {
             User user = userDto.ToEntity();
-            _userRepo.Add(user);
+            await _userRepo.AddAsync(user);
             return Ok(user.ToFullDto());
         }
         catch (Exception ex)
@@ -42,20 +43,20 @@ public class UserController : BaseApiController
     /// Update self, or if admin any user.
     /// </summary>
     [HttpPost("Update/{token}")]
-    public IActionResult UpdateUser(string token, [FromBody] UserDto userDto)
+    public async Task<IActionResult> UpdateUser(string token, [FromBody] UserDto userDto)
     {
         if (string.IsNullOrWhiteSpace(token) || userDto == null)
             return BadRequest("Invalid token or user data.");
 
-        var authResult = AuthUserByToken(token, userDto.Id);
+        var authResult = await AuthUserByTokenAsync(token, userDto.Id);
         if (!IsAuthorized(authResult))
         {
-            var adminAuth = AuthAdminByToken(token);
+            var adminAuth = await AuthAdminByTokenAsync(token);
             if (!IsAuthorized(adminAuth))
                 return Unauthorized("Access denied.");
         }
 
-        User? user = _userRepo.GetById(userDto.Id);
+        User? user = await _userRepo.GetByIdAsync(userDto.Id);
         if (user == null)
             return NotFound("User not found.");
 
@@ -65,7 +66,7 @@ public class UserController : BaseApiController
 
         try
         {
-            _userRepo.Update(user);
+            await _userRepo.UpdateAsync(user);
             return NoContent();
         }
         catch (Exception ex)
@@ -79,22 +80,22 @@ public class UserController : BaseApiController
     /// Delete self or if admin anyone.
     /// </summary>
     [HttpDelete("Delete/{token}")]
-    public IActionResult DeleteUser(string token, [FromQuery] int userId)
+    public async Task<IActionResult> DeleteUser(string token, [FromQuery] int userId)
     {
         if (string.IsNullOrWhiteSpace(token))
             return BadRequest("Token must be provided.");
 
-        var authResult = AuthUserByToken(token, userId);
+        var authResult = await AuthUserByTokenAsync(token, userId);
         if (!IsAuthorized(authResult))
         {
-            var adminAuth = AuthAdminByToken(token);
+            var adminAuth = await AuthAdminByTokenAsync(token);
             if (!IsAuthorized(adminAuth))
                 return Unauthorized("Access denied.");
         }
 
         try
         {
-            bool deleted = _userRepo.Delete(userId);
+            bool deleted = await _userRepo.DeleteAsync(userId);
             if (!deleted)
                 return NotFound("User not found.");
             return NoContent();
@@ -110,12 +111,12 @@ public class UserController : BaseApiController
     /// Get current user info.
     /// </summary>
     [HttpGet("Get/{token}")]
-    public IActionResult GetUser(string token)
+    public async Task<IActionResult> GetUser(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
             return BadRequest("Token must be provided.");
 
-        var authResult = AuthUserByToken(token);
+        var authResult = await AuthUserByTokenAsync(token);
         if (!IsAuthorized(authResult.Result))
             return Unauthorized("Access denied.");
 
@@ -132,20 +133,20 @@ public class UserController : BaseApiController
     /// Get info about user by ID, either self or admin.
     /// </summary>
     [HttpGet("Get/{token}/{userId}")]
-    public IActionResult GetUser(string token, int userId)
+    public async Task<IActionResult> GetUser(string token, int userId)
     {
         if (string.IsNullOrWhiteSpace(token))
             return BadRequest("Token must be provided.");
 
-        var authResult = AuthUserByToken(token, userId);
+        var authResult = await AuthUserByTokenAsync(token, userId);
         if (!IsAuthorized(authResult))
         {
-            var adminAuth = AuthAdminByToken(token);
+            var adminAuth = await AuthAdminByTokenAsync(token);
             if (!IsAuthorized(adminAuth))
                 return Unauthorized("Access denied.");
         }
 
-        User? user = _userRepo.GetById(userId);
+        User? user = await _userRepo.GetByIdAsync(userId);
         if (user == null)
             return NotFound("User not found.");
 
@@ -158,16 +159,16 @@ public class UserController : BaseApiController
     /// Get all users (admin only).
     /// </summary>
     [HttpGet("GetAll/{token}")]
-    public IActionResult GetAllUsers(string token)
+    public async Task<IActionResult> GetAllUsers(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
             return BadRequest("Token must be provided.");
 
-        var authResult = AuthAdminByToken(token);
+        var authResult = await AuthAdminByTokenAsync(token);
         if (!IsAuthorized(authResult))
             return Unauthorized("Admin privileges required.");
 
-        var users = _userRepo.GetAll();
+        var users = await _userRepo.GetAllAsync();
         var userDtos = users.Select(u => {
             var dto = u.ToFullDto();
             dto.AuthTokens = null;
@@ -181,12 +182,12 @@ public class UserController : BaseApiController
     /// Add curated watcher to current user.
     /// </summary>
     [HttpPost("AddCuratedWatcher/{token}/{watcherPublicId}")]
-    public IActionResult AddCuratedWatcher(string token, string watcherPublicId)
+    public async Task<IActionResult> AddCuratedWatcher(string token, string watcherPublicId)
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(watcherPublicId))
             return BadRequest("Token and watcherPublicId must be provided.");
 
-        var authResult = AuthUserByToken(token);
+        var authResult = await AuthUserByTokenAsync(token);
         if (!IsAuthorized(authResult.Result))
             return Unauthorized("Access denied.");
 
@@ -194,7 +195,7 @@ public class UserController : BaseApiController
         if (user == null)
             return NotFound("User not found.");
 
-        Watcher? watcher = _watcherRepo.GetByPublicId(watcherPublicId);
+        Watcher? watcher = await _watcherRepo.GetByPublicIdAsync(watcherPublicId);
         if (watcher == null)
             return NotFound("Watcher not found.");
 
@@ -203,7 +204,7 @@ public class UserController : BaseApiController
             if (!watcher.Curators.Contains(user))
             {
                 watcher.Curators.Add(user);
-                _watcherRepo.Update(watcher);
+                await _watcherRepo.UpdateAsync(watcher);
             }
             else
             {

@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+using BirdWatching.Shared.Model;
 
 namespace BirdWatching.Api.Controllers;
-using System.Security.Cryptography;
-
-using BirdWatching.Shared.Model;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -27,9 +26,9 @@ public class BaseApiController : ControllerBase
         _watcherRepo = new EFWatcherRepository(_context);
     }
 
-    protected IActionResult AuthUserByToken(string token, int userId)
+    protected async Task<IActionResult> AuthUserByTokenAsync(string token, int userId)
     {
-        AuthToken? auth = _authRepo.GetByString(token);
+        var auth = await _authRepo.GetByStringAsync(token);
         if (auth is null)
             return BadRequest(new { error = "Cannot find user by token." });
 
@@ -42,22 +41,22 @@ public class BaseApiController : ControllerBase
         return Ok();
     }
 
-    protected (IActionResult Result, User? User) AuthUserByToken(string token)
+    protected async Task<(IActionResult Result, User? User)> AuthUserByTokenAsync(string token)
     {
-        AuthToken? auth = _authRepo.GetByString(token);
+        var auth = await _authRepo.GetByStringAsync(token);
         if (auth is null)
             return (BadRequest(new { error = "Cannot find user by token." }), null);
 
         if (auth.User is null)
             return (StatusCode(500, new { error = "User not set as reference." }), null);
 
-        var u = _userRepo.GetById(auth.User.Id);
-        return (Ok(), u);
+        var user = await _userRepo.GetByIdAsync(auth.User.Id);
+        return (Ok(), user);
     }
 
-    protected IActionResult AuthAdminByToken(string token)
+    protected async Task<IActionResult> AuthAdminByTokenAsync(string token)
     {
-        AuthToken? auth = _authRepo.GetByString(token);
+        var auth = await _authRepo.GetByStringAsync(token);
         if (auth is null)
             return BadRequest(new { error = "Cannot find user by token." });
 
@@ -72,10 +71,7 @@ public class BaseApiController : ControllerBase
 
     protected string GenerateUrlSafeString(int length)
     {
-        const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                                "abcdefghijklmnopqrstuvwxyz" +
-                                "0123456789" +
-                                "-_";
+        const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
         char[] result = new char[length];
         byte[] buffer = new byte[length];
         using var rng = RandomNumberGenerator.Create();
@@ -83,7 +79,6 @@ public class BaseApiController : ControllerBase
 
         for (int i = 0; i < length; i++)
         {
-            // map each random byte into our alphabet
             int index = buffer[i] % alphabet.Length;
             result[i] = alphabet[index];
         }
@@ -91,7 +86,6 @@ public class BaseApiController : ControllerBase
         return new string(result);
     }
 
-    // Helper to interpret AuthAdminByToken
     protected static bool IsAuthorized(IActionResult result) =>
         result is OkResult or OkObjectResult;
 }

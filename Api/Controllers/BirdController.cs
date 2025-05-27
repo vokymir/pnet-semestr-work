@@ -20,7 +20,7 @@ namespace BirdWatching.Api.Controllers
         /// Create a new bird (public).
         /// </summary>
         [HttpPost("Create")]
-        public IActionResult Create([FromBody] BirdDto dto)
+        public async Task<IActionResult> Create([FromBody] BirdDto dto)
         {
             if (dto == null)
                 return BadRequest("Bird data must be provided.");
@@ -28,7 +28,7 @@ namespace BirdWatching.Api.Controllers
             try
             {
                 var bird = dto.ToEntity();
-                _birdRepo.Add(bird);
+                await _birdRepo.AddAsync(bird);
                 var createdDto = bird.ToFullDto();
                 return Ok(createdDto);
             }
@@ -43,9 +43,9 @@ namespace BirdWatching.Api.Controllers
         /// Get all birds (public).
         /// </summary>
         [HttpGet("GetAll")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var birds = _birdRepo.GetAll() ?? Enumerable.Empty<Bird>();
+            var birds = await _birdRepo.GetAllAsync() ?? Enumerable.Empty<Bird>();
             var dtos = birds.Select(b => b.ToFullDto()).ToList();
             return Ok(dtos);
         }
@@ -54,12 +54,12 @@ namespace BirdWatching.Api.Controllers
         /// Get birds whose full name starts with prefix (public).
         /// </summary>
         [HttpGet("GetByPrefix/{prefix}")]
-        public IActionResult GetByPrefix(string prefix)
+        public async Task<IActionResult> GetByPrefix(string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
                 return BadRequest("Prefix must be provided.");
 
-            var birds = _birdRepo.GetByPrefix(prefix) ?? Enumerable.Empty<Bird>();
+            var birds = await _birdRepo.GetByPrefixAsync(prefix) ?? Enumerable.Empty<Bird>();
             var dtos = birds.Select(b => b.ToFullDto()).ToList();
             return dtos.Any()
                 ? Ok(dtos)
@@ -70,12 +70,12 @@ namespace BirdWatching.Api.Controllers
         /// Get a bird by its ID (public).
         /// </summary>
         [HttpGet("GetById/{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
                 return BadRequest("Invalid bird ID.");
 
-            var bird = _birdRepo.GetById(id);
+            var bird = await _birdRepo.GetByIdAsync(id);
             if (bird == null)
                 return NotFound("Bird not found.");
 
@@ -86,19 +86,20 @@ namespace BirdWatching.Api.Controllers
         /// Append text to a bird's comment (public).
         /// </summary>
         [HttpPatch("AppendComment/{birdId}")]
-        public IActionResult AppendComment(int birdId, [FromBody] string additional)
+        public async Task<IActionResult> AppendComment(int birdId, [FromBody] string additional)
         {
             if (birdId <= 0 || string.IsNullOrEmpty(additional))
                 return BadRequest("Bird ID and comment text must be provided.");
 
-            var bird = _birdRepo.GetById(birdId);
+            var bird = await _birdRepo.GetByIdAsync(birdId);
             if (bird == null)
                 return NotFound("Bird not found.");
 
             bird.Comment += additional;
+
             try
             {
-                _birdRepo.Update(bird);
+                await _birdRepo.UpdateAsync(bird);
                 return NoContent();
             }
             catch (Exception ex)
@@ -112,23 +113,24 @@ namespace BirdWatching.Api.Controllers
         /// Replace a bird's comment (admin only).
         /// </summary>
         [HttpPatch("EditComment/{token}/{birdId}")]
-        public IActionResult EditComment(string token, int birdId, [FromBody] string newComment)
+        public async Task<IActionResult> EditComment(string token, int birdId, [FromBody] string newComment)
         {
             if (string.IsNullOrWhiteSpace(token) || birdId <= 0 || newComment == null)
                 return BadRequest("Token, bird ID, and new comment must be provided.");
 
-            var auth = AuthAdminByToken(token);
+            var auth = await AuthAdminByTokenAsync(token);
             if (!IsAuthorized(auth))
                 return Unauthorized("Admin privileges required.");
 
-            var bird = _birdRepo.GetById(birdId);
+            var bird = await _birdRepo.GetByIdAsync(birdId);
             if (bird == null)
                 return NotFound("Bird not found.");
 
             bird.Comment = newComment;
+
             try
             {
-                _birdRepo.Update(bird);
+                await _birdRepo.UpdateAsync(bird);
                 return NoContent();
             }
             catch (Exception ex)
