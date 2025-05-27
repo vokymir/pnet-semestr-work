@@ -1,4 +1,5 @@
 using BirdWatching.Shared.Model;
+using System.Text;
 
 public class Program
 {
@@ -43,7 +44,7 @@ public class Program
         await ShowWatcherEvents(w);
         EventDto e = new() { MainAdminId = u.Id, Name = $"E: {DateTime.Now.ToString("yyyy-mm-dd HH:ss")}" };
         await CreateEvent(token, e);
-        e = await GetEventById(1);
+        e = await GetEventById(14);
         await ShowUserEvents(u.Id);
 
         // add watcher to event
@@ -282,11 +283,13 @@ $"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | 
         return await response.Content.ReadAsAsync<EventDto>();
     }
 
+    // VERY BIG BUBU, NOT GOOD. GIVES NO ERROR BUT NOT WORKS...
     public static async Task JoinEvent(string token, WatcherDto w, EventDto e)
     {
         Console.WriteLine($"START: Join event... {e.PublicIdentifier}");
         string uri = $"{Prefix}Watcher/JoinEvent/{token}/{w.Id}/{e.PublicIdentifier}";
-        var response = await client.PostAsync(uri, null);
+        var emptyContent = new StringContent("", Encoding.UTF8, "application/json");
+        var response = await client.PostAsync(uri, emptyContent);
 
         if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot join event.");
 

@@ -80,6 +80,17 @@ public class EventController : BaseApiController
         return Results.Ok(eDto);
     }
 
+    [HttpGet("GetByPublicId/{id}")]
+    public IResult GetByPublicId(string id)
+    {
+        Event? e = _eventRepo.GetByPublicId(id);
+        if (e is null)
+            return Results.NotFound();
+
+        EventDto eDto = e.ToFullDto();
+        return Results.Ok(eDto);
+    }
+
     [HttpGet("GetByUserId/{userId}")]
     public IResult GetByUserId(int userId)
     {
