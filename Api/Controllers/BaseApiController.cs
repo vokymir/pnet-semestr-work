@@ -72,12 +72,22 @@ public class BaseApiController : ControllerBase
 
     protected string GenerateUrlSafeString(int length)
     {
-        byte[] data = new byte[length];
-        using (var rng = RandomNumberGenerator.Create())
+        const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                                "abcdefghijklmnopqrstuvwxyz" +
+                                "0123456789" +
+                                "-_";
+        char[] result = new char[length];
+        byte[] buffer = new byte[length];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(buffer);
+
+        for (int i = 0; i < length; i++)
         {
-            rng.GetBytes(data);
+            // map each random byte into our alphabet
+            int index = buffer[i] % alphabet.Length;
+            result[i] = alphabet[index];
         }
 
-        return Convert.ToBase64String(data).Replace("+", "-").Replace("/", "_").Replace("=", "");
+        return new string(result);
     }
 }
