@@ -9,7 +9,6 @@ public class AppDbContext : DbContext
     public DbSet<Record> Records { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Watcher> Watchers { get; set; }
-    public DbSet<AuthToken> AuthTokens { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     { Database.EnsureCreated(); }
@@ -17,12 +16,6 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // ————————————————
-        // AuthToken - User (many-to-one)
-        modelBuilder.Entity<AuthToken>()
-            .HasOne(t => t.User)
-            .WithMany(u => u.AuthTokens)
-            .IsRequired();
-
         // Watcher ← MainCurator (1:N)
         modelBuilder.Entity<Watcher>()
             .HasOne(w => w.MainCurator)

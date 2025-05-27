@@ -5,16 +5,16 @@ using BirdWatching.Shared.Model;
 using System.Threading.Tasks;
 
 [ApiController]
-[Route("api/[controller]")]
 public class UserController : BaseApiController
 {
     private readonly ILogger<UserController> _logger;
 
-    public UserController(AppDbContext context, ILogger<UserController> logger)
+    public UserController(AppDbContext context, ILogger<UserController> logger, IConfiguration config)
     {
         _context = context;
         _logger = logger;
-        Init();
+        _config = config;
+        InitRepos__ContextMustNotBeNull();
     }
 
     /// <summary>

@@ -1,10 +1,13 @@
 namespace BirdWatching.Api.Controllers
 {
     using BirdWatching.Shared.Model;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/bird")]
     public class BirdController : BaseApiController
     {
         private readonly ILogger<BirdController> _logger;
@@ -13,13 +16,13 @@ namespace BirdWatching.Api.Controllers
         {
             _context = context;
             _logger = logger;
-            Init();
+            InitRepos__ContextMustNotBeNull();
         }
 
         /// <summary>
-        /// Create a new bird (public).
+        /// Create a new bird.
         /// </summary>
-        [HttpPost("Create")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] BirdDto dto)
         {
             if (dto == null)
@@ -29,8 +32,7 @@ namespace BirdWatching.Api.Controllers
             {
                 var bird = dto.ToEntity();
                 await _birdRepo.AddAsync(bird);
-                var createdDto = bird.ToFullDto();
-                return Ok(createdDto);
+                return Ok(bird.ToFullDto());
             }
             catch (Exception ex)
             {
@@ -40,21 +42,20 @@ namespace BirdWatching.Api.Controllers
         }
 
         /// <summary>
-        /// Get all birds (public).
+        /// Get all birds.
         /// </summary>
-        [HttpGet("GetAll")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var birds = await _birdRepo.GetAllAsync() ?? Enumerable.Empty<Bird>();
-            var dtos = birds.Select(b => b.ToFullDto()).ToList();
-            return Ok(dtos);
+            return Ok(birds.Select(b => b.ToFullDto()));
         }
 
         /// <summary>
-        /// Get birds whose full name starts with prefix (public).
+        /// Search birds by prefix.
         /// </summary>
-        [HttpGet("GetByPrefix/{prefix}")]
-        public async Task<IActionResult> GetByPrefix(string prefix)
+        [HttpGet("search")]
+        public async Task<IActionResult> GetByPrefix([FromQuery] string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
                 return BadRequest("Prefix must be provided.");
@@ -67,9 +68,9 @@ namespace BirdWatching.Api.Controllers
         }
 
         /// <summary>
-        /// Get a bird by its ID (public).
+        /// Get a bird by ID.
         /// </summary>
-        [HttpGet("GetById/{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
@@ -83,9 +84,9 @@ namespace BirdWatching.Api.Controllers
         }
 
         /// <summary>
-        /// Append text to a bird's comment (public).
+        /// Append text to a bird's comment.
         /// </summary>
-        [HttpPatch("AppendComment/{birdId}")]
+        [HttpPatch("comment/append/{birdId:int}")]
         public async Task<IActionResult> AppendComment(int birdId, [FromBody] string additional)
         {
             if (birdId <= 0 || string.IsNullOrEmpty(additional))
@@ -96,7 +97,6 @@ namespace BirdWatching.Api.Controllers
                 return NotFound("Bird not found.");
 
             bird.Comment += additional;
-
             try
             {
                 await _birdRepo.UpdateAsync(bird);
@@ -112,22 +112,18 @@ namespace BirdWatching.Api.Controllers
         /// <summary>
         /// Replace a bird's comment (admin only).
         /// </summary>
-        [HttpPatch("EditComment/{token}/{birdId}")]
-        public async Task<IActionResult> EditComment(string token, int birdId, [FromBody] string newComment)
+        [HttpPatch("comment/replace/{birdId:int}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditComment(int birdId, [FromBody] string newComment)
         {
-            if (string.IsNullOrWhiteSpace(token) || birdId <= 0 || newComment == null)
-                return BadRequest("Token, bird ID, and new comment must be provided.");
-
-            var auth = await AuthAdminByTokenAsync(token);
-            if (!IsAuthorized(auth))
-                return Unauthorized("Admin privileges required.");
+            if (birdId <= 0 || newComment == null)
+                return BadRequest("Bird ID and new comment must be provided.");
 
             var bird = await _birdRepo.GetByIdAsync(birdId);
             if (bird == null)
                 return NotFound("Bird not found.");
 
             bird.Comment = newComment;
-
             try
             {
                 await _birdRepo.UpdateAsync(bird);
@@ -135,8 +131,8 @@ namespace BirdWatching.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error editing comment for bird {BirdId}.", birdId);
-                return Problem("Failed to edit comment.");
+                _logger.LogError(ex, "Error replacing comment for bird {BirdId}.", birdId);
+                return Problem("Failed to replace comment.");
             }
         }
     }

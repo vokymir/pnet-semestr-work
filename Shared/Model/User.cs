@@ -14,7 +14,6 @@ public class User : IHaveDto<UserDto>
     // M:N joins
     public ICollection<Watcher> CuratedWatchers { get; set; } = new List<Watcher>();
     public ICollection<Event> AdministeredEvents { get; set; } = new List<Event>();
-    public ICollection<AuthToken> AuthTokens { get; set; } = new List<AuthToken>();
 
     public UserDto ToDto()
     {
@@ -51,10 +50,6 @@ public class User : IHaveDto<UserDto>
         if (u.AdministeredEvents is null) u.AdministeredEvents = new List<EventDto>();
         foreach (var e in AdministeredEvents)
             u.AdministeredEvents.Add(e.ToDto());
-
-        if (u.AuthTokens is null) u.AuthTokens = new List<AuthTokenDto>();
-        foreach (var a in AuthTokens)
-            u.AuthTokens.Add(a.ToDto());
 
         return u;
     }

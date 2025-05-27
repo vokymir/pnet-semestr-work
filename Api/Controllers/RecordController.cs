@@ -1,7 +1,11 @@
 namespace BirdWatching.Api.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
     using BirdWatching.Shared.Model;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -14,24 +18,24 @@ namespace BirdWatching.Api.Controllers
         {
             _context = context;
             _logger = logger;
-            Init();
+            InitRepos__ContextMustNotBeNull();
         }
 
         /// <summary>
         /// Create a new record under a watcher.
         /// </summary>
-        [HttpPost("Create/{token}")]
-        public async Task<IActionResult> Create(string token, [FromBody] RecordDto recordDto)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] RecordDto recordDto)
         {
-            if (string.IsNullOrWhiteSpace(token))
-                return BadRequest("Token is required.");
             if (recordDto == null)
                 return BadRequest("Record data must be provided.");
 
-            var auth = await AuthUserByTokenAsync(token);
-            if (!IsAuthorized(auth.Result))
-                return Unauthorized("Invalid or expired token.");
+            // získáme přihlášeného uživatele z claimu NameIdentifier
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
 
+            // validujeme existence entit
             var bird = await _birdRepo.GetByIdAsync(recordDto.BirdId);
             if (bird == null)
                 return NotFound("Bird not found.");
@@ -39,7 +43,9 @@ namespace BirdWatching.Api.Controllers
             var watcher = await _watcherRepo.GetByIdAsync(recordDto.WatcherId);
             if (watcher == null)
                 return NotFound("Watcher not found.");
-            if (!watcher.Curators.Contains(auth.User!))
+
+            // kontrola, že přihlášený uživatel je jedním z kurátorů
+            if (!watcher.Curators.Any(u => u.Id == userId) && !User.IsInRole("Admin"))
                 return Forbid("You do not have permission to add records to this watcher.");
 
             var record = recordDto.ToEntity();
@@ -49,8 +55,7 @@ namespace BirdWatching.Api.Controllers
             try
             {
                 await _recordRepo.AddAsync(record);
-                var createdDto = record.ToFullDto();
-                return Ok(createdDto);
+                return Ok(record.ToFullDto());
             }
             catch (Exception ex)
             {
@@ -62,26 +67,23 @@ namespace BirdWatching.Api.Controllers
         /// <summary>
         /// Retrieve all records.
         /// </summary>
-        [HttpGet("GetAll")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var records = await _recordRepo.GetAllAsync() ?? Enumerable.Empty<Record>();
-            var dtos = records.Select(r => r.ToFullDto()).ToList();
-            return Ok(dtos);
+            return Ok(records.Select(r => r.ToFullDto()));
         }
 
         /// <summary>
         /// Retrieve a record by its ID.
         /// </summary>
-        [HttpGet("GetById/{recordId}")]
-        public async Task<IActionResult> GetById(int recordId)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            if (recordId <= 0)
-                return BadRequest("Invalid record ID.");
+            if (id <= 0) return BadRequest("Invalid record ID.");
 
-            var record = await _recordRepo.GetByIdAsync(recordId);
-            if (record == null)
-                return NotFound("Record not found.");
+            var record = await _recordRepo.GetByIdAsync(id);
+            if (record == null) return NotFound("Record not found.");
 
             return Ok(record.ToFullDto());
         }
@@ -89,33 +91,30 @@ namespace BirdWatching.Api.Controllers
         /// <summary>
         /// Retrieve all records for a specific watcher.
         /// </summary>
-        [HttpGet("GetByWatcher/{watcherId}")]
+        [HttpGet("watcher/{watcherId:int}")]
         public async Task<IActionResult> GetByWatcher(int watcherId)
         {
-            if (watcherId <= 0)
-                return BadRequest("Invalid watcher ID.");
+            if (watcherId <= 0) return BadRequest("Invalid watcher ID.");
 
             var watcher = await _watcherRepo.GetByIdAsync(watcherId);
-            if (watcher == null)
-                return NotFound("Watcher not found.");
+            if (watcher == null) return NotFound("Watcher not found.");
 
-            var records = await _recordRepo.GetWatcherRecordsAsync(watcherId) ?? Enumerable.Empty<Record>();
-            var dtos = records.Select(r => r.ToFullDto()).ToList();
-            return Ok(dtos);
+            var records = await _recordRepo.GetWatcherRecordsAsync(watcherId)
+                              ?? Enumerable.Empty<Record>();
+            return Ok(records.Select(r => r.ToFullDto()));
         }
 
         /// <summary>
-        /// Append text to an existing record's comment.
+        /// Append text to an existing record's comment (any authenticated user).
         /// </summary>
-        [HttpPatch("AppendComment/{recordId}")]
+        [HttpPatch("append/{recordId:int}")]
         public async Task<IActionResult> AppendComment(int recordId, [FromBody] string additionalText)
         {
             if (recordId <= 0 || string.IsNullOrEmpty(additionalText))
                 return BadRequest("Record ID and text must be provided.");
 
             var record = await _recordRepo.GetByIdAsync(recordId);
-            if (record == null)
-                return NotFound("Record not found.");
+            if (record == null) return NotFound("Record not found.");
 
             record.Comment += additionalText;
             try
@@ -131,29 +130,26 @@ namespace BirdWatching.Api.Controllers
         }
 
         /// <summary>
-        /// Edit a record's comment (owner or admin only).
+        /// Edit a record's comment (owner or admin).
         /// </summary>
-        [HttpPatch("EditComment/{token}/{recordId}")]
-        public async Task<IActionResult> EditComment(string token, int recordId, [FromBody] string newComment)
+        [HttpPatch("edit/{recordId:int}")]
+        public async Task<IActionResult> EditComment(int recordId, [FromBody] string newComment)
         {
-            if (string.IsNullOrWhiteSpace(token) || recordId <= 0 || newComment == null)
-                return BadRequest("Token, record ID, and new comment must be provided.");
+            if (recordId <= 0 || newComment == null)
+                return BadRequest("Record ID and new comment must be provided.");
 
             var record = await _recordRepo.GetByIdAsync(recordId);
-            if (record == null)
-                return NotFound("Record not found.");
+            if (record == null) return NotFound("Record not found.");
 
-            var auth = await AuthUserByTokenAsync(token);
-            if (!IsAuthorized(auth.Result))
-            {
-                var adminAuth = await AuthAdminByTokenAsync(token); // assuming sync? You might want async version here too
-                if (!IsAuthorized(adminAuth))
-                    return Unauthorized("Access denied.");
-            }
-            else if (!auth.User!.Watchers.Contains(record.Watcher))
-            {
+            // získáme aktuálního uživatele
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            // majitel záznamu = watcher.MainCurator? Nebo watcher.Curators
+            var isOwner = record.Watcher.Curators.Any(u => u.Id == userId);
+            if (!isOwner && !User.IsInRole("Admin"))
                 return Forbid("You do not have permission to edit this record.");
-            }
 
             record.Comment = newComment;
             try

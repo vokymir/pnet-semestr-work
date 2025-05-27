@@ -1,6 +1,11 @@
 namespace BirdWatching.Api;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 using BirdWatching.Shared.Model;
 
@@ -9,9 +14,9 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "ajajaj");
 
         // Add services to the container.
-
         builder.Services.AddControllers();
         builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite("Data Source=birdwatching.db", b => b.MigrationsAssembly("Api")));
         builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +29,36 @@ public class Program
                       .AllowAnyHeader()
                       .AllowAnyMethod();
             });
+        });
+
+        builder.Services.AddAuthentication(options => {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => {
+            options.RequireHttpsMetadata = true;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["JWT:Issuer"],
+                ValidAudience = builder.Configuration["JWT:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+        });
+        builder.Services.AddControllers(options => { // vsechny api cally museji byt s tokenem
+            var policy = new AuthorizationPolicyBuilder()
+                             .RequireAuthenticatedUser()
+                             .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        });
+
+        builder.Services.AddAuthorization(options => {
+            // přidáme politiku pro Admin roli
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("Admin"));
         });
 
         var app = builder.Build();
@@ -40,8 +75,10 @@ public class Program
         if (!app.Environment.IsDevelopment())
             app.UseHttpsRedirection();
 
-        app.UseAuthorization();
+        app.UseRouting();
 
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
 

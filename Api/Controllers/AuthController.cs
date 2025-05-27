@@ -1,90 +1,64 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using BirdWatching.Shared.Model;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace BirdWatching.Api.Controllers;
 
-/// <summary>
-/// Can do:
-/// - LogIN/OUT
-/// - give new authTokens
-/// - delete old tokens when asked to
-/// </summary>
 [ApiController]
+[Route("api/auth")]
 public class AuthController : BaseApiController
 {
     private readonly ILogger<AuthController> _logger;
+    private readonly IConfiguration _config = null!;
 
-    // valid for 1 hour
-    public TimeSpan TokenTimeSpan = TimeSpan.FromHours(1);
+    public static int ValidHours = 1;
 
-    public AuthController(AppDbContext context, ILogger<AuthController> logger)
+    public AuthController(AppDbContext context, ILogger<AuthController> logger, IConfiguration config)
     {
         _context = context;
         _logger = logger;
-        Init();
+        _config = config;
+        InitRepos__ContextMustNotBeNull();
     }
 
-    [HttpPost("Login")]
+    [AllowAnonymous]
+    [HttpPost()]
     public async Task<IActionResult> Login([FromBody] LoginDto login)
     {
+        // 1) Over zadané přihlašovací údaje v DB
         var user = await _userRepo.GetByUsernameAsync(login.username);
-        if (user is null || user.PasswordHash != login.passwordhash)
-            return NotFound();
+        if (user == null || user.PasswordHash != login.passwordhash)
+            return Unauthorized("Neplatné jméno nebo heslo.");
 
-        string token;
-        do
+        // 2) Vytvoříme claimy
+        var claims = new[]
         {
-            token = GenerateUrlSafeString(64);
-        }
-        while (!await IsUniqueAsync(token));
-
-        await AddAuthTokenAsync(token, user);
-        return Ok(token);
-    }
-
-    [HttpPost("Logout/{token}")]
-    public async Task<IActionResult> Logout(string token)
-    {
-        try
-        {
-            await _authRepo.DeleteAsync(token);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    private async Task AddAuthTokenAsync(string token, User user)
-    {
-        var authToken = new AuthToken {
-            Token = token,
-            User = user,
-            Created = DateTime.Now
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
         };
 
-        await _authRepo.AddAsync(authToken);
-    }
+        // 3) Načteme klíč, issuer a audience z User Secrets
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var issuer = _config["JWT:Issuer"];
+        var audience = _config["JWT:Audience"];
 
-    private async Task<bool> IsUniqueAsync(string token)
-    {
-        var existing = await _authRepo.GetByStringAsync(token);
-        return existing is null;
-    }
+        // 4) Složení tokenu
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(ValidHours),
+            signingCredentials: creds
+        );
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-    [HttpPost("DeleteOldTokens")]
-    public async Task<IActionResult> DeleteOldTokens()
-    {
-        var tokens = await _authRepo.GetAllAsync();
-        foreach (var token in tokens)
-        {
-            if (token.Created + TokenTimeSpan < DateTime.Now)
-            {
-                await _authRepo.DeleteAsync(token.Token);
-            }
-        }
-
-        return Ok();
+        // 5) Vrátíme token klientovi
+        return Ok(new { token = tokenString });
     }
 }

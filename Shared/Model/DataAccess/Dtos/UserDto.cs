@@ -12,7 +12,6 @@ public class UserDto : IAmDto<User>
 
     public ICollection<WatcherDto>? CuratedWatchers { get; set; }
     public ICollection<EventDto>? AdministeredEvents { get; set; }
-    public ICollection<AuthTokenDto>? AuthTokens { get; set; }
 
     public User ToEntity()
     {

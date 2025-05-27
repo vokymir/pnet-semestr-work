@@ -6,16 +6,16 @@ namespace BirdWatching.Api.Controllers
     using System.Linq;
 
     [ApiController]
-    [Route("api/[controller]")]
     public class WatcherController : BaseApiController
     {
         private readonly ILogger<WatcherController> _logger;
 
-        public WatcherController(AppDbContext context, ILogger<WatcherController> logger)
+        public WatcherController(AppDbContext context, ILogger<WatcherController> logger, IConfiguration config)
         {
             _context = context;
             _logger = logger;
-            Init();
+            _config = config;
+            InitRepos__ContextMustNotBeNull();
         }
 
         /// <summary>

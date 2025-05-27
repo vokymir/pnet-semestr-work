@@ -12,8 +12,7 @@ public class EFUserRepository : IUserRepository
                 .Include(u => u.CuratedWatchers)
                 .Include(u => u.Watchers)
                 .Include(u => u.Events)
-                .Include(u => u.AdministeredEvents)
-                .Include(u => u.AuthTokens);
+                .Include(u => u.AdministeredEvents);
         }
         set { }
     }
