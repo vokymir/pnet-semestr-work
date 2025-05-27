@@ -2,11 +2,11 @@ namespace BirdWatching.Shared.Model;
 
 public interface IBirdRepository
 {
-    public void Add(Bird bird);
-    public void Delete(int id);
-    public void Update(Bird bird);
-    public Bird? GetById(int id);
-    public IEnumerable<Bird> GetAll();
-    public IEnumerable<Bird> GetByPrefix(string prefix);
-    public IEnumerable<Bird> GetByPrefixFast(string prefix);
+    Task AddAsync(Bird bird);
+    Task DeleteAsync(int id);
+    Task UpdateAsync(Bird bird);
+    Task<Bird?> GetByIdAsync(int id);
+    Task<Bird[]> GetAllAsync();
+    Task<Bird[]> GetByPrefixAsync(string prefix);
+    Task<Bird[]> GetByPrefixFastAsync(string prefix);
 }

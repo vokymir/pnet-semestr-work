@@ -22,42 +22,58 @@ public class EFWatcherRepository : IWatcherRepository
         _context = context;
     }
 
-    public void Add(Watcher watcher)
+    public async Task AddAsync(Watcher watcher)
     {
-        _context.Watchers.Add(watcher);
-        _context.SaveChanges();
+        await _context.Watchers.AddAsync(watcher);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(Watcher watcher)
+    public async Task UpdateAsync(Watcher watcher)
     {
-        var dbWatcher = WatcherWithDetails.First(w => w.Id == watcher.Id);
-
-        if (dbWatcher is null)
+        var dbWatcher = await WatcherWithDetails.FirstOrDefaultAsync(w => w.Id == watcher.Id);
+        if (dbWatcher == null)
             throw new InvalidOperationException($"Watcher with ID = {watcher.Id} is not in the database and cannot be updated.");
 
-        dbWatcher = watcher;
-        _context.Update(dbWatcher);
-        _context.SaveChanges();
+        // Update individual properties or attach and set state
+        _context.Entry(dbWatcher).CurrentValues.SetValues(watcher);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var watcher = GetById(id);
-
-        if (watcher is null)
+        var watcher = await GetByIdAsync(id);
+        if (watcher == null)
             throw new InvalidOperationException($"Watcher with ID = {id} is not in the database and cannot be deleted.");
 
         _context.Watchers.Remove(watcher);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Watcher[] GetByUser(User user) => WatcherWithDetails.Where(w => w.Curators.Contains(user)).ToArray();
+    public async Task<Watcher[]> GetByUserAsync(User user)
+    {
+        return await WatcherWithDetails
+            .Where(w => w.Curators.Contains(user))
+            .ToArrayAsync();
+    }
 
-    public Watcher? GetById(int id) => WatcherWithDetails.FirstOrDefault(w => w.Id == id);
+    public async Task<Watcher?> GetByIdAsync(int id)
+    {
+        return await WatcherWithDetails.FirstOrDefaultAsync(w => w.Id == id);
+    }
 
-    public Watcher? GetByPublicId(string publicId) => WatcherWithDetails.FirstOrDefault(w => w.PublicIdentifier.Equals(publicId));
+    public async Task<Watcher?> GetByPublicIdAsync(string publicId)
+    {
+        return await WatcherWithDetails.FirstOrDefaultAsync(w => w.PublicIdentifier == publicId);
+    }
 
-    public IEnumerable<Watcher> GetAll() => WatcherWithDetails.ToArray();
+    public async Task<Watcher[]> GetAllAsync()
+    {
+        return await WatcherWithDetails.ToArrayAsync();
+    }
 
-    public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Watchers.ToDictionary(w => w.PublicIdentifier, w => true);
+    public async Task<Dictionary<string, bool>> GetAllPublicIdentifiersAsync()
+    {
+        return await _context.Watchers
+            .ToDictionaryAsync(w => w.PublicIdentifier, w => true);
+    }
 }

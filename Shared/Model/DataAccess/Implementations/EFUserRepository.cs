@@ -1,9 +1,10 @@
-namespace BirdWatching.Shared.Model;
 using Microsoft.EntityFrameworkCore;
+
+namespace BirdWatching.Shared.Model;
 
 public class EFUserRepository : IUserRepository
 {
-    private AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public IQueryable<User> UsersWithDetails {
         get {
@@ -22,41 +23,45 @@ public class EFUserRepository : IUserRepository
         _context = context;
     }
 
-    public void Add(User user)
+    public async Task AddAsync(User user)
     {
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(User user)
+    public async Task UpdateAsync(User user)
     {
-        var dbUser = UsersWithDetails.First(u => u.Id == user.Id);
-
-        if (dbUser is null)
+        var dbUser = await UsersWithDetails.FirstOrDefaultAsync(u => u.Id == user.Id);
+        if (dbUser == null)
             throw new InvalidOperationException($"User with ID = {user.Id} is not in the database and cannot be updated.");
 
-        dbUser = user;
-        _context.Update(dbUser);
-        _context.SaveChanges();
+        _context.Entry(dbUser).CurrentValues.SetValues(user);
+        await _context.SaveChangesAsync();
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        var user = GetById(id);
-
-        if (user is null)
-            // throw new InvalidOperationException($"User with ID = {id} is not in the database and cannot be deleted.");
+        var user = await GetByIdAsync(id);
+        if (user == null)
             return false;
 
         _context.Users.Remove(user);
-        _context.SaveChanges();
-
+        await _context.SaveChangesAsync();
         return true;
     }
 
-    public User? GetById(int id) => UsersWithDetails.First(u => u.Id == id);
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await UsersWithDetails.FirstOrDefaultAsync(u => u.Id == id);
+    }
 
-    public User? GetByUsername(string username) => UsersWithDetails.First(u => u.UserName == username);
+    public async Task<User?> GetByUsernameAsync(string username)
+    {
+        return await UsersWithDetails.FirstOrDefaultAsync(u => u.UserName == username);
+    }
 
-    public IEnumerable<User> GetAll() => UsersWithDetails.ToList();
+    public async Task<User[]> GetAllAsync()
+    {
+        return await UsersWithDetails.ToArrayAsync();
+    }
 }

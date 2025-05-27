@@ -2,12 +2,12 @@ namespace BirdWatching.Shared.Model;
 
 public interface IWatcherRepository
 {
-    public void Add(Watcher watcher);
-    public void Delete(int id);
-    public void Update(Watcher watcher);
-    public Watcher[] GetByUser(User user);
-    public Watcher? GetById(int id);
-    public Watcher? GetByPublicId(string publicId);
-    public IEnumerable<Watcher> GetAll();
-    public Dictionary<string, bool> GetAllPublicIdentifiers();
+    Task AddAsync(Watcher watcher);
+    Task DeleteAsync(int id);
+    Task UpdateAsync(Watcher watcher);
+    Task<Watcher[]> GetByUserAsync(User user);
+    Task<Watcher?> GetByIdAsync(int id);
+    Task<Watcher?> GetByPublicIdAsync(string publicId);
+    Task<Watcher[]> GetAllAsync();
+    Task<Dictionary<string, bool>> GetAllPublicIdentifiersAsync();
 }

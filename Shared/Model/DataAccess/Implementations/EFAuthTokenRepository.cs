@@ -1,61 +1,55 @@
-namespace BirdWatching.Shared.Model;
-
 using Microsoft.EntityFrameworkCore;
+
+namespace BirdWatching.Shared.Model;
 
 public class EFAuthTokenRepository : IAuthTokenRepository
 {
-    private AppDbContext _context;
+    private readonly AppDbContext _context;
 
-    public IQueryable<AuthToken> AuthTokensWithDetails {
-        get {
-            return _context.AuthTokens
-                .Include(a => a.User);
-        }
-        set { }
-    }
+    public IQueryable<AuthToken> AuthTokensWithDetails => _context.AuthTokens.Include(a => a.User);
 
     public EFAuthTokenRepository(AppDbContext context)
     {
         _context = context;
     }
 
-    public void Add(AuthToken authtoken)
+    public async Task AddAsync(AuthToken authtoken)
     {
-        _context.AuthTokens.Add(authtoken);
-        _context.SaveChanges();
+        await _context.AuthTokens.AddAsync(authtoken);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(AuthToken authtoken)
+    public async Task UpdateAsync(AuthToken authtoken)
     {
-        var dbAuthToken = AuthTokensWithDetails.First(a => a.Token.Equals(authtoken));
+        var dbAuthToken = await AuthTokensWithDetails
+            .FirstOrDefaultAsync(a => a.Token == authtoken.Token);
 
         if (dbAuthToken is null)
             throw new InvalidOperationException($"AuthToken {authtoken.Token} is not in the database and cannot be updated.");
-        dbAuthToken = authtoken;
 
-        _context.Update(dbAuthToken);
-        _context.SaveChanges();
+        _context.Entry(dbAuthToken).CurrentValues.SetValues(authtoken);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(string token)
+    public async Task DeleteAsync(string token)
     {
-        var authtoken = GetByString(token);
+        var authtoken = await GetByStringAsync(token);
 
         if (authtoken is null)
             throw new InvalidOperationException($"AuthToken {token} is not in the database and cannot be deleted.");
 
         _context.AuthTokens.Remove(authtoken);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public AuthToken? GetByString(string token)
+    public async Task<AuthToken?> GetByStringAsync(string token)
     {
-        var tkn = AuthTokensWithDetails.FirstOrDefault(a => a.Token.Equals(token));
-        if (tkn is null) return null;
-
-        _context.Entry(tkn).Reference(a => a.User).Load();
+        var tkn = await AuthTokensWithDetails.FirstOrDefaultAsync(a => a.Token == token);
         return tkn;
     }
 
-    public IEnumerable<AuthToken> GetAll() => AuthTokensWithDetails.ToArray();
+    public async Task<AuthToken[]> GetAllAsync()
+    {
+        return await AuthTokensWithDetails.ToArrayAsync();
+    }
 }

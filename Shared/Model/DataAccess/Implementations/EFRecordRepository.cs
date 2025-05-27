@@ -1,10 +1,10 @@
-namespace BirdWatching.Shared.Model;
-
 using Microsoft.EntityFrameworkCore;
+
+namespace BirdWatching.Shared.Model;
 
 public class EFRecordRepository : IRecordRepository
 {
-    private AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public IQueryable<Record> RecordsWithDetails {
         get {
@@ -20,38 +20,46 @@ public class EFRecordRepository : IRecordRepository
         _context = context;
     }
 
-    public void Add(Record record)
+    public async Task AddAsync(Record record)
     {
-        _context.Records.Add(record);
-        _context.SaveChanges();
+        await _context.Records.AddAsync(record);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(Record record)
+    public async Task UpdateAsync(Record record)
     {
-        var dbRecord = RecordsWithDetails.First(r => r.Id == record.Id);
-
-        if (dbRecord is null)
+        var dbRecord = await RecordsWithDetails.FirstOrDefaultAsync(r => r.Id == record.Id);
+        if (dbRecord == null)
             throw new InvalidOperationException($"Record with ID = {record.Id} is not in the database and cannot be updated.");
 
-        dbRecord = record;
-        _context.Update(dbRecord);
-        _context.SaveChanges();
+        _context.Entry(dbRecord).CurrentValues.SetValues(record);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var record = GetById(id);
-
-        if (record is null)
+        var record = await GetByIdAsync(id);
+        if (record == null)
             throw new InvalidOperationException($"Record with ID = {id} is not in the database and cannot be deleted.");
 
         _context.Records.Remove(record);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Record? GetById(int id) => RecordsWithDetails.First(r => r.Id == id);
+    public async Task<Record?> GetByIdAsync(int id)
+    {
+        return await RecordsWithDetails.FirstOrDefaultAsync(r => r.Id == id);
+    }
 
-    public IEnumerable<Record> GetAll() => RecordsWithDetails.ToList();
+    public async Task<Record[]> GetAllAsync()
+    {
+        return await RecordsWithDetails.ToArrayAsync();
+    }
 
-    public IEnumerable<Record> GetWatcherRecords(int watcherId) => RecordsWithDetails.Where(r => r.WatcherId == watcherId).ToArray();
+    public async Task<Record[]> GetWatcherRecordsAsync(int watcherId)
+    {
+        return await RecordsWithDetails
+            .Where(r => r.WatcherId == watcherId)
+            .ToArrayAsync();
+    }
 }

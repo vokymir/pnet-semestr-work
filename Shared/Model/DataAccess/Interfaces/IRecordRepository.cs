@@ -2,10 +2,10 @@ namespace BirdWatching.Shared.Model;
 
 public interface IRecordRepository
 {
-    public void Add(Record record);
-    public void Delete(int id);
-    public void Update(Record record);
-    public Record? GetById(int id);
-    public IEnumerable<Record> GetAll();
-    public IEnumerable<Record> GetWatcherRecords(int watcherId);
+    Task AddAsync(Record record);
+    Task DeleteAsync(int id);
+    Task UpdateAsync(Record record);
+    Task<Record?> GetByIdAsync(int id);
+    Task<Record[]> GetAllAsync();
+    Task<Record[]> GetWatcherRecordsAsync(int watcherId);
 }

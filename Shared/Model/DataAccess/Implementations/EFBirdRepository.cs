@@ -1,57 +1,70 @@
-namespace BirdWatching.Shared.Model;
+using Microsoft.EntityFrameworkCore;
 
-// using Microsoft.EntityFrameworkCore;
+namespace BirdWatching.Shared.Model;
 
 public class EFBirdRepository : IBirdRepository
 {
-    private AppDbContext _context;
+    private readonly AppDbContext _context;
 
-    public IQueryable<Bird> BirdsWithDetails {
-        get {
-            return _context.Birds;
-        }
-    }
+    public IQueryable<Bird> BirdsWithDetails => _context.Birds;
 
     public EFBirdRepository(AppDbContext context)
     {
         _context = context;
     }
 
-    public void Add(Bird bird)
+    public async Task AddAsync(Bird bird)
     {
-        if (bird is null) throw new ApplicationException("Invalid bird to add...");
+        if (bird is null)
+            throw new ApplicationException("Invalid bird to add...");
 
-        _context.Birds.Add((Bird) bird);
-        _context.SaveChanges();
+        await _context.Birds.AddAsync(bird);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(Bird bird)
+    public async Task UpdateAsync(Bird bird)
     {
-        var dbBird = BirdsWithDetails.FirstOrDefault(b => b.Id == bird.Id);
+        var dbBird = await BirdsWithDetails.FirstOrDefaultAsync(b => b.Id == bird.Id);
 
         if (dbBird is null)
             throw new InvalidOperationException($"Bird with ID = {bird.Id} is not in the database and cannot be updated.");
 
-        dbBird = bird;
         _context.Entry(dbBird).CurrentValues.SetValues(bird);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var bird = GetById(id);
+        var bird = await GetByIdAsync(id);
 
         if (bird is null)
             throw new InvalidOperationException($"Bird with ID = {id} is not in the database and cannot be deleted.");
 
         _context.Birds.Remove(bird);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Bird? GetById(int id) => BirdsWithDetails.FirstOrDefault(b => b.Id == id);
+    public async Task<Bird?> GetByIdAsync(int id)
+    {
+        return await BirdsWithDetails.FirstOrDefaultAsync(b => b.Id == id);
+    }
 
-    public IEnumerable<Bird> GetByPrefix(string prefix) => BirdsWithDetails.Where(b => b.FullName.StartsWith(prefix)).ToArray();
-    public IEnumerable<Bird> GetByPrefixFast(string prefix) => _context.Birds.Where(b => b.FullName.StartsWith(prefix)).ToArray();
+    public async Task<Bird[]> GetAllAsync()
+    {
+        return await BirdsWithDetails.ToArrayAsync();
+    }
 
-    public IEnumerable<Bird> GetAll() => BirdsWithDetails.ToArray();
+    public async Task<Bird[]> GetByPrefixAsync(string prefix)
+    {
+        return await BirdsWithDetails
+            .Where(b => b.FullName.StartsWith(prefix))
+            .ToArrayAsync();
+    }
+
+    public async Task<Bird[]> GetByPrefixFastAsync(string prefix)
+    {
+        return await _context.Birds
+            .Where(b => b.FullName.StartsWith(prefix))
+            .ToArrayAsync();
+    }
 }

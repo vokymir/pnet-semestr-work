@@ -2,14 +2,14 @@ namespace BirdWatching.Shared.Model;
 
 public interface IEventRepository
 {
-    public void Add(Event @event);
-    public void Delete(int id);
-    public void Update(Event @event);
-    public Event? GetById(int id);
-    public Event? GetByPublicId(string publicId);
-    public IEnumerable<Event> GetAll();
-    public IEnumerable<Event>? GetByUserId(int userId);
-    public IEnumerable<Event>? GetByWatcherId(int watcherId);
-    public Dictionary<string, bool> GetAllPublicIdentifiers();
-    public IEnumerable<Watcher>? GetParticipants(int id);
+    Task AddAsync(Event @event);
+    Task DeleteAsync(int id);
+    Task UpdateAsync(Event @event);
+    Task<Event?> GetByIdAsync(int id);
+    Task<Event?> GetByPublicIdAsync(string publicId);
+    Task<Event[]> GetAllAsync();
+    Task<Event[]> GetByUserIdAsync(int userId);
+    Task<Event[]> GetByWatcherIdAsync(int watcherId);
+    Task<Dictionary<string, bool>> GetAllPublicIdentifiersAsync();
+    Task<Watcher[]?> GetParticipantsAsync(int id);
 }

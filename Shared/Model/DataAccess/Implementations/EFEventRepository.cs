@@ -1,10 +1,10 @@
-namespace BirdWatching.Shared.Model;
-
 using Microsoft.EntityFrameworkCore;
+
+namespace BirdWatching.Shared.Model;
 
 public class EFEventRepository : IEventRepository
 {
-    private AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public IQueryable<Event> EventsWithDetails {
         get {
@@ -20,52 +20,79 @@ public class EFEventRepository : IEventRepository
         _context = context;
     }
 
-    public void Add(Event @event)
+    public async Task AddAsync(Event @event)
     {
-        _context.Events.Add(@event);
-        _context.SaveChanges();
+        await _context.Events.AddAsync(@event);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(Event @event)
+    public async Task UpdateAsync(Event @event)
     {
-        var dbEvent = EventsWithDetails.First(e => e.Id == @event.Id);
+        var dbEvent = await EventsWithDetails.FirstOrDefaultAsync(e => e.Id == @event.Id);
 
-        if (dbEvent is null)
+        if (dbEvent == null)
             throw new InvalidOperationException($"Event with ID = {@event.Id} is not in the database and cannot be updated.");
 
-        dbEvent = @event;
-        _context.Update(dbEvent);
-        _context.SaveChanges();
+        _context.Entry(dbEvent).CurrentValues.SetValues(@event);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var @event = GetById(id);
+        var @event = await GetByIdAsync(id);
 
-        if (@event is null)
+        if (@event == null)
             throw new InvalidOperationException($"Event with ID = {id} is not in the database and cannot be deleted.");
+
         _context.Events.Remove(@event);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Event? GetById(int id) => EventsWithDetails.First(e => e.Id == id);
+    public async Task<Event?> GetByIdAsync(int id)
+    {
+        return await EventsWithDetails.FirstOrDefaultAsync(e => e.Id == id);
+    }
 
-    public Event? GetByPublicId(string publicId) => EventsWithDetails.First(e => e.PublicIdentifier == publicId);
+    public async Task<Event?> GetByPublicIdAsync(string publicId)
+    {
+        return await EventsWithDetails.FirstOrDefaultAsync(e => e.PublicIdentifier == publicId);
+    }
 
-    public IEnumerable<Event> GetAll() => EventsWithDetails.ToList();
+    public async Task<Event[]> GetAllAsync()
+    {
+        return await EventsWithDetails.ToArrayAsync();
+    }
 
-    public IEnumerable<Event>? GetByUserId(int userId) => EventsWithDetails.Where(e => e.MainAdminId == userId)?.ToList();
+    public async Task<Event[]> GetByUserIdAsync(int userId)
+    {
+        return await EventsWithDetails.Where(e => e.MainAdminId == userId).ToArrayAsync();
+    }
 
-    public IEnumerable<Event>? GetByWatcherId(int watcherId) => _context.Watchers
-        .Include(w => w.Participating)
-            .ThenInclude(e => e.Participants)
-        .Include(w => w.Participating)
-            .ThenInclude(e => e.MainAdmin)
-        .FirstOrDefault(w => w.Id == watcherId)?.Participating;
+    public async Task<Event[]> GetByWatcherIdAsync(int watcherId)
+    {
+        var watcher = await _context.Watchers
+            .Include(w => w.Participating)
+                .ThenInclude(e => e.Participants)
+            .Include(w => w.Participating)
+                .ThenInclude(e => e.MainAdmin)
+            .FirstOrDefaultAsync(w => w.Id == watcherId);
 
-    public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Events.ToDictionary(e => e.PublicIdentifier, e => true);
+        return watcher?.Participating?.ToArray() ?? Array.Empty<Event>();
+    }
 
-    public IEnumerable<Watcher>? GetParticipants(int eventId) =>
-        _context.Events.Include(e => e.Participants).First(e => e.Id == eventId)?
-        .Participants ?? null; // if event doesn't exist, return null
+    public async Task<Dictionary<string, bool>> GetAllPublicIdentifiersAsync()
+    {
+        return await _context.Events
+            .Select(e => e.PublicIdentifier)
+            .ToDictionaryAsync(id => id, id => true);
+    }
+
+    public async Task<Watcher[]?> GetParticipantsAsync(int id)
+    {
+        var @event = await _context.Events
+            .Include(e => e.Participants)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        return @event?.Participants?.ToArray();
+    }
 }
