@@ -1,7 +1,7 @@
 namespace BirdWatching.Api.Controllers
 {
     using BirdWatching.Shared.Model;
-    using Microsoft.AspNetCore.Authorization;
+    // using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Linq;
@@ -9,7 +9,7 @@ namespace BirdWatching.Api.Controllers
     using System.Threading.Tasks;
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/record")]
     public class RecordController : BaseApiController
     {
         private readonly ILogger<RecordController> _logger;

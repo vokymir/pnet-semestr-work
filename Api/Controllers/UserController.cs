@@ -1,222 +1,187 @@
-namespace BirdWatching.Api.Controllers;
-
-using Microsoft.AspNetCore.Mvc;
-using BirdWatching.Shared.Model;
-using System.Threading.Tasks;
-
-[ApiController]
-public class UserController : BaseApiController
+namespace BirdWatching.Api.Controllers
 {
-    private readonly ILogger<UserController> _logger;
+    using BirdWatching.Shared.Model;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
-    public UserController(AppDbContext context, ILogger<UserController> logger, IConfiguration config)
+    [ApiController]
+    [Route("api/user")]
+    public class UserController : BaseApiController
     {
-        _context = context;
-        _logger = logger;
-        _config = config;
-        InitRepos__ContextMustNotBeNull();
-    }
+        private readonly ILogger<UserController> _logger;
 
-    /// <summary>
-    /// Create new user.
-    /// </summary>
-    [HttpPost("Create")]
-    public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
-    {
-        if (userDto == null)
-            return BadRequest("User data must be provided.");
-
-        try
+        public UserController(AppDbContext context, ILogger<UserController> logger)
         {
-            User user = userDto.ToEntity();
-            await _userRepo.AddAsync(user);
-            return Ok(user.ToFullDto());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating user.");
-            return Problem("An error occurred while creating the user.");
-        }
-    }
-
-    /// <summary>
-    /// Update self, or if admin any user.
-    /// </summary>
-    [HttpPost("Update/{token}")]
-    public async Task<IActionResult> UpdateUser(string token, [FromBody] UserDto userDto)
-    {
-        if (string.IsNullOrWhiteSpace(token) || userDto == null)
-            return BadRequest("Invalid token or user data.");
-
-        var authResult = await AuthUserByTokenAsync(token, userDto.Id);
-        if (!IsAuthorized(authResult))
-        {
-            var adminAuth = await AuthAdminByTokenAsync(token);
-            if (!IsAuthorized(adminAuth))
-                return Unauthorized("Access denied.");
+            _context = context;
+            _logger = logger;
+            InitRepos__ContextMustNotBeNull();
         }
 
-        User? user = await _userRepo.GetByIdAsync(userDto.Id);
-        if (user == null)
-            return NotFound("User not found.");
-
-        // Only update fields that are allowed to be updated
-        user.UserName = userDto.UserName ?? user.UserName;
-        user.PasswordHash = userDto.PasswordHash ?? user.PasswordHash;
-
-        try
+        /// <summary>
+        /// Create new user (registrovat se může kdokoliv).
+        /// </summary>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
         {
-            await _userRepo.UpdateAsync(user);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to update user with ID {UserId}.", userDto.Id);
-            return Problem("Failed to update user.");
-        }
-    }
+            if (userDto == null)
+                return BadRequest("User data must be provided.");
 
-    /// <summary>
-    /// Delete self or if admin anyone.
-    /// </summary>
-    [HttpDelete("Delete/{token}")]
-    public async Task<IActionResult> DeleteUser(string token, [FromQuery] int userId)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            return BadRequest("Token must be provided.");
-
-        var authResult = await AuthUserByTokenAsync(token, userId);
-        if (!IsAuthorized(authResult))
-        {
-            var adminAuth = await AuthAdminByTokenAsync(token);
-            if (!IsAuthorized(adminAuth))
-                return Unauthorized("Access denied.");
+            try
+            {
+                var user = userDto.ToEntity();
+                await _userRepo.AddAsync(user);
+                return Ok(user.ToFullDto());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating user.");
+                return Problem("An error occurred while creating the user.");
+            }
         }
 
-        try
+        /// <summary>
+        /// Update own profile (nebo Admin může update komukoli).
+        /// </summary>
+        [HttpPut("{userId:int}")]
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto userDto)
         {
-            bool deleted = await _userRepo.DeleteAsync(userId);
-            if (!deleted)
+            if (userDto == null)
+                return BadRequest("User data must be provided.");
+
+            // ID přihlášeného z claimu
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(sub, out var currentUserId))
+                return Unauthorized();
+
+            // jestli je Admin nebo aktualizuje sám sebe
+            var isAdmin = User.IsInRole("Admin");
+            if (!isAdmin && currentUserId != userId)
+                return Forbid();
+
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
                 return NotFound("User not found.");
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to delete user with ID {UserId}.", userId);
-            return Problem("Failed to delete user.");
-        }
-    }
 
-    /// <summary>
-    /// Get current user info.
-    /// </summary>
-    [HttpGet("Get/{token}")]
-    public async Task<IActionResult> GetUser(string token)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            return BadRequest("Token must be provided.");
+            user.UserName = userDto.UserName ?? user.UserName;
+            user.PasswordHash = userDto.PasswordHash ?? user.PasswordHash;
 
-        var authResult = await AuthUserByTokenAsync(token);
-        if (!IsAuthorized(authResult.Result))
-            return Unauthorized("Access denied.");
-
-        User? user = authResult.User;
-        if (user == null)
-            return NotFound("User not found.");
-
-        var userDto = user.ToFullDto();
-        userDto.AuthTokens = null;
-        return Ok(userDto);
-    }
-
-    /// <summary>
-    /// Get info about user by ID, either self or admin.
-    /// </summary>
-    [HttpGet("Get/{token}/{userId}")]
-    public async Task<IActionResult> GetUser(string token, int userId)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            return BadRequest("Token must be provided.");
-
-        var authResult = await AuthUserByTokenAsync(token, userId);
-        if (!IsAuthorized(authResult))
-        {
-            var adminAuth = await AuthAdminByTokenAsync(token);
-            if (!IsAuthorized(adminAuth))
-                return Unauthorized("Access denied.");
-        }
-
-        User? user = await _userRepo.GetByIdAsync(userId);
-        if (user == null)
-            return NotFound("User not found.");
-
-        var userDto = user.ToFullDto();
-        userDto.AuthTokens = null;
-        return Ok(userDto);
-    }
-
-    /// <summary>
-    /// Get all users (admin only).
-    /// </summary>
-    [HttpGet("GetAll/{token}")]
-    public async Task<IActionResult> GetAllUsers(string token)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            return BadRequest("Token must be provided.");
-
-        var authResult = await AuthAdminByTokenAsync(token);
-        if (!IsAuthorized(authResult))
-            return Unauthorized("Admin privileges required.");
-
-        var users = await _userRepo.GetAllAsync();
-        var userDtos = users.Select(u => {
-            var dto = u.ToFullDto();
-            dto.AuthTokens = null;
-            return dto;
-        }).ToArray();
-
-        return Ok(userDtos);
-    }
-
-    /// <summary>
-    /// Add curated watcher to current user.
-    /// </summary>
-    [HttpPost("AddCuratedWatcher/{token}/{watcherPublicId}")]
-    public async Task<IActionResult> AddCuratedWatcher(string token, string watcherPublicId)
-    {
-        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(watcherPublicId))
-            return BadRequest("Token and watcherPublicId must be provided.");
-
-        var authResult = await AuthUserByTokenAsync(token);
-        if (!IsAuthorized(authResult.Result))
-            return Unauthorized("Access denied.");
-
-        User? user = authResult.User;
-        if (user == null)
-            return NotFound("User not found.");
-
-        Watcher? watcher = await _watcherRepo.GetByPublicIdAsync(watcherPublicId);
-        if (watcher == null)
-            return NotFound("Watcher not found.");
-
-        try
-        {
-            if (!watcher.Curators.Contains(user))
+            try
             {
-                watcher.Curators.Add(user);
+                await _userRepo.UpdateAsync(user);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update user {UserId}.", userId);
+                return Problem("Failed to update user.");
+            }
+        }
+
+        /// <summary>
+        /// Delete own account (Admin může delete kohokoliv).
+        /// </summary>
+        [HttpDelete("{userId:int}")]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(sub, out var currentUserId))
+                return Unauthorized();
+
+            var isAdmin = User.IsInRole("Admin");
+            if (!isAdmin && currentUserId != userId)
+                return Forbid();
+
+            bool deleted;
+            try
+            {
+                deleted = await _userRepo.DeleteAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to delete user {UserId}.", userId);
+                return Problem("Failed to delete user.");
+            }
+
+            return deleted ? NoContent() : NotFound("User not found.");
+        }
+
+        /// <summary>
+        /// Get own profile (nebo Admin může get kohokoliv).
+        /// </summary>
+        [HttpGet("{userId:int}")]
+        public async Task<IActionResult> GetUser(int userId)
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(sub, out var currentUserId))
+                return Unauthorized();
+
+            var isAdmin = User.IsInRole("Admin");
+            if (!isAdmin && currentUserId != userId)
+                return Forbid();
+
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            var dto = user.ToFullDto();
+            return Ok(dto);
+        }
+
+        /// <summary>
+        /// List all users (Admin only).
+        /// </summary>
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userRepo.GetAllAsync();
+            var dtos = users
+                .Select(u => {
+                    var d = u.ToFullDto();
+                    return d;
+                })
+                .ToArray();
+            return Ok(dtos);
+        }
+
+        /// <summary>
+        /// Add curated watcher to current user.
+        /// </summary>
+        [HttpPost("curate/{watcherPublicId}")]
+        public async Task<IActionResult> AddCuratedWatcher(string watcherPublicId)
+        {
+            if (string.IsNullOrWhiteSpace(watcherPublicId))
+                return BadRequest("WatcherPublicId must be provided.");
+
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(sub, out var userId))
+                return Unauthorized();
+
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            var watcher = await _watcherRepo.GetByPublicIdAsync(watcherPublicId);
+            if (watcher == null)
+                return NotFound("Watcher not found.");
+
+            if (watcher.Curators.Any(u => u.Id == userId))
+                return Conflict("Already a curator.");
+
+            watcher.Curators.Add(user);
+            try
+            {
                 await _watcherRepo.UpdateAsync(watcher);
+                return NoContent();
             }
-            else
+            catch (Exception ex)
             {
-                return Conflict("User is already a curator of this watcher.");
+                _logger.LogError(ex, "Failed to add curated watcher for user {UserId}.", userId);
+                return Problem("Failed to add curated watcher.");
             }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to add curator {UserId} to watcher {WatcherId}.", user.Id, watcherPublicId);
-            return Problem("Failed to add curator.");
-        }
-
-        return Ok();
     }
 }
