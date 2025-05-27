@@ -43,7 +43,7 @@ namespace BirdWatching.Api.Controllers
                 string id;
                 do
                 {
-                    id = GenerateUrlSafeString(8);
+                    id = GenerateUrlSafeString(5);
                 } while (existing.ContainsKey(id));
                 watcher.PublicIdentifier = id;
 

@@ -111,17 +111,19 @@ namespace BirdWatching.Api.Controllers
         [HttpGet("GetByUserId/{userId}")]
         public IActionResult GetByUserId(int userId)
         {
-            if (userId <= 0)
+            if (userId <= 0 && userId != -1) // -1 only for testing purposes
                 return BadRequest("Invalid user ID.");
 
             var user = _userRepo.GetById(userId);
             if (user == null)
                 return NotFound("User not found.");
 
-            // THIS SHOULD BE UPDATED AND AVAILABLE FROM EVENTREPO
-            var events = user.Events ?? Enumerable.Empty<Event>();
+            var events = _eventRepo.GetByUserId(userId);
+            if (events is null)
+                return NotFound("User not found.");
+
             var dtos = events.Select(ev => {
-                var full = _eventRepo.GetById(ev.Id)?.ToFullDto();
+                var full = ev.ToFullDto();
                 return full ?? new EventDto { Id = ev.Id, Name = "(deleted)" };
             })
                 .ToList();
@@ -142,10 +144,12 @@ namespace BirdWatching.Api.Controllers
             if (w == null)
                 return NotFound("Watcher not found.");
 
-            // THIS SHOULD BE UPDATED AND AVAILABLE FROM EVENTREPO
-            var events = w.Participating ?? Enumerable.Empty<Event>();
+            var events = _eventRepo.GetByWatcherId(watcherId);
+            if (events is null)
+                return NotFound("Watcher not found.");
+
             var dtos = events.Select(ev => {
-                var full = _eventRepo.GetById(ev.Id)?.ToFullDto();
+                var full = ev.ToFullDto();
                 return full ?? new EventDto { Id = ev.Id, Name = "(deleted)" };
             })
                 .ToList();

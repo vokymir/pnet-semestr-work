@@ -54,6 +54,15 @@ public class EFEventRepository : IEventRepository
 
     public IEnumerable<Event> GetAll() => EventsWithDetails.ToList();
 
+    public IEnumerable<Event>? GetByUserId(int userId) => EventsWithDetails.Where(e => e.MainAdminId == userId)?.ToList();
+
+    public IEnumerable<Event>? GetByWatcherId(int watcherId) => _context.Watchers
+        .Include(w => w.Participating)
+            .ThenInclude(e => e.Participants)
+        .Include(w => w.Participating)
+            .ThenInclude(e => e.MainAdmin)
+        .FirstOrDefault(w => w.Id == watcherId)?.Participating;
+
     public Dictionary<string, bool> GetAllPublicIdentifiers() => _context.Events.ToDictionary(e => e.PublicIdentifier, e => true);
 
     public IEnumerable<Watcher>? GetParticipants(int eventId) =>
