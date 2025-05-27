@@ -155,9 +155,5 @@ namespace BirdWatching.Api.Controllers
                 return Problem("Failed to join event.");
             }
         }
-
-        // Helper to check authorization results
-        private static bool IsAuthorized(IActionResult result) =>
-            result is OkResult or OkObjectResult;
     }
 }

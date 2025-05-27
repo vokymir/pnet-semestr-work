@@ -1,118 +1,141 @@
-namespace BirdWatching.Api.Controllers;
-
-using BirdWatching.Shared.Model;
-using Microsoft.AspNetCore.Mvc;
-
-/// <summary>
-/// Can do:
-/// - Create, Get (public)
-/// - add to comment (public), edit comment (admin)
-/// Should do:
-/// - Update, delete (admin)
-/// </summary>
-[ApiController]
-public class BirdController : BaseApiController
+namespace BirdWatching.Api.Controllers
 {
-    private readonly ILogger<BirdController> _logger;
+    using BirdWatching.Shared.Model;
+    using Microsoft.AspNetCore.Mvc;
 
-    public BirdController(AppDbContext context, ILogger<BirdController> logger)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BirdController : BaseApiController
     {
-        _context = context;
-        _logger = logger;
-        Init();
-    }
+        private readonly ILogger<BirdController> _logger;
 
-    [HttpPost("Create")]
-    public IActionResult Add(BirdDto bd)
-    {
-        Bird b = bd.ToEntity();
-        try
+        public BirdController(AppDbContext context, ILogger<BirdController> logger)
         {
-            _birdRepo.Add(b);
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
+            _context = context;
+            _logger = logger;
+            Init();
         }
 
-        return Ok();
-    }
-
-    [HttpGet("GetAll")]
-    public IActionResult GetAll()
-    {
-        var bs = _birdRepo.GetAll();
-        if (bs is null) return NotFound("No bird exists.");
-        else
+        /// <summary>
+        /// Create a new bird (public).
+        /// </summary>
+        [HttpPost("Create")]
+        public IActionResult Create([FromBody] BirdDto dto)
         {
-            List<BirdDto> bds = new();
-            foreach (var b in bs)
-                bds.Add(b.ToFullDto());
-            return Ok(bds);
+            if (dto == null)
+                return BadRequest("Bird data must be provided.");
+
+            try
+            {
+                var bird = dto.ToEntity();
+                _birdRepo.Add(bird);
+                var createdDto = bird.ToFullDto();
+                return Ok(createdDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating bird.");
+                return Problem("An error occurred while creating the bird.");
+            }
         }
-    }
 
-    [HttpGet("GetByPrefix/{prefix}")]
-    public IActionResult GetByPrefix(string prefix)
-    {
-        var bs = _birdRepo.GetByPrefix(prefix);
-        if (bs is null) return NotFound("No bird with such prefix found...");
-
-        List<BirdDto> bds = new();
-        foreach (var b in bs)
-            bds.Add(b.ToFullDto());
-
-        return Ok(bds);
-    }
-
-    [HttpGet("GetById/{id}")]
-    public IActionResult GetById(int id)
-    {
-        Bird? b = _birdRepo.GetById(id);
-        if (b is null) return NotFound();
-
-        BirdDto bd = b.ToFullDto();
-        return Ok(bd);
-    }
-
-    [HttpPatch("AddToComment")]
-    public IActionResult ProlongComment(int birdId, string comment)
-    {
-        Bird? b = _birdRepo.GetById(birdId);
-        if (b is null) return NotFound();
-        b.Comment += comment;
-        try
+        /// <summary>
+        /// Get all birds (public).
+        /// </summary>
+        [HttpGet("GetAll")]
+        public IActionResult GetAll()
         {
-            _birdRepo.Update(b);
+            var birds = _birdRepo.GetAll() ?? Enumerable.Empty<Bird>();
+            var dtos = birds.Select(b => b.ToFullDto()).ToList();
+            return Ok(dtos);
         }
-        catch (Exception e)
+
+        /// <summary>
+        /// Get birds whose full name starts with prefix (public).
+        /// </summary>
+        [HttpGet("GetByPrefix/{prefix}")]
+        public IActionResult GetByPrefix(string prefix)
         {
-            return Problem(e.Message);
+            if (string.IsNullOrWhiteSpace(prefix))
+                return BadRequest("Prefix must be provided.");
+
+            var birds = _birdRepo.GetByPrefix(prefix) ?? Enumerable.Empty<Bird>();
+            var dtos = birds.Select(b => b.ToFullDto()).ToList();
+            return dtos.Any()
+                ? Ok(dtos)
+                : NotFound($"No birds found with prefix '{prefix}'.");
         }
-        return Ok();
-    }
 
-    [HttpPatch("EditComment/{token}")]
-    public IActionResult EditComment(string token, int birdId, string comment)
-    {
-        var adminResponse = AuthAdminByToken(token);
-        if (!adminResponse.Equals(Ok()))
-            return adminResponse;
-
-
-        Bird? b = _birdRepo.GetById(birdId);
-        if (b is null) return NotFound("Bird not found.");
-
-        b.Comment = comment;
-
-        try
+        /// <summary>
+        /// Get a bird by its ID (public).
+        /// </summary>
+        [HttpGet("GetById/{id}")]
+        public IActionResult GetById(int id)
         {
-            _birdRepo.Update(b);
+            if (id <= 0)
+                return BadRequest("Invalid bird ID.");
+
+            var bird = _birdRepo.GetById(id);
+            if (bird == null)
+                return NotFound("Bird not found.");
+
+            return Ok(bird.ToFullDto());
         }
-        catch (Exception e)
+
+        /// <summary>
+        /// Append text to a bird's comment (public).
+        /// </summary>
+        [HttpPatch("AppendComment/{birdId}")]
+        public IActionResult AppendComment(int birdId, [FromBody] string additional)
         {
-            return Problem(e.Message);
+            if (birdId <= 0 || string.IsNullOrEmpty(additional))
+                return BadRequest("Bird ID and comment text must be provided.");
+
+            var bird = _birdRepo.GetById(birdId);
+            if (bird == null)
+                return NotFound("Bird not found.");
+
+            bird.Comment += additional;
+            try
+            {
+                _birdRepo.Update(bird);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error appending comment to bird {BirdId}.", birdId);
+                return Problem("Failed to append comment.");
+            }
         }
-        return Ok();
+
+        /// <summary>
+        /// Replace a bird's comment (admin only).
+        /// </summary>
+        [HttpPatch("EditComment/{token}/{birdId}")]
+        public IActionResult EditComment(string token, int birdId, [FromBody] string newComment)
+        {
+            if (string.IsNullOrWhiteSpace(token) || birdId <= 0 || newComment == null)
+                return BadRequest("Token, bird ID, and new comment must be provided.");
+
+            var auth = AuthAdminByToken(token);
+            if (!IsAuthorized(auth))
+                return Unauthorized("Admin privileges required.");
+
+            var bird = _birdRepo.GetById(birdId);
+            if (bird == null)
+                return NotFound("Bird not found.");
+
+            bird.Comment = newComment;
+            try
+            {
+                _birdRepo.Update(bird);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error editing comment for bird {BirdId}.", birdId);
+                return Problem("Failed to edit comment.");
+            }
+        }
     }
 }

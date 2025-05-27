@@ -90,4 +90,8 @@ public class BaseApiController : ControllerBase
 
         return new string(result);
     }
+
+    // Helper to interpret AuthAdminByToken
+    protected static bool IsAuthorized(IActionResult result) =>
+        result is OkResult or OkObjectResult;
 }

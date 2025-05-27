@@ -166,9 +166,5 @@ namespace BirdWatching.Api.Controllers
                 return Problem("Failed to edit comment.");
             }
         }
-
-        // Reuse the same IsAuthorized helper from other controllers:
-        private static bool IsAuthorized(IActionResult result) =>
-            result is OkResult or OkObjectResult;
     }
 }

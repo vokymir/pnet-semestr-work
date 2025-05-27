@@ -217,9 +217,5 @@ namespace BirdWatching.Api.Controllers
             var dtos = watchers.Select(w => w.ToFullDto()).ToList();
             return Ok(dtos);
         }
-
-        // Helper to interpret Auth*ByToken
-        private static bool IsAuthorized(IActionResult result) =>
-            result is OkResult or OkObjectResult;
     }
 }

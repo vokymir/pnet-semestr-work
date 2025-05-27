@@ -218,10 +218,4 @@ public class UserController : BaseApiController
 
         return Ok();
     }
-
-    // Helper method to check authorization results more cleanly
-    private static bool IsAuthorized(IActionResult authResult)
-    {
-        return authResult is OkResult or OkObjectResult;
-    }
 }
