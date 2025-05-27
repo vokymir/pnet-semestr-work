@@ -24,17 +24,17 @@ public class RecordController : BaseApiController
     }
 
     [HttpPost("Create/{token}")]
-    public IResult Create(string token, RecordDto recordDto)
+    public IActionResult Create(string token, RecordDto recordDto)
     {
         var response = AuthUserByToken(token);
-        if (!response.Result.Equals(Results.Ok())) return response.Result;
+        if (!response.Result.Equals(Ok())) return response.Result;
 
         var bird = _birdRepo.GetById(recordDto.BirdId);
-        if (bird == null) return Results.NotFound("Bird not found.");
+        if (bird == null) return NotFound("Bird not found.");
 
         var w = _watcherRepo.GetById(recordDto.WatcherId);
-        if (w == null) return Results.NotFound("Watcher not found.");
-        if (!w.Curators.Contains(response.User!)) return Results.Problem("Don't have permission to edit watcher.");
+        if (w == null) return NotFound("Watcher not found.");
+        if (!w.Curators.Contains(response.User!)) return Problem("Don't have permission to edit watcher.");
 
         Record r = recordDto.ToEntity();
         r.Watcher = w;
@@ -45,33 +45,33 @@ public class RecordController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 
     [HttpGet("GetAll")]
-    public IResult GetAll()
+    public IActionResult GetAll()
     {
         var rs = _recordRepo.GetAll();
-        if (rs is null) return Results.NotFound();
+        if (rs is null) return NotFound();
         List<RecordDto> rds = new();
         foreach (var r in rs)
             rds.Add(r.ToFullDto());
-        return Results.Ok(rds);
+        return Ok(rds);
     }
 
     [HttpGet("GetById/{recordId}")]
-    public IResult Get(int recordId)
+    public IActionResult Get(int recordId)
     {
         var r = _recordRepo.GetById(recordId);
-        if (r is null) return Results.NotFound();
-        else return Results.Ok(r.ToFullDto());
+        if (r is null) return NotFound();
+        else return Ok(r.ToFullDto());
     }
 
     [HttpGet("GetByWatcher/{watcherId}")]
-    public IResult GetWatchersRecords(int watcherId)
+    public IActionResult GetWatchersRecords(int watcherId)
     {
         try
         {
@@ -80,19 +80,19 @@ public class RecordController : BaseApiController
             foreach (var r in records)
                 rds.Add(r.ToFullDto());
 
-            return Results.Ok(rds);
+            return Ok(rds);
         }
         catch (Exception ex)
         {
-            return Results.Problem(ex.Message);
+            return Problem(ex.Message);
         }
     }
 
     [HttpPatch("AddToComment")]
-    public IResult ProlongComment(int recordId, string comment)
+    public IActionResult ProlongComment(int recordId, string comment)
     {
         var r = _recordRepo.GetById(recordId);
-        if (r is null) return Results.NotFound();
+        if (r is null) return NotFound();
         r.Comment += comment;
         try
         {
@@ -100,29 +100,29 @@ public class RecordController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
-        return Results.Ok();
+        return Ok();
     }
 
     [HttpPatch("EditComment/{token}")]
-    public IResult EditComment(string token, int recordId, string comment)
+    public IActionResult EditComment(string token, int recordId, string comment)
     {
         var r = _recordRepo.GetById(recordId);
-        if (r is null) return Results.NotFound("Record not found.");
+        if (r is null) return NotFound("Record not found.");
 
         // if either is owner of record or is admin
         var response = AuthUserByToken(token);
-        if (!response.Result.Equals(Results.Ok()))
+        if (!response.Result.Equals(Ok()))
         {
             var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Results.Ok()))
+            if (!adminResponse.Equals(Ok()))
                 return adminResponse;
         }
         else
         {
             if (!response.User!.Watchers.Contains(r.Watcher))
-                return Results.Problem("Don't have permission to edit this comment.");
+                return Problem("Don't have permission to edit this comment.");
         }
 
         r.Comment = comment;
@@ -133,8 +133,8 @@ public class RecordController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
-        return Results.Ok();
+        return Ok();
     }
 }

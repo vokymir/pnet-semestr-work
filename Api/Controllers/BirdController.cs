@@ -23,7 +23,7 @@ public class BirdController : BaseApiController
     }
 
     [HttpPost("Create")]
-    public IResult Add(BirdDto bd)
+    public IActionResult Add(BirdDto bd)
     {
         Bird b = bd.ToEntity();
         try
@@ -32,54 +32,54 @@ public class BirdController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 
     [HttpGet("GetAll")]
-    public IResult GetAll()
+    public IActionResult GetAll()
     {
         var bs = _birdRepo.GetAll();
-        if (bs is null) return Results.NotFound("No bird exists.");
+        if (bs is null) return NotFound("No bird exists.");
         else
         {
             List<BirdDto> bds = new();
             foreach (var b in bs)
                 bds.Add(b.ToFullDto());
-            return Results.Ok(bds);
+            return Ok(bds);
         }
     }
 
     [HttpGet("GetByPrefix/{prefix}")]
-    public IResult GetByPrefix(string prefix)
+    public IActionResult GetByPrefix(string prefix)
     {
         var bs = _birdRepo.GetByPrefix(prefix);
-        if (bs is null) return Results.NotFound("No bird with such prefix found...");
+        if (bs is null) return NotFound("No bird with such prefix found...");
 
         List<BirdDto> bds = new();
         foreach (var b in bs)
             bds.Add(b.ToFullDto());
 
-        return Results.Ok(bds);
+        return Ok(bds);
     }
 
     [HttpGet("GetById/{id}")]
-    public IResult GetById(int id)
+    public IActionResult GetById(int id)
     {
         Bird? b = _birdRepo.GetById(id);
-        if (b is null) return Results.NotFound();
+        if (b is null) return NotFound();
 
         BirdDto bd = b.ToFullDto();
-        return Results.Ok(bd);
+        return Ok(bd);
     }
 
     [HttpPatch("AddToComment")]
-    public IResult ProlongComment(int birdId, string comment)
+    public IActionResult ProlongComment(int birdId, string comment)
     {
         Bird? b = _birdRepo.GetById(birdId);
-        if (b is null) return Results.NotFound();
+        if (b is null) return NotFound();
         b.Comment += comment;
         try
         {
@@ -87,21 +87,21 @@ public class BirdController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
-        return Results.Ok();
+        return Ok();
     }
 
     [HttpPatch("EditComment/{token}")]
-    public IResult EditComment(string token, int birdId, string comment)
+    public IActionResult EditComment(string token, int birdId, string comment)
     {
         var adminResponse = AuthAdminByToken(token);
-        if (!adminResponse.Equals(Results.Ok()))
+        if (!adminResponse.Equals(Ok()))
             return adminResponse;
 
 
         Bird? b = _birdRepo.GetById(birdId);
-        if (b is null) return Results.NotFound("Bird not found.");
+        if (b is null) return NotFound("Bird not found.");
 
         b.Comment = comment;
 
@@ -111,8 +111,8 @@ public class BirdController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
-        return Results.Ok();
+        return Ok();
     }
 }

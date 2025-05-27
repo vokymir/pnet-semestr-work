@@ -26,13 +26,13 @@ public class AuthController : BaseApiController
     }
 
     [HttpPost("Login")]
-    public IResult Login(LoginDto login)
+    public IActionResult Login(LoginDto login)
     {
         User? user = _userRepo.GetByUsername(login.username);
         if (user is null)
-            return Results.NotFound();
+            return NotFound();
         else if (user.PasswordHash != login.passwordhash)
-            return Results.NotFound();
+            return NotFound();
 
         string token;
         do
@@ -41,11 +41,11 @@ public class AuthController : BaseApiController
 
         AddAuthToken(token, user);
 
-        return Results.Ok(token);
+        return Ok(token);
     }
 
     [HttpPost("Logout/{token}")]
-    public IResult Logout(string token)
+    public IActionResult Logout(string token)
     {
         try
         {
@@ -53,10 +53,10 @@ public class AuthController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 
     private void AddAuthToken(string token, User user)

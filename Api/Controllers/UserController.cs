@@ -30,31 +30,31 @@ public class UserController : BaseApiController
     /// Create new user.
     /// </summary>
     [HttpPost("Create")]
-    public IResult CreateUser(UserDto userDto)
+    public IActionResult CreateUser(UserDto userDto)
     {
         User user = userDto.ToEntity();
 
         _userRepo.Add(user);
 
-        return Results.Ok();
+        return Ok();
     }
 
     /// <summary>
     /// Update self, or if admin any user.
     /// </summary>
     [HttpPost("Update/{token}")]
-    public IResult UpdateUser(string token, UserDto userDto)
+    public IActionResult UpdateUser(string token, UserDto userDto)
     {
-        IResult response = AuthUserByToken(token, userDto.Id);
-        if (!response.Equals(Results.Ok()))
+        IActionResult response = AuthUserByToken(token, userDto.Id);
+        if (!response.Equals(Ok()))
         {
             var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Results.Ok()))
+            if (!adminResponse.Equals(Ok()))
                 return response;
         }
 
         User? user = _userRepo.GetById(userDto.Id);
-        if (user is null) return Results.NotFound();
+        if (user is null) return NotFound();
 
         user.UserName = userDto.UserName;
         user.PasswordHash = userDto.PasswordHash;
@@ -65,23 +65,23 @@ public class UserController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 
     /// <summary>
     /// Delete self or if admin anyone.
     /// </summary>
     [HttpDelete("Delete/{token}")]
-    public IResult DeleteUser(string token, int userId)
+    public IActionResult DeleteUser(string token, int userId)
     {
-        IResult response = AuthUserByToken(token, userId);
-        if (!response.Equals(Results.Ok()))
+        IActionResult response = AuthUserByToken(token, userId);
+        if (!response.Equals(Ok()))
         {
             var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Results.Ok()))
+            if (!adminResponse.Equals(Ok()))
                 return response;
         }
 
@@ -91,63 +91,63 @@ public class UserController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 
     /// <summary>
     /// Get all info about user, if you.
     /// </summary>
     [HttpGet("Get/{token}")]
-    public IResult GetUser(string token)
+    public IActionResult GetUser(string token)
     {
         var response = AuthUserByToken(token);
-        if (!response.Result.Equals(Results.Ok())) return response.Result;
+        if (!response.Result.Equals(Ok())) return response.Result;
 
         User? user = response.User;
         if (user is null)
-            return Results.NotFound();
+            return NotFound();
 
         UserDto userDto = user.ToFullDto();
         userDto.AuthTokens = null;
 
-        return Results.Ok(userDto);
+        return Ok(userDto);
     }
 
     /// <summary>
     /// Get info about user, either self or must be admin.
     /// </summary>
     [HttpGet("Get/{token}/{userId}")]
-    public IResult GetUser(string token, int userId)
+    public IActionResult GetUser(string token, int userId)
     {
-        IResult response = AuthUserByToken(token, userId);
-        if (!response.Equals(Results.Ok()))
+        IActionResult response = AuthUserByToken(token, userId);
+        if (!response.Equals(Ok()))
         {
             var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Results.Ok()))
+            if (!adminResponse.Equals(Ok()))
                 return response;
         }
 
         User? user = _userRepo.GetById(userId);
         if (user is null)
-            return Results.NotFound();
+            return NotFound();
 
         UserDto userDto = user.ToFullDto();
         userDto.AuthTokens = null;
 
-        return Results.Ok(userDto);
+        return Ok(userDto);
     }
 
     /// <summary>
     /// Get all users if you are admin.
     /// </summary>
     [HttpGet("GetAll/{token}")]
-    public IResult GetAllUsers(string token)
+    public IActionResult GetAllUsers(string token)
     {
-        IResult response = AuthAdminByToken(token);
-        if (!response.Equals(Results.Ok())) return response;
+        IActionResult response = AuthAdminByToken(token);
+        if (!response.Equals(Ok())) return response;
 
         User[] users = _userRepo.GetAll().ToArray();
         UserDto[] userDtos = new UserDto[users.Length];
@@ -160,21 +160,21 @@ public class UserController : BaseApiController
             userDtos[i] = userDto;
         }
 
-        return Results.Ok(userDtos);
+        return Ok(userDtos);
     }
 
     [HttpPost("AddCuratedWatcher/{token}/{watcherPublicId}")]
-    public IResult AddCuratedWatcher(string token, string watcherPublicId)
+    public IActionResult AddCuratedWatcher(string token, string watcherPublicId)
     {
         var response = AuthUserByToken(token);
-        if (!response.Result.Equals(Results.Ok())) return response.Result;
+        if (!response.Result.Equals(Ok())) return response.Result;
 
         User? user = response.User;
         if (user is null)
-            return Results.NotFound("User not found.");
+            return NotFound("User not found.");
 
         Watcher? watcher = _watcherRepo.GetByPublicId(watcherPublicId);
-        if (watcher is null) return Results.NotFound("Watcher not found.");
+        if (watcher is null) return NotFound("Watcher not found.");
 
         try
         {
@@ -183,9 +183,9 @@ public class UserController : BaseApiController
         }
         catch (Exception ex)
         {
-            return Results.Problem(ex.Message);
+            return Problem(ex.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 }

@@ -27,31 +27,31 @@ public class BaseApiController : ControllerBase
         _watcherRepo = new EFWatcherRepository(_context);
     }
 
-    protected IResult AuthUserByToken(string token, int userId)
+    protected IActionResult AuthUserByToken(string token, int userId)
     {
         AuthToken? auth = _authRepo.GetByString(token);
-        if (auth is null) return Results.BadRequest("Cannot find user by token.");
-        if (auth.User is null) return Results.Problem("User not set as reference.");
-        if (auth.User.Id != userId) return Results.BadRequest("Don't have permission to do this.");
-        return Results.Ok();
+        if (auth is null) return BadRequest("Cannot find user by token.");
+        if (auth.User is null) return Problem("User not set as reference.");
+        if (auth.User.Id != userId) return BadRequest("Don't have permission to do this.");
+        return Ok();
     }
 
-    protected (IResult Result, User? User) AuthUserByToken(string token)
+    protected (IActionResult Result, User? User) AuthUserByToken(string token)
     {
         AuthToken? auth = _authRepo.GetByString(token);
-        if (auth is null) return (Results.BadRequest("Cannot find user by token."), null);
-        if (auth.User is null) return (Results.Problem("User not set as reference."), null);
+        if (auth is null) return (BadRequest("Cannot find user by token."), null);
+        if (auth.User is null) return (Problem("User not set as reference."), null);
         var u = _userRepo.GetById(auth.User.Id);
-        return (Results.Ok(), u);
+        return (Ok(), u);
     }
 
-    protected IResult AuthAdminByToken(string token)
+    protected IActionResult AuthAdminByToken(string token)
     {
         AuthToken? auth = _authRepo.GetByString(token);
-        if (auth is null) return Results.BadRequest("Cannot find user by token.");
-        if (auth.User is null) return Results.Problem("User not set as reference.");
-        if (!auth.User.IsAdmin) return Results.BadRequest("Don't have permission to do this.");
-        return Results.Ok();
+        if (auth is null) return BadRequest("Cannot find user by token.");
+        if (auth.User is null) return Problem("User not set as reference.");
+        if (!auth.User.IsAdmin) return BadRequest("Don't have permission to do this.");
+        return Ok();
     }
 
     protected string GenerateUrlSafeString(int length)

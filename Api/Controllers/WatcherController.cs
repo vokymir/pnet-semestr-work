@@ -31,10 +31,10 @@ public class WatcherController : BaseApiController
     /// Create a new watcher and assing it to current user.
     /// </summary>
     [HttpPost("Create/{token}")]
-    public IResult CreateWatcher(string token, WatcherDto watcherDto)
+    public IActionResult CreateWatcher(string token, WatcherDto watcherDto)
     {
         var gettingUser = AuthUserByToken(token);
-        if (!gettingUser.Result.Equals(Results.Ok())) return gettingUser.Result;
+        if (!gettingUser.Result.Equals(Ok())) return gettingUser.Result;
         User user = gettingUser.User!;
 
         try
@@ -54,37 +54,37 @@ public class WatcherController : BaseApiController
         }
         catch (Exception e)
         {
-            return Results.Problem(e.Message);
+            return Problem(e.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 
     /// <summary>
     /// Get absolutely all watchers, if you are admin.
     /// </summary>
     [HttpGet("GetAll/{token}")]
-    public IResult GetAllIfAdmin(string token)
+    public IActionResult GetAllIfAdmin(string token)
     {
         var result = AuthAdminByToken(token);
-        if (!result.Equals(Results.Ok())) return result;
+        if (!result.Equals(Ok())) return result;
 
         var watchers = _watcherRepo.GetAll();
         var watcherDtos = new List<WatcherDto>();
         foreach (var w in watchers)
             watcherDtos.Add(w.ToFullDto());
 
-        return Results.Ok(watcherDtos);
+        return Ok(watcherDtos);
     }
 
     /// <summary>
     /// Get all watchers a user can edit.
     /// </summary>
     [HttpGet("AllUserHave/{token}")]
-    public IResult GetUserWatchers(string token)
+    public IActionResult GetUserWatchers(string token)
     {
         var gettingUser = AuthUserByToken(token);
-        if (!gettingUser.Result.Equals(Results.Ok())) return gettingUser.Result;
+        if (!gettingUser.Result.Equals(Ok())) return gettingUser.Result;
         User user = gettingUser.User!;
 
         Watcher[] watchers = _watcherRepo.GetByUser(user);
@@ -92,33 +92,33 @@ public class WatcherController : BaseApiController
         foreach (var w in watchers)
             watcherDtos.Add(w.ToFullDto());
 
-        return Results.Ok(watcherDtos);
+        return Ok(watcherDtos);
     }
 
     [HttpGet("Get/{id}")]
-    public IResult GetById(int id)
+    public IActionResult GetById(int id)
     {
         var w = _watcherRepo.GetById(id);
-        if (w is null) return Results.NotFound();
+        if (w is null) return NotFound();
 
         WatcherDto wDto = w.ToFullDto();
 
-        return Results.Ok(wDto);
+        return Ok(wDto);
     }
 
     [HttpPost("JoinEvent/{token}/{watcherId}/{eventPublicId}")]
-    public IResult JoinEvent(string token, int watcherId, string eventPublicId)
+    public IActionResult JoinEvent(string token, int watcherId, string eventPublicId)
     {
         var gettingUser = AuthUserByToken(token);
-        if (!gettingUser.Result.Equals(Results.Ok())) return gettingUser.Result;
+        if (!gettingUser.Result.Equals(Ok())) return gettingUser.Result;
         User user = gettingUser.User!;
 
         Watcher? watcher = _watcherRepo.GetById(watcherId);
-        if (watcher is null) return Results.NotFound("Watcher not found.");
-        if (!watcher.Curators.Contains(user)) return Results.Problem("Don't have permission to edit watcher.");
+        if (watcher is null) return NotFound("Watcher not found.");
+        if (!watcher.Curators.Contains(user)) return Problem("Don't have permission to edit watcher.");
 
         Event? e = _eventRepo.GetByPublicId(eventPublicId);
-        if (e is null) return Results.NotFound("Event not found.");
+        if (e is null) return NotFound("Event not found.");
 
         try
         {
@@ -127,9 +127,9 @@ public class WatcherController : BaseApiController
         }
         catch (Exception ex)
         {
-            return Results.Problem(ex.Message);
+            return Problem(ex.Message);
         }
 
-        return Results.Ok();
+        return Ok();
     }
 }
