@@ -1,9 +1,9 @@
 using BirdWatching.Shared.Model;
 using System.Text;
+using System.Text.Json;
 
 public class Program
 {
-
     static readonly HttpClient client = new HttpClient();
     static readonly string Prefix = "http://localhost:5069/api/";
 
@@ -16,7 +16,7 @@ public class Program
 
         // create watcher
         List<WatcherDto> watchers = await ListUserWatchers(token);
-        WatcherDto w = new WatcherDto() { FirstName = "Jarda", LastName = $"Sáček {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
+        WatcherDto w = new WatcherDto() { FirstName = "Jarda", LastName = $"Sáček {DateTime.Now:yyyy-MM-dd HH:mm:ss}" };
         await CreateNewWatcher(token, w);
         watchers = await ListUserWatchers(token);
 
@@ -24,11 +24,11 @@ public class Program
 
         // create bird
         await ShowAllBirds();
-        BirdDto b = new() { Genus = "Gen", Species = $"Spec {DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss")}" };
+        BirdDto b = new() { Genus = "Gen", Species = $"Spec {DateTime.Now:yyyy-MM-dd HH:mm:ss}" };
         await NewBird(b);
         await ShowAllBirds();
         b = await GetBirdById(1);
-        w = watchers[0];
+        w = watchers.FirstOrDefault() ?? w;
 
         // create record
         await ShowAllRecords();
@@ -42,257 +42,329 @@ public class Program
         await ShowAllEvents();
         await ShowUserEvents(u.Id);
         await ShowWatcherEvents(w);
-        EventDto e = new() { MainAdminId = u.Id, Name = $"E: {DateTime.Now.ToString("yyyy-mm-dd HH:ss")}" };
+        EventDto e = new() { MainAdminId = u.Id, Name = $"E: {DateTime.Now:yyyy-MM-dd HH:mm:ss}" };
         await CreateEvent(token, e);
-        e = await GetEventById(14);
+        e = await GetEventById(new Random().Next(20));
         await ShowUserEvents(u.Id);
 
         // add watcher to event
         await JoinEvent(token, w, e);
         await ShowWatcherEvents(w);
         await ShowAllEvents();
-
     }
+
+    // --- HELPERS ---
+
+    private static async Task<T?> SafeReadAsync<T>(HttpContent content)
+    {
+        try
+        {
+            var stream = await content.ReadAsStreamAsync();
+            return await JsonSerializer.DeserializeAsync<T>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deserializing response: {ex.Message}");
+            return default;
+        }
+    }
+
+    private static void LogHeader(string msg) => Console.WriteLine($"\n=== {msg} ===");
+
+    // --- API METHODS ---
 
     public static async Task<string> Login(UserDto user)
     {
-        Console.WriteLine("START: Logging in...");
+        LogHeader("Logging in");
         string uri = Prefix + "Auth/Login";
-        LoginDto l = new(user.UserName, user.PasswordHash);
-        HttpResponseMessage msg = await client.PostAsJsonAsync(uri, l);
+        var loginDto = new LoginDto(user.UserName, user.PasswordHash);
 
+        HttpResponseMessage msg = await client.PostAsJsonAsync(uri, loginDto);
         if (msg.IsSuccessStatusCode)
         {
-            string wtf = await msg.Content.ReadAsAsync<string>();
-            Console.WriteLine(wtf + "\n=====");
-            return wtf;
+            string token = await msg.Content.ReadAsStringAsync();
+            Console.WriteLine($"Token received: {token}");
+            return token;
         }
         else
-            Console.WriteLine("=====");
-        return string.Empty;
+        {
+            Console.WriteLine($"Login failed: {msg.StatusCode}");
+            return string.Empty;
+        }
     }
 
     public static async Task<List<WatcherDto>> ListUserWatchers(string token)
     {
-        Console.WriteLine("START: Listing all watchers of one user...");
+        LogHeader("Listing watchers");
         string uri = $"{Prefix}Watcher/AllUserHave/{token}";
         var response = await client.GetAsync(uri);
+
         if (response.IsSuccessStatusCode)
         {
-            var watchers = await response.Content.ReadAsAsync<List<WatcherDto>>();
-            foreach (var w in watchers)
-                Console.WriteLine($"{w.Id}\t{w.FirstName}\t{w.LastName}\t{w.PublicIdentifier}");
-            Console.WriteLine("=====");
-            return watchers;
+            var watchers = await SafeReadAsync<List<WatcherDto>>(response.Content);
+            if (watchers != null)
+            {
+                foreach (var w in watchers)
+                    Console.WriteLine($"{w.Id}\t{w.FirstName}\t{w.LastName}\t{w.PublicIdentifier}");
+                return watchers;
+            }
         }
+        Console.WriteLine("No watchers found or error.");
         return new List<WatcherDto>();
     }
 
     public static async Task CreateNewWatcher(string token, WatcherDto watcherInfo)
     {
-        Console.WriteLine("START: Create new watcher...");
+        LogHeader("Creating new watcher");
         string uri = $"{Prefix}Watcher/Create/{token}";
         var response = await client.PostAsJsonAsync(uri, watcherInfo);
-        Console.WriteLine("=====");
+        if (!response.IsSuccessStatusCode)
+            Console.WriteLine($"Failed to create watcher: {response.StatusCode}");
     }
 
     public static async Task<UserDto> ShowUserInfo(string token)
     {
-        Console.WriteLine("START: Show info about one user...");
+        LogHeader("Showing user info");
         string uri = $"{Prefix}User/Get/{token}";
         var response = await client.GetAsync(uri);
+
         if (response.IsSuccessStatusCode)
         {
-            var u = await response.Content.ReadAsAsync<UserDto>();
-            if (u is null) Console.WriteLine($"VERY BAD, invalid user");
-            else Console.WriteLine(
-$"{u.Id} | {u.UserName}: {u.PasswordHash} | {(u.IsAdmin ? "Admin" : "Loser")} | W: {u.Watchers?.Count ?? -69} E: {u.Events?.Count ?? -69} | MainAdmin of W: {u.CuratedWatchers?.Count ?? -69} E: {u.AdministeredEvents?.Count ?? -69}\n=====");
-            return u ?? new UserDto();
+            var user = await SafeReadAsync<UserDto>(response.Content);
+            if (user == null)
+            {
+                Console.WriteLine("Invalid user data.");
+                return new UserDto();
+            }
+            Console.WriteLine($"{user.Id} | {user.UserName} | {(user.IsAdmin ? "Admin" : "User")} | Watchers: {user.Watchers?.Count ?? 0} | Events: {user.Events?.Count ?? 0}");
+            return user;
         }
         else
         {
-            Console.WriteLine("Cannot show user info.\n=====");
+            Console.WriteLine($"Failed to get user info: {response.StatusCode}");
             return new UserDto();
         }
     }
 
     public static async Task ShowAllBirds()
     {
-        Console.WriteLine("START: Show all birds...");
+        LogHeader("Showing all birds");
         string uri = $"{Prefix}Bird/GetAll";
         var response = await client.GetAsync(uri);
         if (response.IsSuccessStatusCode)
         {
-            var bs = await response.Content.ReadAsAsync<BirdDto[]>();
-            if (bs is null) Console.WriteLine("No bird, simple null");
+            var birds = await SafeReadAsync<BirdDto[]>(response.Content);
+            if (birds == null || birds.Length == 0)
+            {
+                Console.WriteLine("No birds found.");
+            }
             else
-                foreach (var b in bs)
+            {
+                foreach (var b in birds)
                     Console.WriteLine($"{b.Id}\t{b.FullName}\t{b.Comment}");
-            Console.WriteLine("=====");
+            }
         }
-        else Console.WriteLine("NOTSUCCESSFULL get all birds\n=====");
+        else
+        {
+            Console.WriteLine($"Failed to get birds: {response.StatusCode}");
+        }
     }
 
     public static async Task NewBird(BirdDto bdto)
     {
-        Console.WriteLine("START: Create new bird...");
+        LogHeader("Creating new bird");
         string uri = $"{Prefix}Bird/Create";
         var response = await client.PostAsJsonAsync(uri, bdto);
-        if (response.IsSuccessStatusCode) Console.WriteLine("Adding bird was a success.");
+        if (response.IsSuccessStatusCode)
+            Console.WriteLine("Bird added successfully.");
         else
         {
-            var smth = await response.Content.ReadAsAsync<string>();
-            Console.WriteLine($"Error when adding bird: {smth}");
+            string error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error adding bird: {error}");
         }
-        Console.WriteLine("=====");
     }
 
     public static async Task<BirdDto> GetBirdById(int id)
     {
-        Console.WriteLine("START: Get bird by id...");
+        LogHeader($"Getting bird by id {id}");
         string uri = $"{Prefix}Bird/GetById/{id}";
         var response = await client.GetAsync(uri);
-
         if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine($"Cannot get bird by id {id}: {await response.Content.ReadAsStringAsync()}\n=====");
-            return new BirdDto() { Id = -69 };
+            string error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Failed to get bird: {error}");
+            return new BirdDto { Id = -1 };
         }
-        var bird = await response.Content.ReadAsAsync<BirdDto>();
-        Console.WriteLine("=====");
-        return bird;
+        var bird = await SafeReadAsync<BirdDto>(response.Content);
+        return bird ?? new BirdDto { Id = -1 };
     }
 
     public static async Task ShowAllRecords()
     {
-        Console.WriteLine("START: Show all records...");
+        LogHeader("Showing all records");
         string uri = $"{Prefix}Record/GetAll";
         var response = await client.GetAsync(uri);
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Failed to get records: {response.StatusCode}");
+            return;
+        }
 
-        if (!response.IsSuccessStatusCode) Console.WriteLine($"Error fetching all records.");
+        var records = await SafeReadAsync<RecordDto[]>(response.Content);
+        if (records != null)
+        {
+            foreach (var r in records)
+                Console.WriteLine($"{r.Id}\tB:{r.Bird?.FullName ?? "N/A"}\tW:{r.Watcher?.FirstName ?? "N/A"} {r.Watcher?.LastName ?? ""}\t{r.DateSeen:yyyy-MM-dd HH:mm}");
+        }
         else
         {
-            var rds = await response.Content.ReadAsAsync<RecordDto[]>();
-            foreach (var rd in rds)
-                Console.WriteLine($"{rd.Id}\tB:{rd.Bird?.FullName ?? "miss"}\tW:{rd.Watcher?.FirstName ?? "miss"} {rd.Watcher?.LastName ?? "miss"}\t{rd.DateSeen.ToString("yyyy-mm-dd HH:ss")}");
+            Console.WriteLine("No records found.");
         }
-        Console.WriteLine("=====");
     }
 
     public static async Task ShowWatcherRecords(int watcherId)
     {
-        Console.WriteLine("START: Show all records of one watcher...");
+        LogHeader($"Showing records for watcher {watcherId}");
         string uri = $"{Prefix}Record/GetByWatcher/{watcherId}";
         var response = await client.GetAsync(uri);
 
-        if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot get watchers' records, because: {response.StatusCode} : {response.RequestMessage} : {response.Content.ReadAsAsync<string>()}");
-        else
+        if (!response.IsSuccessStatusCode)
         {
-            var smth = await response.Content.ReadAsAsync<RecordDto[]>();
-            if (smth is null) Console.WriteLine("ajaja, watchers records are null...");
-            else
-                foreach (var r in smth)
-                    Console.WriteLine($"{r.Id}\tB:{r.BirdId}\tW:{r.WatcherId}\tD:{r.DateSeen}\tC:{r.Comment}");
+            Console.WriteLine($"Failed to get watcher records: {response.StatusCode}");
+            return;
         }
-        Console.WriteLine("=====");
+
+        var records = await SafeReadAsync<RecordDto[]>(response.Content);
+        if (records == null)
+        {
+            Console.WriteLine("No records found for watcher.");
+            return;
+        }
+
+        foreach (var r in records)
+            Console.WriteLine($"{r.Id}\tB:{r.BirdId}\tW:{r.WatcherId}\tD:{r.DateSeen:yyyy-MM-dd HH:mm}\tC:{r.Comment}");
     }
 
-    public static async Task AddRecordToWatcher(string token, RecordDto r)
+    public static async Task AddRecordToWatcher(string token, RecordDto record)
     {
-        Console.WriteLine("START: Add record to watcher...");
+        LogHeader("Adding record to watcher");
         string uri = $"{Prefix}Record/Create/{token}";
-        var response = await client.PostAsJsonAsync(uri, r);
-
-        if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot add record of birdId {r.BirdId} to watcherId {r.WatcherId}: {await response.Content.ReadAsStringAsync()}");
-        Console.WriteLine("=====");
+        var response = await client.PostAsJsonAsync(uri, record);
+        if (!response.IsSuccessStatusCode)
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Failed to add record: {error}");
+        }
     }
 
     public static async Task ShowAllEvents()
     {
-        Console.WriteLine("START: Show all events...");
+        LogHeader("Showing all events");
         string uri = $"{Prefix}Event/GetAll";
         var response = await client.GetAsync(uri);
 
-        if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot get events");
-        else
+        if (!response.IsSuccessStatusCode)
         {
-            var smth = await response.Content.ReadAsAsync<EventDto[]>();
-            if (smth is null) Console.WriteLine("ajaja, events are null...");
-            else
-                foreach (var e in smth)
-                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}\t{e.PublicIdentifier}");
+            Console.WriteLine($"Failed to get events: {response.StatusCode}");
+            return;
         }
-        Console.WriteLine("=====");
+
+        var events = await SafeReadAsync<EventDto[]>(response.Content);
+        if (events == null)
+        {
+            Console.WriteLine("No events found.");
+            return;
+        }
+
+        foreach (var e in events)
+            Console.WriteLine($"{e.Id}\t{e.Name}\tParticipants: {e.Participants?.Count ?? 0}\tAdminId: {e.MainAdminId}\t{e.PublicIdentifier}");
     }
 
-    public static async Task ShowUserEvents(int id)
+    public static async Task ShowUserEvents(int userId)
     {
-        Console.WriteLine("START: Show all events belonging to user...");
-        string uri = $"{Prefix}Event/GetByUserId/{id}";
+        LogHeader($"Showing events for user {userId}");
+        string uri = $"{Prefix}Event/GetByUserId/{userId}";
         var response = await client.GetAsync(uri);
 
-        if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot get events related to user.");
-        else
+        if (!response.IsSuccessStatusCode)
         {
-            var evs = await response.Content.ReadAsAsync<EventDto[]>();
-            if (evs is null) Console.WriteLine("ajaj Events are null...");
-            else
-                foreach (var e in evs)
-                    Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}\t{e.PublicIdentifier}");
+            Console.WriteLine($"Failed to get user events: {response.StatusCode}");
+            return;
         }
-        Console.WriteLine("=====");
+
+        var events = await SafeReadAsync<EventDto[]>(response.Content);
+        if (events == null)
+        {
+            Console.WriteLine("No events found for user.");
+            return;
+        }
+
+        foreach (var e in events)
+            Console.WriteLine($"{e.Id}\t{e.Name}\tParticipants: {e.Participants?.Count ?? 0}\tAdminId: {e.MainAdminId}\t{e.PublicIdentifier}");
     }
 
     public static async Task CreateEvent(string token, EventDto e)
     {
-        Console.WriteLine("START: Create event...");
+        LogHeader("Creating event");
         string uri = $"{Prefix}Event/Create/{token}";
         var response = await client.PostAsJsonAsync(uri, e);
-
-        if (!response.IsSuccessStatusCode) Console.WriteLine($"Cannot create event: {await response.Content.ReadAsStringAsync()}");
-        Console.WriteLine("=====");
+        if (!response.IsSuccessStatusCode)
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Failed to create event: {error}");
+        }
     }
 
     public static async Task ShowWatcherEvents(WatcherDto w)
     {
-        Console.WriteLine("START: Show events in which watcher participates...");
+        LogHeader($"Showing events for watcher {w.Id}");
         string uri = $"{Prefix}Event/GetByWatcherId/{w.Id}";
         var response = await client.GetAsync(uri);
 
-        if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot show watchers events");
-        else
-            foreach (var e in await response.Content.ReadAsAsync<EventDto[]>())
-                Console.WriteLine($"{e.Id}\t{e.Name}\t#W:{e.Participants?.Count ?? -69}\tAdminId:{e.MainAdminId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Failed to get watcher events.");
+            return;
+        }
 
-        Console.WriteLine("=====");
+        var events = await SafeReadAsync<EventDto[]>(response.Content);
+        if (events == null)
+        {
+            Console.WriteLine("No events found for watcher.");
+            return;
+        }
+
+        foreach (var e in events)
+            Console.WriteLine($"{e.Id}\t{e.Name}\tParticipants: {e.Participants?.Count ?? 0}\tAdminId: {e.MainAdminId}");
     }
 
     public static async Task<EventDto> GetEventById(int id)
     {
-        Console.WriteLine("START: Get event by id...");
+        LogHeader($"Getting event by id {id}");
         string uri = $"{Prefix}Event/Get/{id}";
         var response = await client.GetAsync(uri);
 
         if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine("cannot get event by id\n=====");
-            return new EventDto() { Name = "NENE" };
+            string error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Failed to get event: {error}");
+            return new EventDto { Name = "NENE" };
         }
-        else
-            Console.WriteLine("=====");
-        return await response.Content.ReadAsAsync<EventDto>();
+
+        var e = await SafeReadAsync<EventDto>(response.Content);
+        return e ?? new EventDto { Name = "NENE" };
     }
 
-    // VERY BIG BUBU, NOT GOOD. GIVES NO ERROR BUT NOT WORKS...
     public static async Task JoinEvent(string token, WatcherDto w, EventDto e)
     {
-        Console.WriteLine($"START: Join event... {e.PublicIdentifier}");
+        LogHeader($"Joining event {e.PublicIdentifier}");
         string uri = $"{Prefix}Watcher/JoinEvent/{token}/{w.Id}/{e.PublicIdentifier}";
         var emptyContent = new StringContent("", Encoding.UTF8, "application/json");
         var response = await client.PostAsync(uri, emptyContent);
 
-        if (!response.IsSuccessStatusCode) Console.WriteLine("Cannot join event.");
-
-        Console.WriteLine("=====");
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Failed to join event: {response.StatusCode}");
+        }
     }
 }

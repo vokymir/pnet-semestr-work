@@ -10,10 +10,9 @@ using BirdWatching.Shared.Model;
 /// - join event
 /// - Add/remove curators??? = done in users
 /// Should do:
-/// - Update watcher.
-/// - Change mainUser.
+/// - Update watcher. (if mainAdmin)
 /// Also:
-/// - participate in event + leave
+/// - participate in event (DONE)+ leave
 /// </summary>
 [ApiController]
 public class WatcherController : BaseApiController

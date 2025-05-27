@@ -30,17 +30,27 @@ public class BaseApiController : ControllerBase
     protected IActionResult AuthUserByToken(string token, int userId)
     {
         AuthToken? auth = _authRepo.GetByString(token);
-        if (auth is null) return BadRequest("Cannot find user by token.");
-        if (auth.User is null) return Problem("User not set as reference.");
-        if (auth.User.Id != userId) return BadRequest("Don't have permission to do this.");
+        if (auth is null)
+            return BadRequest(new { error = "Cannot find user by token." });
+
+        if (auth.User is null)
+            return StatusCode(500, new { error = "User not set as reference." });
+
+        if (auth.User.Id != userId)
+            return Unauthorized(new { error = "Don't have permission to do this." });
+
         return Ok();
     }
 
     protected (IActionResult Result, User? User) AuthUserByToken(string token)
     {
         AuthToken? auth = _authRepo.GetByString(token);
-        if (auth is null) return (BadRequest("Cannot find user by token."), null);
-        if (auth.User is null) return (Problem("User not set as reference."), null);
+        if (auth is null)
+            return (BadRequest(new { error = "Cannot find user by token." }), null);
+
+        if (auth.User is null)
+            return (StatusCode(500, new { error = "User not set as reference." }), null);
+
         var u = _userRepo.GetById(auth.User.Id);
         return (Ok(), u);
     }
@@ -48,9 +58,15 @@ public class BaseApiController : ControllerBase
     protected IActionResult AuthAdminByToken(string token)
     {
         AuthToken? auth = _authRepo.GetByString(token);
-        if (auth is null) return BadRequest("Cannot find user by token.");
-        if (auth.User is null) return Problem("User not set as reference.");
-        if (!auth.User.IsAdmin) return BadRequest("Don't have permission to do this.");
+        if (auth is null)
+            return BadRequest(new { error = "Cannot find user by token." });
+
+        if (auth.User is null)
+            return StatusCode(500, new { error = "User not set as reference." });
+
+        if (!auth.User.IsAdmin)
+            return Unauthorized(new { error = "Don't have permission to do this." });
+
         return Ok();
     }
 

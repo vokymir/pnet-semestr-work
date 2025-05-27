@@ -1,20 +1,10 @@
 namespace BirdWatching.Api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-
 using BirdWatching.Shared.Model;
 
-/// <summary>
-/// Can do following:
-/// - Create new user from dto.
-/// - Update and delete self (or any if admin).
-/// - List all users (Admin only).
-/// - Get info about current user (or any if admin).
-/// - Add curated watcher to existing user.
-/// Should do:
-/// -
-/// </summary>
 [ApiController]
+[Route("api/[controller]")]
 public class UserController : BaseApiController
 {
     private readonly ILogger<UserController> _logger;
@@ -30,162 +20,208 @@ public class UserController : BaseApiController
     /// Create new user.
     /// </summary>
     [HttpPost("Create")]
-    public IActionResult CreateUser(UserDto userDto)
+    public IActionResult CreateUser([FromBody] UserDto userDto)
     {
-        User user = userDto.ToEntity();
+        if (userDto == null)
+            return BadRequest("User data must be provided.");
 
-        _userRepo.Add(user);
-
-        return Ok();
+        try
+        {
+            User user = userDto.ToEntity();
+            _userRepo.Add(user);
+            return Ok(user.ToFullDto());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating user.");
+            return Problem("An error occurred while creating the user.");
+        }
     }
 
     /// <summary>
     /// Update self, or if admin any user.
     /// </summary>
     [HttpPost("Update/{token}")]
-    public IActionResult UpdateUser(string token, UserDto userDto)
+    public IActionResult UpdateUser(string token, [FromBody] UserDto userDto)
     {
-        IActionResult response = AuthUserByToken(token, userDto.Id);
-        if (!response.Equals(Ok()))
+        if (string.IsNullOrWhiteSpace(token) || userDto == null)
+            return BadRequest("Invalid token or user data.");
+
+        var authResult = AuthUserByToken(token, userDto.Id);
+        if (!IsAuthorized(authResult))
         {
-            var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Ok()))
-                return response;
+            var adminAuth = AuthAdminByToken(token);
+            if (!IsAuthorized(adminAuth))
+                return Unauthorized("Access denied.");
         }
 
         User? user = _userRepo.GetById(userDto.Id);
-        if (user is null) return NotFound();
+        if (user == null)
+            return NotFound("User not found.");
 
-        user.UserName = userDto.UserName;
-        user.PasswordHash = userDto.PasswordHash;
+        // Only update fields that are allowed to be updated
+        user.UserName = userDto.UserName ?? user.UserName;
+        user.PasswordHash = userDto.PasswordHash ?? user.PasswordHash;
 
         try
         {
             _userRepo.Update(user);
+            return NoContent();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return Problem(e.Message);
+            _logger.LogError(ex, "Failed to update user with ID {UserId}.", userDto.Id);
+            return Problem("Failed to update user.");
         }
-
-        return Ok();
     }
 
     /// <summary>
     /// Delete self or if admin anyone.
     /// </summary>
     [HttpDelete("Delete/{token}")]
-    public IActionResult DeleteUser(string token, int userId)
+    public IActionResult DeleteUser(string token, [FromQuery] int userId)
     {
-        IActionResult response = AuthUserByToken(token, userId);
-        if (!response.Equals(Ok()))
+        if (string.IsNullOrWhiteSpace(token))
+            return BadRequest("Token must be provided.");
+
+        var authResult = AuthUserByToken(token, userId);
+        if (!IsAuthorized(authResult))
         {
-            var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Ok()))
-                return response;
+            var adminAuth = AuthAdminByToken(token);
+            if (!IsAuthorized(adminAuth))
+                return Unauthorized("Access denied.");
         }
 
         try
         {
-            _userRepo.Delete(userId);
+            bool deleted = _userRepo.Delete(userId);
+            if (!deleted)
+                return NotFound("User not found.");
+            return NoContent();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return Problem(e.Message);
+            _logger.LogError(ex, "Failed to delete user with ID {UserId}.", userId);
+            return Problem("Failed to delete user.");
         }
-
-        return Ok();
     }
 
     /// <summary>
-    /// Get all info about user, if you.
+    /// Get current user info.
     /// </summary>
     [HttpGet("Get/{token}")]
     public IActionResult GetUser(string token)
     {
-        var response = AuthUserByToken(token);
-        if (!response.Result.Equals(Ok())) return response.Result;
+        if (string.IsNullOrWhiteSpace(token))
+            return BadRequest("Token must be provided.");
 
-        User? user = response.User;
-        if (user is null)
-            return NotFound();
+        var authResult = AuthUserByToken(token);
+        if (!IsAuthorized(authResult.Result))
+            return Unauthorized("Access denied.");
 
-        UserDto userDto = user.ToFullDto();
+        User? user = authResult.User;
+        if (user == null)
+            return NotFound("User not found.");
+
+        var userDto = user.ToFullDto();
         userDto.AuthTokens = null;
-
         return Ok(userDto);
     }
 
     /// <summary>
-    /// Get info about user, either self or must be admin.
+    /// Get info about user by ID, either self or admin.
     /// </summary>
     [HttpGet("Get/{token}/{userId}")]
     public IActionResult GetUser(string token, int userId)
     {
-        IActionResult response = AuthUserByToken(token, userId);
-        if (!response.Equals(Ok()))
+        if (string.IsNullOrWhiteSpace(token))
+            return BadRequest("Token must be provided.");
+
+        var authResult = AuthUserByToken(token, userId);
+        if (!IsAuthorized(authResult))
         {
-            var adminResponse = AuthAdminByToken(token);
-            if (!adminResponse.Equals(Ok()))
-                return response;
+            var adminAuth = AuthAdminByToken(token);
+            if (!IsAuthorized(adminAuth))
+                return Unauthorized("Access denied.");
         }
 
         User? user = _userRepo.GetById(userId);
-        if (user is null)
-            return NotFound();
+        if (user == null)
+            return NotFound("User not found.");
 
-        UserDto userDto = user.ToFullDto();
+        var userDto = user.ToFullDto();
         userDto.AuthTokens = null;
-
         return Ok(userDto);
     }
 
     /// <summary>
-    /// Get all users if you are admin.
+    /// Get all users (admin only).
     /// </summary>
     [HttpGet("GetAll/{token}")]
     public IActionResult GetAllUsers(string token)
     {
-        IActionResult response = AuthAdminByToken(token);
-        if (!response.Equals(Ok())) return response;
+        if (string.IsNullOrWhiteSpace(token))
+            return BadRequest("Token must be provided.");
 
-        User[] users = _userRepo.GetAll().ToArray();
-        UserDto[] userDtos = new UserDto[users.Length];
+        var authResult = AuthAdminByToken(token);
+        if (!IsAuthorized(authResult))
+            return Unauthorized("Admin privileges required.");
 
-        for (int i = 0; i < users.Length; i++)
-        {
-            User user = users[i];
-            UserDto userDto = user.ToFullDto();
-            userDto.AuthTokens = null;
-            userDtos[i] = userDto;
-        }
+        var users = _userRepo.GetAll();
+        var userDtos = users.Select(u => {
+            var dto = u.ToFullDto();
+            dto.AuthTokens = null;
+            return dto;
+        }).ToArray();
 
         return Ok(userDtos);
     }
 
+    /// <summary>
+    /// Add curated watcher to current user.
+    /// </summary>
     [HttpPost("AddCuratedWatcher/{token}/{watcherPublicId}")]
     public IActionResult AddCuratedWatcher(string token, string watcherPublicId)
     {
-        var response = AuthUserByToken(token);
-        if (!response.Result.Equals(Ok())) return response.Result;
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(watcherPublicId))
+            return BadRequest("Token and watcherPublicId must be provided.");
 
-        User? user = response.User;
-        if (user is null)
+        var authResult = AuthUserByToken(token);
+        if (!IsAuthorized(authResult.Result))
+            return Unauthorized("Access denied.");
+
+        User? user = authResult.User;
+        if (user == null)
             return NotFound("User not found.");
 
         Watcher? watcher = _watcherRepo.GetByPublicId(watcherPublicId);
-        if (watcher is null) return NotFound("Watcher not found.");
+        if (watcher == null)
+            return NotFound("Watcher not found.");
 
         try
         {
-            watcher.Curators.Add(user);
-            _watcherRepo.Update(watcher);
+            if (!watcher.Curators.Contains(user))
+            {
+                watcher.Curators.Add(user);
+                _watcherRepo.Update(watcher);
+            }
+            else
+            {
+                return Conflict("User is already a curator of this watcher.");
+            }
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message);
+            _logger.LogError(ex, "Failed to add curator {UserId} to watcher {WatcherId}.", user.Id, watcherPublicId);
+            return Problem("Failed to add curator.");
         }
 
         return Ok();
+    }
+
+    // Helper method to check authorization results more cleanly
+    private static bool IsAuthorized(IActionResult authResult)
+    {
+        return authResult is OkResult or OkObjectResult;
     }
 }

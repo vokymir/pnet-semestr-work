@@ -40,15 +40,18 @@ public class EFUserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    public void Delete(int id)
+    public bool Delete(int id)
     {
         var user = GetById(id);
 
         if (user is null)
-            throw new InvalidOperationException($"User with ID = {id} is not in the database and cannot be deleted.");
+            // throw new InvalidOperationException($"User with ID = {id} is not in the database and cannot be deleted.");
+            return false;
 
         _context.Users.Remove(user);
         _context.SaveChanges();
+
+        return true;
     }
 
     public User? GetById(int id) => UsersWithDetails.First(u => u.Id == id);
