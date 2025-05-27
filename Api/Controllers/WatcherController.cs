@@ -1,134 +1,163 @@
-namespace BirdWatching.Api.Controllers;
-
-using Microsoft.AspNetCore.Mvc;
-using BirdWatching.Shared.Model;
-
-/// <summary>
-/// Can do the following:
-/// - Create watcher and bind it to current user.
-/// - Get all watchers belonging to user (or all if admin).
-/// - join event
-/// - Add/remove curators??? = done in users
-/// Should do:
-/// - Update watcher. (if mainAdmin)
-/// Also:
-/// - participate in event (DONE)+ leave
-/// </summary>
-[ApiController]
-public class WatcherController : BaseApiController
+namespace BirdWatching.Api.Controllers
 {
-    private readonly ILogger<WatcherController> _logger;
+    using Microsoft.AspNetCore.Mvc;
+    using BirdWatching.Shared.Model;
 
-    public WatcherController(AppDbContext context, ILogger<WatcherController> logger)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class WatcherController : BaseApiController
     {
-        _context = context;
-        _logger = logger;
-        Init();
-    }
+        private readonly ILogger<WatcherController> _logger;
 
-    /// <summary>
-    /// Create a new watcher and assing it to current user.
-    /// </summary>
-    [HttpPost("Create/{token}")]
-    public IActionResult CreateWatcher(string token, WatcherDto watcherDto)
-    {
-        var gettingUser = AuthUserByToken(token);
-        if (!gettingUser.Result.Equals(Ok())) return gettingUser.Result;
-        User user = gettingUser.User!;
-
-        try
+        public WatcherController(AppDbContext context, ILogger<WatcherController> logger)
         {
-            var watcher = watcherDto.ToEntity();
-            watcher.MainCuratorId = user.Id;
-            watcher.Curators.Add(user);
-
-            var wStrings = _watcherRepo.GetAllPublicIdentifiers();
-            string identificator;
-            do
-                identificator = GenerateUrlSafeString(8);
-            while (wStrings.ContainsKey(identificator));
-            watcher.PublicIdentifier = identificator;
-
-            _watcherRepo.Add(watcher);
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
+            _context = context;
+            _logger = logger;
+            Init();
         }
 
-        return Ok();
-    }
-
-    /// <summary>
-    /// Get absolutely all watchers, if you are admin.
-    /// </summary>
-    [HttpGet("GetAll/{token}")]
-    public IActionResult GetAllIfAdmin(string token)
-    {
-        var result = AuthAdminByToken(token);
-        if (!result.Equals(Ok())) return result;
-
-        var watchers = _watcherRepo.GetAll();
-        var watcherDtos = new List<WatcherDto>();
-        foreach (var w in watchers)
-            watcherDtos.Add(w.ToFullDto());
-
-        return Ok(watcherDtos);
-    }
-
-    /// <summary>
-    /// Get all watchers a user can edit.
-    /// </summary>
-    [HttpGet("AllUserHave/{token}")]
-    public IActionResult GetUserWatchers(string token)
-    {
-        var gettingUser = AuthUserByToken(token);
-        if (!gettingUser.Result.Equals(Ok())) return gettingUser.Result;
-        User user = gettingUser.User!;
-
-        Watcher[] watchers = _watcherRepo.GetByUser(user);
-        var watcherDtos = new List<WatcherDto>();
-        foreach (var w in watchers)
-            watcherDtos.Add(w.ToFullDto());
-
-        return Ok(watcherDtos);
-    }
-
-    [HttpGet("Get/{id}")]
-    public IActionResult GetById(int id)
-    {
-        var w = _watcherRepo.GetById(id);
-        if (w is null) return NotFound();
-
-        WatcherDto wDto = w.ToFullDto();
-
-        return Ok(wDto);
-    }
-
-    [HttpPost("JoinEvent/{token}/{watcherId}/{eventPublicId}")]
-    public IActionResult JoinEvent(string token, int watcherId, string eventPublicId)
-    {
-        var gettingUser = AuthUserByToken(token);
-        if (!gettingUser.Result.Equals(Ok())) return gettingUser.Result;
-        User user = gettingUser.User!;
-
-        Watcher? watcher = _watcherRepo.GetById(watcherId);
-        if (watcher is null) return NotFound("Watcher not found.");
-        if (!watcher.Curators.Contains(user)) return Problem("Don't have permission to edit watcher.");
-
-        Event? e = _eventRepo.GetByPublicId(eventPublicId);
-        if (e is null) return NotFound("Event not found.");
-
-        try
+        /// <summary>
+        /// Create a new watcher and assign it to current user.
+        /// </summary>
+        [HttpPost("Create/{token}")]
+        public IActionResult CreateWatcher(string token, [FromBody] WatcherDto watcherDto)
         {
-            watcher.Participating.Add(e);
-            _watcherRepo.Update(watcher);
-        }
-        catch (Exception ex)
-        {
-            return Problem(ex.Message);
+            if (string.IsNullOrWhiteSpace(token))
+                return BadRequest("Token must be provided.");
+            if (watcherDto == null)
+                return BadRequest("Watcher data must be provided.");
+
+            var auth = AuthUserByToken(token);
+            if (!IsAuthorized(auth.Result))
+                return Unauthorized("Invalid or expired token.");
+
+            var user = auth.User!;
+            try
+            {
+                var watcher = watcherDto.ToEntity();
+                watcher.MainCuratorId = user.Id;
+                watcher.Curators.Add(user);
+
+                // Generate unique public identifier
+                var existing = _watcherRepo.GetAllPublicIdentifiers();
+                string id;
+                do
+                {
+                    id = GenerateUrlSafeString(8);
+                } while (existing.ContainsKey(id));
+                watcher.PublicIdentifier = id;
+
+                _watcherRepo.Add(watcher);
+
+                var resultDto = watcher.ToFullDto();
+                return Ok(resultDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating watcher for user {UserId}.", user.Id);
+                return Problem("An error occurred while creating the watcher.");
+            }
         }
 
-        return Ok();
+        /// <summary>
+        /// Get absolutely all watchers, if admin.
+        /// </summary>
+        [HttpGet("GetAll/{token}")]
+        public IActionResult GetAllIfAdmin(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return BadRequest("Token must be provided.");
+
+            var auth = AuthAdminByToken(token);
+            if (!IsAuthorized(auth))
+                return Unauthorized("Admin privileges required.");
+
+            var watchers = _watcherRepo.GetAll()
+                .Select(w => w.ToFullDto())
+                .ToList();
+
+            return Ok(watchers);
+        }
+
+        /// <summary>
+        /// Get watchers that current user can edit.
+        /// </summary>
+        [HttpGet("AllUserHave/{token}")]
+        public IActionResult GetUserWatchers(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return BadRequest("Token must be provided.");
+
+            var auth = AuthUserByToken(token);
+            if (!IsAuthorized(auth.Result))
+                return Unauthorized("Invalid or expired token.");
+
+            var user = auth.User!;
+            var watchers = _watcherRepo.GetByUser(user)
+                .Select(w => w.ToFullDto())
+                .ToList();
+
+            return Ok(watchers);
+        }
+
+        /// <summary>
+        /// Get watcher by ID.
+        /// </summary>
+        [HttpGet("Get/{id}")]
+        public IActionResult GetById(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Invalid watcher ID.");
+
+            var watcher = _watcherRepo.GetById(id);
+            if (watcher == null)
+                return NotFound("Watcher not found.");
+
+            return Ok(watcher.ToFullDto());
+        }
+
+        /// <summary>
+        /// Join a watcher to an event.
+        /// </summary>
+        [HttpPost("JoinEvent/{token}/{watcherId}/{eventPublicId}")]
+        public IActionResult JoinEvent(string token, int watcherId, string eventPublicId)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return BadRequest("Token must be provided.");
+
+            var auth = AuthUserByToken(token);
+            if (!IsAuthorized(auth.Result))
+                return Unauthorized("Invalid or expired token.");
+
+            var user = auth.User!;
+            var watcher = _watcherRepo.GetById(watcherId);
+            if (watcher == null)
+                return NotFound("Watcher not found.");
+            if (!watcher.Curators.Contains(user))
+                return Forbid("You do not have permission to modify this watcher.");
+
+            var e = _eventRepo.GetByPublicId(eventPublicId);
+            if (e == null)
+                return NotFound("Event not found.");
+
+            try
+            {
+                if (watcher.Participating.Any(ev => ev.Id == e.Id))
+                    return Conflict("Watcher is already participating in this event.");
+
+                watcher.Participating.Add(e);
+                _watcherRepo.Update(watcher);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding watcher {WatcherId} to event {EventId}.", watcherId, e.Id);
+                return Problem("Failed to join event.");
+            }
+        }
+
+        // Helper to check authorization results
+        private static bool IsAuthorized(IActionResult result) =>
+            result is OkResult or OkObjectResult;
     }
 }
