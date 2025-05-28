@@ -38,8 +38,9 @@ public class AuthController : BaseApiController
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name,           user.UserName),
+            new Claim(ClaimTypes.Role,           user.IsAdmin ? "Admin" : "User")
         };
 
         // 3) Načteme klíč, issuer a audience z User Secrets

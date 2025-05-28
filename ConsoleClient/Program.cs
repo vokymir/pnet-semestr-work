@@ -21,6 +21,18 @@ public class Program
             await CallEndpointAsync__GET(client, token, "/api/event/all");   // e.g. returns events
                                                                              // Call an [Authorize(Roles="Admin")] endpoint
             await CallEndpointAsync__GET(client, token, "/api/user/all");    // Admin-only users
+
+            WatcherDto w = new() { FirstName = "Jmeno", LastName = "Prijmeni" };
+            await CreateWatcherAsync(client, token, w);
+
+            var ws = await GetWatchersAsync(client, token);
+
+            EventDto e = new() { Name = "Udalost", Start = DateTime.Now, End = DateTime.Now.AddDays(1) };
+            await CreateEventAsync(client, token, e);
+
+            var es = await GetEventsAsync(client, token);
+
+            await JoinWatcherToEventAsync(client, token, ws[0].Id, es[es.Count - 1].PublicIdentifier);
         }
     }
 
@@ -74,5 +86,121 @@ public class Program
         {
             Console.WriteLine($"Error {(int) response.StatusCode} when calling {endpoint}");
         }
+    }
+
+    static async Task CreateWatcherAsync(HttpClient client, string token, WatcherDto watcher)
+    {
+        Console.WriteLine("\n📤 Creating new watcher...");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var json = JsonSerializer.Serialize(watcher);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync("/api/watcher", content);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"✅ Watcher created: {data}");
+        }
+        else
+        {
+            Console.WriteLine($"❌ Failed to create watcher: {response.StatusCode}");
+        }
+    }
+
+    static async Task CreateEventAsync(HttpClient client, string token, EventDto evt)
+    {
+        Console.WriteLine("\n📤 Creating new event...");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var json = JsonSerializer.Serialize(evt);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync("/api/event", content);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"✅ Event created: {data}");
+        }
+        else
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"❌ Failed to create event: {response.StatusCode}\n{error}");
+        }
+    }
+
+    static async Task JoinWatcherToEventAsync(HttpClient client, string token, int watcherId, string eventPublicId)
+    {
+        Console.WriteLine($"\n📤 Joining watcher {watcherId} to event {eventPublicId}...");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var endpoint = $"/api/watcher/join/{eventPublicId}?watcherId={watcherId}";
+        var emptyContent = new StringContent("", Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync(endpoint, emptyContent);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("✅ Watcher successfully joined event.");
+        }
+        else
+        {
+            Console.WriteLine($"❌ Failed to join event: {response.StatusCode}");
+        }
+    }
+
+    static async Task<List<WatcherDto>> GetWatchersAsync(HttpClient client, string token)
+    {
+        Console.WriteLine("\n📥 Retrieving your watchers...");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/api/watcher");
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"❌ Failed to retrieve watchers: {response.StatusCode}");
+            return new List<WatcherDto>();
+        }
+
+        var stream = await response.Content.ReadAsStreamAsync();
+        var watchers = await JsonSerializer.DeserializeAsync<List<WatcherDto>>(stream, new JsonSerializerOptions {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (watchers is null || watchers.Count == 0)
+        {
+            Console.WriteLine("⚠️ No watchers found.");
+            return new List<WatcherDto>();
+        }
+
+        foreach (var w in watchers)
+            Console.WriteLine($"🕵️ {w.Id} - {w.FirstName} {w.LastName} ({w.PublicIdentifier})");
+
+        return watchers;
+    }
+
+    static async Task<List<EventDto>> GetEventsAsync(HttpClient client, string token)
+    {
+        Console.WriteLine("\n📥 Retrieving all events...");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/api/event/all");
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"❌ Failed to retrieve events: {response.StatusCode}");
+            return new List<EventDto>();
+        }
+
+        var stream = await response.Content.ReadAsStreamAsync();
+        var events = await JsonSerializer.DeserializeAsync<List<EventDto>>(stream, new JsonSerializerOptions {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (events is null || events.Count == 0)
+        {
+            Console.WriteLine("⚠️ No events found.");
+            return new List<EventDto>();
+        }
+
+        foreach (var e in events)
+            Console.WriteLine($"📅 {e.Id} - {e.Name} ({e.PublicIdentifier})");
+
+        return events;
     }
 }

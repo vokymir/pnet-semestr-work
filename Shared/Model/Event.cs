@@ -43,12 +43,13 @@ public class Event : IHaveDto<EventDto>
             Start = Start,
             End = End,
             MainAdminId = MainAdminId,
-            MainAdmin = MainAdmin.ToDto(),
             PublicIdentifier = PublicIdentifier,
             AllowDuplicates = AllowDuplicates,
             GenusRegex = GenusRegex,
             SpeciesRegex = SpeciesRegex,
         };
+
+        if (MainAdmin is not null) e.MainAdmin = MainAdmin.ToDto();
 
         if (e.Participants is null) e.Participants = new List<WatcherDto>();
         foreach (var w in Participants)

@@ -24,14 +24,22 @@ namespace BirdWatching.Api.Controllers
         /// <summary>
         /// Create a new event. Current user becomes MainAdmin.
         /// </summary>
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] EventDto eventDto)
         {
             if (eventDto == null)
                 return BadRequest("Event data must be provided.");
 
+            foreach (var c in User.Claims)
+                Console.WriteLine($"{c.Type} = {c.Value}");
+
+            // 🛡️ Kontrola, že uživatel je přihlášen
+            if (!User.Identity?.IsAuthenticated ?? true)
+                return Unauthorized("JWT token is missing or invalid.");
+
             // ID aktuálního uživatele z claimu 'sub'
-            var userIdClaim = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
 
@@ -41,12 +49,11 @@ namespace BirdWatching.Api.Controllers
                 e.MainAdminId = userId;
 
                 // unikátní public identifier
-                var existing = await _eventRepo.GetAllPublicIdentifiersAsync();
                 string pubId;
-                do
+                do // same as in watcherController
                 {
                     pubId = GenerateUrlSafeString(5);
-                } while (existing.ContainsKey(pubId));
+                } while (await _eventRepo.GetByPublicIdAsync(pubId) != null);
                 e.PublicIdentifier = pubId;
 
                 await _eventRepo.AddAsync(e);
