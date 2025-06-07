@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace BirdWatching.Api.Controllers;
 
@@ -26,13 +27,20 @@ public class AuthController : BaseApiController
     }
 
     [AllowAnonymous]
-    [HttpPost()]
+    [HttpPost]
+    [SwaggerOperation(OperationId = "Login")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginDto login)
     {
         // 1) Over zadané přihlašovací údaje v DB
         var user = await _userRepo.GetByUsernameAsync(login.username);
         if (user == null || user.PasswordHash != login.passwordhash)
-            return Unauthorized("Neplatné jméno nebo heslo.");
+            return Unauthorized(new ProblemDetails {
+                Status = 401,
+                Title = "Unauthorized",
+                Detail = "Neplatné jméno nebo heslo."
+            });
 
         // 2) Vytvoříme claimy
         var claims = new[]
@@ -60,6 +68,6 @@ public class AuthController : BaseApiController
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
         // 5) Vrátíme token klientovi
-        return Ok(new { token = tokenString });
+        return Ok(tokenString);
     }
 }

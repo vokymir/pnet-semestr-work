@@ -27,11 +27,11 @@ public partial interface IBirdApiClient
 {
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task AuthAsync(LoginDto body);
+System.Threading.Tasks.Task<string> AuthAsync(LoginDto body);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task AuthAsync(LoginDto body, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<string> AuthAsync(LoginDto body, System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task BirdPOSTAsync(BirdDto body);
@@ -41,11 +41,11 @@ System.Threading.Tasks.Task BirdPOSTAsync(BirdDto body);
 System.Threading.Tasks.Task BirdPOSTAsync(BirdDto body, System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task AllAsync();
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> BirdAllAsync();
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task AllAsync(System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> BirdAllAsync(System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task SearchAsync(string prefix);
@@ -83,11 +83,11 @@ System.Threading.Tasks.Task EventPOSTAsync(EventDto body);
 System.Threading.Tasks.Task EventPOSTAsync(EventDto body, System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All2Async();
+System.Threading.Tasks.Task AllAsync();
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All2Async(System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task AllAsync(System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task EventGETAsync(int id);
@@ -139,11 +139,11 @@ System.Threading.Tasks.Task RecordPOSTAsync(RecordDto body);
 System.Threading.Tasks.Task RecordPOSTAsync(RecordDto body, System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All3Async();
+System.Threading.Tasks.Task All2Async();
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All3Async(System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task All2Async(System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task RecordGETAsync(int id);
@@ -202,11 +202,11 @@ System.Threading.Tasks.Task UserGET2Async(int userId);
 System.Threading.Tasks.Task UserGET2Async(int userId, System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All4Async();
+System.Threading.Tasks.Task All3Async();
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All4Async(System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task All3Async(System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task CurateAsync(string watcherPublicId);
@@ -230,11 +230,11 @@ System.Threading.Tasks.Task WatcherGET3Async();
 System.Threading.Tasks.Task WatcherGET3Async(System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All5Async();
+System.Threading.Tasks.Task All4Async();
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task All5Async(System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task All4Async(System.Threading.CancellationToken cancellationToken);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task WatcherGET4Async(int id);
@@ -291,14 +291,14 @@ partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.H
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task AuthAsync(LoginDto body)
+public virtual System.Threading.Tasks.Task<string> AuthAsync(LoginDto body)
 {
 return AuthAsync(body, System.Threading.CancellationToken.None);
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task AuthAsync(LoginDto body, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<string> AuthAsync(LoginDto body, System.Threading.CancellationToken cancellationToken)
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -311,6 +311,7 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("text/plain"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/auth"
@@ -335,7 +336,22 @@ ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
 if (status_ == 200)
 {
-return;
+var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("Unauthorized", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -425,14 +441,14 @@ client_.Dispose();
 }
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task AllAsync()
+public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> BirdAllAsync()
 {
-return AllAsync(System.Threading.CancellationToken.None);
+return BirdAllAsync(System.Threading.CancellationToken.None);
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task AllAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> BirdAllAsync(System.Threading.CancellationToken cancellationToken)
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -441,10 +457,11 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("text/plain"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-// Operation Path: "api/bird/all"
-urlBuilder_.Append("api/bird/all");
+// Operation Path: "api/bird"
+urlBuilder_.Append("api/bird");
 PrepareRequest(client_, request_, urlBuilder_);
 var url_ = urlBuilder_.ToString();
 request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
@@ -465,7 +482,12 @@ ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
 if (status_ == 200)
 {
-return;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<BirdDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
 }
 else
 {
@@ -830,14 +852,14 @@ client_.Dispose();
 }
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task All2Async()
+public virtual System.Threading.Tasks.Task AllAsync()
 {
-return All2Async(System.Threading.CancellationToken.None);
+return AllAsync(System.Threading.CancellationToken.None);
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task All2Async(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task AllAsync(System.Threading.CancellationToken cancellationToken)
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1360,14 +1382,14 @@ client_.Dispose();
 }
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task All3Async()
+public virtual System.Threading.Tasks.Task All2Async()
 {
-return All3Async(System.Threading.CancellationToken.None);
+return All2Async(System.Threading.CancellationToken.None);
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task All3Async(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task All2Async(System.Threading.CancellationToken cancellationToken)
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1964,14 +1986,14 @@ client_.Dispose();
 }
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task All4Async()
+public virtual System.Threading.Tasks.Task All3Async()
 {
-return All4Async(System.Threading.CancellationToken.None);
+return All3Async(System.Threading.CancellationToken.None);
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task All4Async(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task All3Async(System.Threading.CancellationToken cancellationToken)
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2224,14 +2246,14 @@ client_.Dispose();
 }
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task All5Async()
+public virtual System.Threading.Tasks.Task All4Async()
 {
-return All5Async(System.Threading.CancellationToken.None);
+return All4Async(System.Threading.CancellationToken.None);
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <returns>OK</returns>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task All5Async(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task All4Async(System.Threading.CancellationToken cancellationToken)
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
