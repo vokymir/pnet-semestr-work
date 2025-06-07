@@ -1,0 +1,18 @@
+{
+  "runtime": "Net80",
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "className": "BirdApiClient",
+      "namespace": "BirdWatching.Shared.Api",
+      "generateClientInterfaces": true,
+      "useHttpClientCreationMethod": true,
+      "generateDtoTypes": false,
+      "output": "Api/BirdApiClient.cs"
+    }
+  },
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "http://localhost:5069/swagger/v1/swagger.json"
+    }
+  }
+}

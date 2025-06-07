@@ -15,25 +15,26 @@ public class Program
     static async Task Main(string[] args)
     {
         string token = await LoginAsync(client, "string", "string");
-        if (!string.IsNullOrEmpty(token))
-        {
-            // Call an [Authorize] endpoint
-            await CallEndpointAsync__GET(client, token, "/api/event/all");   // e.g. returns events
-                                                                             // Call an [Authorize(Roles="Admin")] endpoint
-            await CallEndpointAsync__GET(client, token, "/api/user/all");    // Admin-only users
+        if (string.IsNullOrEmpty(token))
+            throw new ApplicationException("Cannot login...");
 
-            WatcherDto w = new() { FirstName = "Jmeno", LastName = "Prijmeni" };
-            await CreateWatcherAsync(client, token, w);
+        // Call an [Authorize] endpoint
+        await CallEndpointAsync__GET(client, token, "/api/event/all");   // e.g. returns events
+                                                                         // Call an [Authorize(Roles="Admin")] endpoint
+        await CallEndpointAsync__GET(client, token, "/api/user/all");    // Admin-only users
 
-            var ws = await GetWatchersAsync(client, token);
+        WatcherDto w = new() { FirstName = "Jmeno", LastName = "Prijmeni" };
+        await CreateWatcherAsync(client, token, w);
 
-            EventDto e = new() { Name = "Udalost", Start = DateTime.Now, End = DateTime.Now.AddDays(1) };
-            await CreateEventAsync(client, token, e);
+        var ws = await GetWatchersAsync(client, token);
 
-            var es = await GetEventsAsync(client, token);
+        EventDto e = new() { Name = "Udalost", Start = DateTime.Now, End = DateTime.Now.AddDays(1) };
+        await CreateEventAsync(client, token, e);
 
-            await JoinWatcherToEventAsync(client, token, ws[0].Id, es[es.Count - 1].PublicIdentifier);
-        }
+        var es = await GetEventsAsync(client, token);
+
+        await JoinWatcherToEventAsync(client, token, ws[0].Id, es[es.Count - 1].PublicIdentifier);
+
     }
 
     static async Task<string> LoginAsync(HttpClient client, string username, string passwordHash)

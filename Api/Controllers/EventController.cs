@@ -47,6 +47,7 @@ namespace BirdWatching.Api.Controllers
             {
                 var e = eventDto.ToEntity();
                 e.MainAdminId = userId;
+                e.MainAdmin = (await _userRepo.GetByIdAsync(userId))!; // if any error, it's still invalid operation
 
                 // unikátní public identifier
                 string pubId;

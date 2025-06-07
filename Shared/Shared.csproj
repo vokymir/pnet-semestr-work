@@ -15,6 +15,37 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.5" />
+    <PackageReference Include="NSwag.MSBuild" Version="14.4.0" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
+
+  <!---  Create BirdApiClient -->
+  <Target Name="NSwag" BeforeTargets="BeforeCompile" Condition="'$(MSBuildProjectName)' == 'Shared'">
+    <Message Importance="high" Text="Running NSwag to regenerate BirdApiClient..." />
+    <Exec Command="nswag run nswag.json" IgnoreExitCode="true"/>
+  </Target>
+
+<Target Name="AddUsingToGeneratedClient" AfterTargets="NSwag" Condition="'$(MSBuildProjectName)' == 'Shared'">
+  <Message Importance="high" Text="Adding using directive to BirdApiClient.cs if missing" />
+
+  <!-- Read all lines -->
+  <ReadLinesFromFile File="Api/BirdApiClient.cs">
+    <Output TaskParameter="Lines" ItemName="ClientFileLines" />
+  </ReadLinesFromFile>
+
+  <!-- Check if using directive exists -->
+  <ItemGroup>
+    <HasUsingLine Include="@(ClientFileLines)" Condition=" '%(Identity)' == 'using BirdWatching.Shared.Model;' " />
+  </ItemGroup>
+
+  <!-- If not found, insert it -->
+    <!-- Replace namespace line by inserting the using directive before it -->
+  <WriteLinesToFile Condition=" '@(HasUsingLine)' == '' " File="Api/BirdApiClient.cs" Overwrite="true"
+    Lines="@(ClientFileLines->Replace('namespace BirdWatching.Shared.Api',
+'using BirdWatching.Shared.Model;
+namespace BirdWatching.Shared.Api'))"
+      />
+
+</Target>
 
 </Project>
