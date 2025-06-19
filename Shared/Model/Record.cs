@@ -6,6 +6,9 @@ public class Record : IHaveDto<RecordDto>
     public DateTime DateSeen { get; set; } = DateTime.Now;
     public string Comment { get; set; } = string.Empty;
 
+    public float Lon { get; set; }
+    public float Lat { get; set; }
+
     public int BirdId { get; set; }
     public Bird Bird { get; set; } = null!;
 

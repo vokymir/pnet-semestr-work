@@ -11,7 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<Watcher> Watchers { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    { Database.EnsureCreated(); }
+    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
