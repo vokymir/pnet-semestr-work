@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using NSwag.Annotations;
 
 namespace BirdWatching.Api.Controllers;
 
@@ -27,6 +28,7 @@ public class AuthController : BaseApiController
 
     [AllowAnonymous]
     [HttpPost]
+    [OpenApiOperation("Auth_Login")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginDto login)

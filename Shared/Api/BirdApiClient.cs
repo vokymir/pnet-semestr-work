@@ -25,11 +25,9 @@ using System = global::System;
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial interface IBirdApiClient
 {
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<string> LoginAsync(LoginDto login);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<string> LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<string> LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -70,14 +68,9 @@ partial void Initialize();
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<string> LoginAsync(LoginDto login)
-{
-return LoginAsync(login, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<string> LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<string> LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (login == null)
 throw new System.ArgumentNullException("login");
@@ -258,36 +251,24 @@ return result == null ? "" : result;
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial interface IBirdApiClient
 {
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync();
+System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix);
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id);
+System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional);
+System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment);
+System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -328,14 +309,9 @@ partial void Initialize();
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto)
-{
-return CreateAsync(dto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (dto == null)
 throw new System.ArgumentNullException("dto");
@@ -399,14 +375,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync()
-{
-return GetAllAsync(System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -466,14 +437,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix)
-{
-return GetByPrefixAsync(prefix, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -537,14 +503,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id)
-{
-return GetByIdAsync(id, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -605,14 +566,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional)
-{
-return AppendCommentAsync(birdId, additional, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (birdId == null)
 throw new System.ArgumentNullException("birdId");
@@ -679,14 +635,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment)
-{
-return EditCommentAsync(birdId, newComment, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (birdId == null)
 throw new System.ArgumentNullException("birdId");
@@ -858,46 +809,30 @@ return result == null ? "" : result;
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial interface IBirdApiClient
 {
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllAsync();
+System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id);
+System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId);
+System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId);
+System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId);
+System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto);
+System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId);
+System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -938,14 +873,9 @@ partial void Initialize();
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto)
-{
-return CreateAsync(eventDto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventDto == null)
 throw new System.ArgumentNullException("eventDto");
@@ -1009,14 +939,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetAllAsync()
-{
-return GetAllAsync(System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1074,14 +999,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id)
-{
-return GetByIdAsync(id, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1142,14 +1062,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId)
-{
-return GetByPublicIdAsync(publicId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (publicId == null)
 throw new System.ArgumentNullException("publicId");
@@ -1210,14 +1125,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId)
-{
-return GetByUserIdAsync(userId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -1278,14 +1188,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId)
-{
-return GetByWatcherIdAsync(watcherId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherId == null)
 throw new System.ArgumentNullException("watcherId");
@@ -1346,14 +1251,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto)
-{
-return UpdateAsync(id, dto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1420,14 +1320,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId)
-{
-return GetWatchersAsync(eventId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventId == null)
 throw new System.ArgumentNullException("eventId");
@@ -1593,36 +1488,24 @@ return result == null ? "" : result;
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial interface IBirdApiClient
 {
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllAsync();
+System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id);
+System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId);
+System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText);
+System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment);
+System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -1663,14 +1546,9 @@ partial void Initialize();
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto)
-{
-return CreateAsync(recordDto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordDto == null)
 throw new System.ArgumentNullException("recordDto");
@@ -1734,14 +1612,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetAllAsync()
-{
-return GetAllAsync(System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1799,14 +1672,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id)
-{
-return GetByIdAsync(id, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1867,14 +1735,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId)
-{
-return GetByWatcherAsync(watcherId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherId == null)
 throw new System.ArgumentNullException("watcherId");
@@ -1935,14 +1798,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText)
-{
-return AppendCommentAsync(recordId, additionalText, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordId == null)
 throw new System.ArgumentNullException("recordId");
@@ -2009,14 +1867,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment)
-{
-return EditCommentAsync(recordId, newComment, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordId == null)
 throw new System.ArgumentNullException("recordId");
@@ -2188,36 +2041,24 @@ return result == null ? "" : result;
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial interface IBirdApiClient
 {
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto);
+System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId);
+System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId);
+System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync();
+System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync(System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId);
+System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -2258,14 +2099,9 @@ partial void Initialize();
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto)
-{
-return CreateUserAsync(userDto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userDto == null)
 throw new System.ArgumentNullException("userDto");
@@ -2329,14 +2165,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto)
-{
-return UpdateUserAsync(userId, userDto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -2403,14 +2234,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId)
-{
-return DeleteUserAsync(userId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -2471,14 +2297,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId)
-{
-return GetUserAsync(userId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -2539,14 +2360,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync()
-{
-return GetAllUsersAsync(System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2604,14 +2420,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId)
-{
-return AddCuratedWatcherAsync(watcherPublicId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherPublicId == null)
 throw new System.ArgumentNullException("watcherPublicId");
@@ -2778,31 +2589,21 @@ return result == null ? "" : result;
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial interface IBirdApiClient
 {
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync();
+System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync();
+System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id);
+System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> JoinEventAsync(int? watcherId, string eventPublicId);
+System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> JoinEventAsync(int? watcherId, string eventPublicId, System.Threading.CancellationToken cancellationToken);
+System.Threading.Tasks.Task<FileResponse> JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -2843,14 +2644,9 @@ partial void Initialize();
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
 partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto)
-{
-return CreateWatcherAsync(watcherDto, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherDto == null)
 throw new System.ArgumentNullException("watcherDto");
@@ -2914,14 +2710,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync()
-{
-return GetUserWatchersAsync(System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2979,14 +2770,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync()
-{
-return GetAllIfAdminAsync(System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -3044,14 +2830,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id)
-{
-return GetByIdAsync(id, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -3112,14 +2893,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual System.Threading.Tasks.Task<FileResponse> JoinEventAsync(int? watcherId, string eventPublicId)
-{
-return JoinEventAsync(watcherId, eventPublicId, System.Threading.CancellationToken.None);
-}
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> JoinEventAsync(int? watcherId, string eventPublicId, System.Threading.CancellationToken cancellationToken)
+public virtual async System.Threading.Tasks.Task<FileResponse> JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventPublicId == null)
 throw new System.ArgumentNullException("eventPublicId");

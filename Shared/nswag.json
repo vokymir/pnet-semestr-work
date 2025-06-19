@@ -4,9 +4,14 @@
     "openApiToCSharpClient": {
       "className": "BirdApiClient",
       "namespace": "BirdWatching.Shared.Api",
-      "generateClientInterfaces": true,
+"generateClientInterfaces": true,
       "useHttpClientCreationMethod": true,
       "generateDtoTypes": false,
+      "generateSingleClient": true,
+      "generateOptionalParameters": true,
+      "clientBaseClass": null,
+      "exceptionClass": "ApiException",
+      "wrapDtoExceptions": true,
       "output": "Api/BirdApiClient.cs"
     }
   },
