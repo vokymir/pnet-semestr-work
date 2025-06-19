@@ -5,7 +5,6 @@ namespace BirdWatching.Api.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Linq;
     using System.Threading.Tasks;
-    using Swashbuckle.AspNetCore.Annotations;
 
     [ApiController]
     [Route("api/bird")]
@@ -46,7 +45,6 @@ namespace BirdWatching.Api.Controllers
         /// Get all birds.
         /// </summary>
         [HttpGet]
-        [SwaggerOperation(OperationId = "AllBirdsAsync")]
         [ProducesResponseType(typeof(BirdDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
