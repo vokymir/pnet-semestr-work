@@ -7,6 +7,7 @@ namespace BirdWatching.Api.Controllers
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using NSwag.Annotations;
 
     [ApiController]
     [Route("api/event")]
@@ -25,6 +26,7 @@ namespace BirdWatching.Api.Controllers
         /// Create a new event. Current user becomes MainAdmin.
         /// </summary>
         [Authorize]
+        [OpenApiOperation("Event_Create")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] EventDto eventDto)
         {
@@ -71,6 +73,7 @@ namespace BirdWatching.Api.Controllers
         /// Get all public events.
         /// </summary>
         [HttpGet("all")]
+        [OpenApiOperation("Event_GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var events = (await _eventRepo.GetAllAsync()).ToList();
@@ -82,6 +85,7 @@ namespace BirdWatching.Api.Controllers
         /// Get event by internal ID.
         /// </summary>
         [HttpGet("{id:int}")]
+        [OpenApiOperation("Event_GetById")]
         [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
@@ -95,6 +99,7 @@ namespace BirdWatching.Api.Controllers
         /// Get event by public identifier.
         /// </summary>
         [HttpGet("public/{publicId}")]
+        [OpenApiOperation("Event_GetByPublicId")]
         public async Task<IActionResult> GetByPublicId(string publicId)
         {
             if (string.IsNullOrWhiteSpace(publicId))
@@ -109,6 +114,7 @@ namespace BirdWatching.Api.Controllers
         /// Get events administered by a given user.
         /// </summary>
         [HttpGet("user/{userId:int}")]
+        [OpenApiOperation("Event_GetByUserId")]
         public async Task<IActionResult> GetByUserId(int userId)
         {
             if (userId <= 0) return BadRequest("Invalid user ID.");
@@ -124,6 +130,7 @@ namespace BirdWatching.Api.Controllers
         /// Get events a watcher is participating in.
         /// </summary>
         [HttpGet("watcher/{watcherId:int}")]
+        [OpenApiOperation("Event_GetByWatcherId")]
         public async Task<IActionResult> GetByWatcherId(int watcherId)
         {
             if (watcherId <= 0) return BadRequest("Invalid watcher ID.");
@@ -139,6 +146,7 @@ namespace BirdWatching.Api.Controllers
         /// Update an existing event (only its MainAdmin or Admin role).
         /// </summary>
         [HttpPatch("update/{id:int}")]
+        [OpenApiOperation("Event_Update")]
         public async Task<IActionResult> Update(int id, [FromBody] EventDto dto)
         {
             if (dto == null) return BadRequest("Event data must be provided.");
@@ -181,6 +189,7 @@ namespace BirdWatching.Api.Controllers
         /// Get participants (watchers) of an event.
         /// </summary>
         [HttpGet("participants/{eventId:int}")]
+        [OpenApiOperation("Event_GetWatchers")]
         public async Task<IActionResult> GetWatchers(int eventId)
         {
             if (eventId <= 0) return BadRequest("Invalid event ID.");

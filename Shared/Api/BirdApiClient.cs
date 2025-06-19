@@ -19,6 +19,7 @@
 #pragma warning disable 8625 // Disable "CS8625 Cannot convert null literal to non-nullable reference type"
 #pragma warning disable 8765 // Disable "CS8765 Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes)."
 using BirdWatching.Shared.Model;
+using Microsoft.AspNetCore.Mvc;
 namespace BirdWatching.Shared.Api
 {
 using System = global::System;
@@ -27,7 +28,100 @@ public partial interface IBirdApiClient
 {
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<string> LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<string> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> Bird_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Bird_GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Bird_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Bird_AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Bird_EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Event_GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Record_CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Record_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Record_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Record_GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Record_AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Record_EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> User_CreateAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> User_UpdateAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> User_DeleteAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> User_GetAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> User_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> User_AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Watcher_CreateAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Watcher_GetByUserCurrentAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Watcher_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Watcher_GetAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <exception cref="ApiException">A server side error occurred.</exception>
+System.Threading.Tasks.Task<FileResponse> Watcher_JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -70,7 +164,7 @@ partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.H
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<string> LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<string> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (login == null)
 throw new System.ArgumentNullException("login");
@@ -146,172 +240,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-protected struct ObjectResponseResult<T>
-{
-public ObjectResponseResult(T responseObject, string responseText)
-{
-this.Object = responseObject;
-this.Text = responseText;
-}
-public T Object { get; }
-public string Text { get; }
-}
-public bool ReadResponseAsString { get; set; }
-protected virtual async System.Threading.Tasks.Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(System.Net.Http.HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
-{
-if (response == null || response.Content == null)
-{
-return new ObjectResponseResult<T>(default(T), string.Empty);
-}
-if (ReadResponseAsString)
-{
-var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-try
-{
-var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-return new ObjectResponseResult<T>(typedBody, responseText);
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
-}
-}
-else
-{
-try
-{
-using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-using (var streamReader = new System.IO.StreamReader(responseStream))
-using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
-{
-var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
-var typedBody = serializer.Deserialize<T>(jsonTextReader);
-return new ObjectResponseResult<T>(typedBody, string.Empty);
-}
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
-}
-}
-}
-private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-{
-if (value == null)
-{
-return "";
-}
-if (value is System.Enum)
-{
-var name = System.Enum.GetName(value.GetType(), value);
-if (name != null)
-{
-var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-if (field != null)
-{
-var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-as System.Runtime.Serialization.EnumMemberAttribute;
-if (attribute != null)
-{
-return attribute.Value != null ? attribute.Value : name;
-}
-}
-var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-return converted == null ? string.Empty : converted;
-}
-}
-else if (value is bool)
-{
-return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-}
-else if (value is byte[])
-{
-return System.Convert.ToBase64String((byte[]) value);
-}
-else if (value is string[])
-{
-return string.Join(",", (string[])value);
-}
-else if (value.GetType().IsArray)
-{
-var valueArray = (System.Array)value;
-var valueTextArray = new string[valueArray.Length];
-for (var i = 0; i < valueArray.Length; i++)
-{
-valueTextArray[i] = ConvertToString(valueArray.GetValue(i), cultureInfo);
-}
-return string.Join(",", valueTextArray);
-}
-var result = System.Convert.ToString(value, cultureInfo);
-return result == null ? "" : result;
-}
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial interface IBirdApiClient
-{
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial class BirdApiClient : IBirdApiClient
-{
-#pragma warning disable 8618
-private string _baseUrl;
-#pragma warning restore 8618
-private System.Net.Http.HttpClient _httpClient;
-private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
-private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-public BirdApiClient(System.Net.Http.HttpClient httpClient)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-{
-BaseUrl = "http://localhost:5069";
-_httpClient = httpClient;
-Initialize();
-}
-private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
-{
-var settings = new Newtonsoft.Json.JsonSerializerSettings();
-UpdateJsonSerializerSettings(settings);
-return settings;
-}
-public string BaseUrl
-{
-get { return _baseUrl; }
-set
-{
-_baseUrl = value;
-if (!string.IsNullOrEmpty(_baseUrl) && !_baseUrl.EndsWith("/"))
-_baseUrl += '/';
-}
-}
-protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
-static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
-partial void Initialize();
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
-partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (dto == null)
 throw new System.ArgumentNullException("dto");
@@ -377,7 +308,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> Bird_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -439,7 +370,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Bird_GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -505,7 +436,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Bird_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -568,7 +499,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Bird_AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (birdId == null)
 throw new System.ArgumentNullException("birdId");
@@ -637,7 +568,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Bird_EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (birdId == null)
 throw new System.ArgumentNullException("birdId");
@@ -704,178 +635,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-protected struct ObjectResponseResult<T>
-{
-public ObjectResponseResult(T responseObject, string responseText)
-{
-this.Object = responseObject;
-this.Text = responseText;
-}
-public T Object { get; }
-public string Text { get; }
-}
-public bool ReadResponseAsString { get; set; }
-protected virtual async System.Threading.Tasks.Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(System.Net.Http.HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
-{
-if (response == null || response.Content == null)
-{
-return new ObjectResponseResult<T>(default(T), string.Empty);
-}
-if (ReadResponseAsString)
-{
-var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-try
-{
-var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-return new ObjectResponseResult<T>(typedBody, responseText);
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
-}
-}
-else
-{
-try
-{
-using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-using (var streamReader = new System.IO.StreamReader(responseStream))
-using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
-{
-var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
-var typedBody = serializer.Deserialize<T>(jsonTextReader);
-return new ObjectResponseResult<T>(typedBody, string.Empty);
-}
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
-}
-}
-}
-private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-{
-if (value == null)
-{
-return "";
-}
-if (value is System.Enum)
-{
-var name = System.Enum.GetName(value.GetType(), value);
-if (name != null)
-{
-var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-if (field != null)
-{
-var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-as System.Runtime.Serialization.EnumMemberAttribute;
-if (attribute != null)
-{
-return attribute.Value != null ? attribute.Value : name;
-}
-}
-var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-return converted == null ? string.Empty : converted;
-}
-}
-else if (value is bool)
-{
-return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-}
-else if (value is byte[])
-{
-return System.Convert.ToBase64String((byte[]) value);
-}
-else if (value is string[])
-{
-return string.Join(",", (string[])value);
-}
-else if (value.GetType().IsArray)
-{
-var valueArray = (System.Array)value;
-var valueTextArray = new string[valueArray.Length];
-for (var i = 0; i < valueArray.Length; i++)
-{
-valueTextArray[i] = ConvertToString(valueArray.GetValue(i), cultureInfo);
-}
-return string.Join(",", valueTextArray);
-}
-var result = System.Convert.ToString(value, cultureInfo);
-return result == null ? "" : result;
-}
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial interface IBirdApiClient
-{
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial class BirdApiClient : IBirdApiClient
-{
-#pragma warning disable 8618
-private string _baseUrl;
-#pragma warning restore 8618
-private System.Net.Http.HttpClient _httpClient;
-private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
-private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-public BirdApiClient(System.Net.Http.HttpClient httpClient)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-{
-BaseUrl = "http://localhost:5069";
-_httpClient = httpClient;
-Initialize();
-}
-private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
-{
-var settings = new Newtonsoft.Json.JsonSerializerSettings();
-UpdateJsonSerializerSettings(settings);
-return settings;
-}
-public string BaseUrl
-{
-get { return _baseUrl; }
-set
-{
-_baseUrl = value;
-if (!string.IsNullOrEmpty(_baseUrl) && !_baseUrl.EndsWith("/"))
-_baseUrl += '/';
-}
-}
-protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
-static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
-partial void Initialize();
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
-partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventDto == null)
 throw new System.ArgumentNullException("eventDto");
@@ -941,7 +703,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1001,7 +763,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1064,7 +826,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (publicId == null)
 throw new System.ArgumentNullException("publicId");
@@ -1127,7 +889,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -1190,7 +952,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherId == null)
 throw new System.ArgumentNullException("watcherId");
@@ -1253,7 +1015,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1322,7 +1084,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventId == null)
 throw new System.ArgumentNullException("eventId");
@@ -1383,172 +1145,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-protected struct ObjectResponseResult<T>
-{
-public ObjectResponseResult(T responseObject, string responseText)
-{
-this.Object = responseObject;
-this.Text = responseText;
-}
-public T Object { get; }
-public string Text { get; }
-}
-public bool ReadResponseAsString { get; set; }
-protected virtual async System.Threading.Tasks.Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(System.Net.Http.HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
-{
-if (response == null || response.Content == null)
-{
-return new ObjectResponseResult<T>(default(T), string.Empty);
-}
-if (ReadResponseAsString)
-{
-var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-try
-{
-var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-return new ObjectResponseResult<T>(typedBody, responseText);
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
-}
-}
-else
-{
-try
-{
-using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-using (var streamReader = new System.IO.StreamReader(responseStream))
-using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
-{
-var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
-var typedBody = serializer.Deserialize<T>(jsonTextReader);
-return new ObjectResponseResult<T>(typedBody, string.Empty);
-}
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
-}
-}
-}
-private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-{
-if (value == null)
-{
-return "";
-}
-if (value is System.Enum)
-{
-var name = System.Enum.GetName(value.GetType(), value);
-if (name != null)
-{
-var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-if (field != null)
-{
-var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-as System.Runtime.Serialization.EnumMemberAttribute;
-if (attribute != null)
-{
-return attribute.Value != null ? attribute.Value : name;
-}
-}
-var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-return converted == null ? string.Empty : converted;
-}
-}
-else if (value is bool)
-{
-return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-}
-else if (value is byte[])
-{
-return System.Convert.ToBase64String((byte[]) value);
-}
-else if (value is string[])
-{
-return string.Join(",", (string[])value);
-}
-else if (value.GetType().IsArray)
-{
-var valueArray = (System.Array)value;
-var valueTextArray = new string[valueArray.Length];
-for (var i = 0; i < valueArray.Length; i++)
-{
-valueTextArray[i] = ConvertToString(valueArray.GetValue(i), cultureInfo);
-}
-return string.Join(",", valueTextArray);
-}
-var result = System.Convert.ToString(value, cultureInfo);
-return result == null ? "" : result;
-}
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial interface IBirdApiClient
-{
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial class BirdApiClient : IBirdApiClient
-{
-#pragma warning disable 8618
-private string _baseUrl;
-#pragma warning restore 8618
-private System.Net.Http.HttpClient _httpClient;
-private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
-private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-public BirdApiClient(System.Net.Http.HttpClient httpClient)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-{
-BaseUrl = "http://localhost:5069";
-_httpClient = httpClient;
-Initialize();
-}
-private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
-{
-var settings = new Newtonsoft.Json.JsonSerializerSettings();
-UpdateJsonSerializerSettings(settings);
-return settings;
-}
-public string BaseUrl
-{
-get { return _baseUrl; }
-set
-{
-_baseUrl = value;
-if (!string.IsNullOrEmpty(_baseUrl) && !_baseUrl.EndsWith("/"))
-_baseUrl += '/';
-}
-}
-protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
-static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
-partial void Initialize();
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
-partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Record_CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordDto == null)
 throw new System.ArgumentNullException("recordDto");
@@ -1614,7 +1213,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Record_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1674,7 +1273,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Record_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1737,7 +1336,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Record_GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherId == null)
 throw new System.ArgumentNullException("watcherId");
@@ -1800,7 +1399,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Record_AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordId == null)
 throw new System.ArgumentNullException("recordId");
@@ -1869,7 +1468,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Record_EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordId == null)
 throw new System.ArgumentNullException("recordId");
@@ -1936,172 +1535,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-protected struct ObjectResponseResult<T>
-{
-public ObjectResponseResult(T responseObject, string responseText)
-{
-this.Object = responseObject;
-this.Text = responseText;
-}
-public T Object { get; }
-public string Text { get; }
-}
-public bool ReadResponseAsString { get; set; }
-protected virtual async System.Threading.Tasks.Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(System.Net.Http.HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
-{
-if (response == null || response.Content == null)
-{
-return new ObjectResponseResult<T>(default(T), string.Empty);
-}
-if (ReadResponseAsString)
-{
-var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-try
-{
-var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-return new ObjectResponseResult<T>(typedBody, responseText);
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
-}
-}
-else
-{
-try
-{
-using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-using (var streamReader = new System.IO.StreamReader(responseStream))
-using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
-{
-var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
-var typedBody = serializer.Deserialize<T>(jsonTextReader);
-return new ObjectResponseResult<T>(typedBody, string.Empty);
-}
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
-}
-}
-}
-private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-{
-if (value == null)
-{
-return "";
-}
-if (value is System.Enum)
-{
-var name = System.Enum.GetName(value.GetType(), value);
-if (name != null)
-{
-var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-if (field != null)
-{
-var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-as System.Runtime.Serialization.EnumMemberAttribute;
-if (attribute != null)
-{
-return attribute.Value != null ? attribute.Value : name;
-}
-}
-var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-return converted == null ? string.Empty : converted;
-}
-}
-else if (value is bool)
-{
-return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-}
-else if (value is byte[])
-{
-return System.Convert.ToBase64String((byte[]) value);
-}
-else if (value is string[])
-{
-return string.Join(",", (string[])value);
-}
-else if (value.GetType().IsArray)
-{
-var valueArray = (System.Array)value;
-var valueTextArray = new string[valueArray.Length];
-for (var i = 0; i < valueArray.Length; i++)
-{
-valueTextArray[i] = ConvertToString(valueArray.GetValue(i), cultureInfo);
-}
-return string.Join(",", valueTextArray);
-}
-var result = System.Convert.ToString(value, cultureInfo);
-return result == null ? "" : result;
-}
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial interface IBirdApiClient
-{
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial class BirdApiClient : IBirdApiClient
-{
-#pragma warning disable 8618
-private string _baseUrl;
-#pragma warning restore 8618
-private System.Net.Http.HttpClient _httpClient;
-private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
-private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-public BirdApiClient(System.Net.Http.HttpClient httpClient)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-{
-BaseUrl = "http://localhost:5069";
-_httpClient = httpClient;
-Initialize();
-}
-private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
-{
-var settings = new Newtonsoft.Json.JsonSerializerSettings();
-UpdateJsonSerializerSettings(settings);
-return settings;
-}
-public string BaseUrl
-{
-get { return _baseUrl; }
-set
-{
-_baseUrl = value;
-if (!string.IsNullOrEmpty(_baseUrl) && !_baseUrl.EndsWith("/"))
-_baseUrl += '/';
-}
-}
-protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
-static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
-partial void Initialize();
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
-partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> User_CreateAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userDto == null)
 throw new System.ArgumentNullException("userDto");
@@ -2167,7 +1603,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> User_UpdateAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -2236,7 +1672,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> User_DeleteAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -2299,7 +1735,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> User_GetAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -2362,7 +1798,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> User_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2422,7 +1858,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> User_AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherPublicId == null)
 throw new System.ArgumentNullException("watcherPublicId");
@@ -2484,169 +1920,9 @@ if (disposeClient_)
 client_.Dispose();
 }
 }
-protected struct ObjectResponseResult<T>
-{
-public ObjectResponseResult(T responseObject, string responseText)
-{
-this.Object = responseObject;
-this.Text = responseText;
-}
-public T Object { get; }
-public string Text { get; }
-}
-public bool ReadResponseAsString { get; set; }
-protected virtual async System.Threading.Tasks.Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(System.Net.Http.HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
-{
-if (response == null || response.Content == null)
-{
-return new ObjectResponseResult<T>(default(T), string.Empty);
-}
-if (ReadResponseAsString)
-{
-var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-try
-{
-var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-return new ObjectResponseResult<T>(typedBody, responseText);
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
-}
-}
-else
-{
-try
-{
-using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-using (var streamReader = new System.IO.StreamReader(responseStream))
-using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
-{
-var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
-var typedBody = serializer.Deserialize<T>(jsonTextReader);
-return new ObjectResponseResult<T>(typedBody, string.Empty);
-}
-}
-catch (Newtonsoft.Json.JsonException exception)
-{
-var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
-}
-}
-}
-private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-{
-if (value == null)
-{
-return "";
-}
-if (value is System.Enum)
-{
-var name = System.Enum.GetName(value.GetType(), value);
-if (name != null)
-{
-var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-if (field != null)
-{
-var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-as System.Runtime.Serialization.EnumMemberAttribute;
-if (attribute != null)
-{
-return attribute.Value != null ? attribute.Value : name;
-}
-}
-var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-return converted == null ? string.Empty : converted;
-}
-}
-else if (value is bool)
-{
-return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-}
-else if (value is byte[])
-{
-return System.Convert.ToBase64String((byte[]) value);
-}
-else if (value is string[])
-{
-return string.Join(",", (string[])value);
-}
-else if (value.GetType().IsArray)
-{
-var valueArray = (System.Array)value;
-var valueTextArray = new string[valueArray.Length];
-for (var i = 0; i < valueArray.Length; i++)
-{
-valueTextArray[i] = ConvertToString(valueArray.GetValue(i), cultureInfo);
-}
-return string.Join(",", valueTextArray);
-}
-var result = System.Convert.ToString(value, cultureInfo);
-return result == null ? "" : result;
-}
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial interface IBirdApiClient
-{
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial class BirdApiClient : IBirdApiClient
-{
-#pragma warning disable 8618
-private string _baseUrl;
-#pragma warning restore 8618
-private System.Net.Http.HttpClient _httpClient;
-private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
-private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-public BirdApiClient(System.Net.Http.HttpClient httpClient)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-{
-BaseUrl = "http://localhost:5069";
-_httpClient = httpClient;
-Initialize();
-}
-private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
-{
-var settings = new Newtonsoft.Json.JsonSerializerSettings();
-UpdateJsonSerializerSettings(settings);
-return settings;
-}
-public string BaseUrl
-{
-get { return _baseUrl; }
-set
-{
-_baseUrl = value;
-if (!string.IsNullOrEmpty(_baseUrl) && !_baseUrl.EndsWith("/"))
-_baseUrl += '/';
-}
-}
-protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
-static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
-partial void Initialize();
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
-partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
-partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-/// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_CreateAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherDto == null)
 throw new System.ArgumentNullException("watcherDto");
@@ -2712,7 +1988,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_GetByUserCurrentAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2772,7 +2048,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2832,7 +2108,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_GetAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -2895,7 +2171,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventPublicId == null)
 throw new System.ArgumentNullException("eventPublicId");

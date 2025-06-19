@@ -7,6 +7,7 @@ namespace BirdWatching.Api.Controllers
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using NSwag.Annotations;
 
     [ApiController]
     [Route("api/record")]
@@ -25,6 +26,7 @@ namespace BirdWatching.Api.Controllers
         /// Create a new record under a watcher.
         /// </summary>
         [HttpPost]
+        [OpenApiOperation("Record_Create")]
         public async Task<IActionResult> Create([FromBody] RecordDto recordDto)
         {
             if (recordDto == null)
@@ -68,6 +70,7 @@ namespace BirdWatching.Api.Controllers
         /// Retrieve all records.
         /// </summary>
         [HttpGet("all")]
+        [OpenApiOperation("Record_GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var records = await _recordRepo.GetAllAsync() ?? Enumerable.Empty<Record>();
@@ -78,6 +81,7 @@ namespace BirdWatching.Api.Controllers
         /// Retrieve a record by its ID.
         /// </summary>
         [HttpGet("{id:int}")]
+        [OpenApiOperation("Record_GetById")]
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0) return BadRequest("Invalid record ID.");
@@ -92,6 +96,7 @@ namespace BirdWatching.Api.Controllers
         /// Retrieve all records for a specific watcher.
         /// </summary>
         [HttpGet("watcher/{watcherId:int}")]
+        [OpenApiOperation("Record_GetByWatcher")]
         public async Task<IActionResult> GetByWatcher(int watcherId)
         {
             if (watcherId <= 0) return BadRequest("Invalid watcher ID.");
@@ -108,6 +113,7 @@ namespace BirdWatching.Api.Controllers
         /// Append text to an existing record's comment (any authenticated user).
         /// </summary>
         [HttpPatch("append/{recordId:int}")]
+        [OpenApiOperation("Record_AppendComment")]
         public async Task<IActionResult> AppendComment(int recordId, [FromBody] string additionalText)
         {
             if (recordId <= 0 || string.IsNullOrEmpty(additionalText))
@@ -133,6 +139,7 @@ namespace BirdWatching.Api.Controllers
         /// Edit a record's comment (owner or admin).
         /// </summary>
         [HttpPatch("edit/{recordId:int}")]
+        [OpenApiOperation("Record_EditComment")]
         public async Task<IActionResult> EditComment(int recordId, [FromBody] string newComment)
         {
             if (recordId <= 0 || newComment == null)

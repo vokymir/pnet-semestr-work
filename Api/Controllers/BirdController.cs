@@ -5,6 +5,7 @@ namespace BirdWatching.Api.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Linq;
     using System.Threading.Tasks;
+    using NSwag.Annotations;
 
     [ApiController]
     [Route("api/bird")]
@@ -23,6 +24,7 @@ namespace BirdWatching.Api.Controllers
         /// Create a new bird.
         /// </summary>
         [HttpPost]
+        [OpenApiOperation("Bird_Create")]
         public async Task<IActionResult> Create([FromBody] BirdDto dto)
         {
             if (dto == null)
@@ -45,6 +47,7 @@ namespace BirdWatching.Api.Controllers
         /// Get all birds.
         /// </summary>
         [HttpGet]
+        [OpenApiOperation("Bird_GetAll")]
         [ProducesResponseType(typeof(BirdDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
@@ -56,6 +59,7 @@ namespace BirdWatching.Api.Controllers
         /// Search birds by prefix.
         /// </summary>
         [HttpGet("search")]
+        [OpenApiOperation("Bird_GetByPrefix")]
         public async Task<IActionResult> GetByPrefix([FromQuery] string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
@@ -72,6 +76,7 @@ namespace BirdWatching.Api.Controllers
         /// Get a bird by ID.
         /// </summary>
         [HttpGet("{id:int}")]
+        [OpenApiOperation("Bird_GetById")]
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
@@ -88,6 +93,7 @@ namespace BirdWatching.Api.Controllers
         /// Append text to a bird's comment.
         /// </summary>
         [HttpPatch("comment/append/{birdId:int}")]
+        [OpenApiOperation("Bird_AppendComment")]
         public async Task<IActionResult> AppendComment(int birdId, [FromBody] string additional)
         {
             if (birdId <= 0 || string.IsNullOrEmpty(additional))
@@ -114,6 +120,7 @@ namespace BirdWatching.Api.Controllers
         /// Replace a bird's comment (admin only).
         /// </summary>
         [HttpPatch("comment/replace/{birdId:int}")]
+        [OpenApiOperation("Bird_EditComment")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditComment(int birdId, [FromBody] string newComment)
         {

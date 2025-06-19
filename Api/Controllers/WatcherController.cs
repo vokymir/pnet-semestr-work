@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using BirdWatching.Shared.Model;
+using NSwag.Annotations;
 
 namespace BirdWatching.Api.Controllers;
 
@@ -18,6 +19,7 @@ public class WatcherController : BaseApiController
         InitRepos__ContextMustNotBeNull();
     }
 
+    // used in this class to get the current user for auth
     private async Task<User?> GetCurrentUserAsync()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -27,6 +29,7 @@ public class WatcherController : BaseApiController
     private bool IsAdmin => User.IsInRole("admin");
 
     [HttpPost]
+    [OpenApiOperation("Watcher_Create")]
     public async Task<IActionResult> CreateWatcher([FromBody] WatcherDto watcherDto)
     {
         if (watcherDto == null)
@@ -62,6 +65,7 @@ public class WatcherController : BaseApiController
     }
 
     [Authorize(Roles = "Admin")]
+    [OpenApiOperation("Watcher_GetAll")]
     [HttpGet("all")]
     public async Task<IActionResult> GetAllIfAdmin()
     {
@@ -73,6 +77,7 @@ public class WatcherController : BaseApiController
     }
 
     [HttpGet]
+    [OpenApiOperation("Watcher_GetByUserCurrent")]
     public async Task<IActionResult> GetUserWatchers()
     {
         var user = await GetCurrentUserAsync();
@@ -87,6 +92,7 @@ public class WatcherController : BaseApiController
     }
 
     [HttpGet("{id}")]
+    [OpenApiOperation("Watcher_Get")]
     public async Task<IActionResult> GetById(int id)
     {
         if (id <= 0)
@@ -100,6 +106,7 @@ public class WatcherController : BaseApiController
     }
 
     [HttpPost("join/{eventPublicId}")]
+    [OpenApiOperation("Watcher_JoinEvent")]
     public async Task<IActionResult> JoinEvent(int watcherId, string eventPublicId)
     {
         var user = await GetCurrentUserAsync();

@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,7 +24,7 @@
   <!---  Create BirdApiClient -->
   <Target Name="NSwag" BeforeTargets="BeforeCompile" Condition="'$(MSBuildProjectName)' == 'Shared'">
     <Message Importance="high" Text="Running NSwag to regenerate BirdApiClient..." />
-    <Exec Command="nswag run nswag.json" IgnoreExitCode="true"/>
+    <Exec Command="nswag run nswag.json" IgnoreExitCode="true" />
   </Target>
 
 <Target Name="AddUsingToGeneratedClient" AfterTargets="NSwag" Condition="'$(MSBuildProjectName)' == 'Shared'">
@@ -40,11 +42,7 @@
 
   <!-- If not found, insert it -->
     <!-- Replace namespace line by inserting the using directive before it -->
-  <WriteLinesToFile Condition=" '@(HasUsingLine)' == '' " File="Api/BirdApiClient.cs" Overwrite="true"
-    Lines="@(ClientFileLines->Replace('namespace BirdWatching.Shared.Api',
-'using BirdWatching.Shared.Model;
-namespace BirdWatching.Shared.Api'))"
-      />
+  <WriteLinesToFile Condition=" '@(HasUsingLine)' == '' " File="Api/BirdApiClient.cs" Overwrite="true" Lines="@(ClientFileLines-&gt;Replace('namespace BirdWatching.Shared.Api',&#xA;'using BirdWatching.Shared.Model;&#xA;using Microsoft.AspNetCore.Mvc;&#xA;namespace BirdWatching.Shared.Api'))" />
 
 </Target>
 

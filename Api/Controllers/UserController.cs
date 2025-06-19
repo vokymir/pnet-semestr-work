@@ -5,6 +5,7 @@ namespace BirdWatching.Api.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using NSwag.Annotations;
 
     [ApiController]
     [Route("api/user")]
@@ -23,6 +24,7 @@ namespace BirdWatching.Api.Controllers
         /// Create new user (registrovat se může kdokoliv).
         /// </summary>
         [HttpPost]
+        [OpenApiOperation("User_Create")]
         [AllowAnonymous]
         public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
         {
@@ -46,6 +48,7 @@ namespace BirdWatching.Api.Controllers
         /// Update own profile (nebo Admin může update komukoli).
         /// </summary>
         [HttpPut("{userId:int}")]
+        [OpenApiOperation("User_Update")]
         public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto userDto)
         {
             if (userDto == null)
@@ -84,6 +87,7 @@ namespace BirdWatching.Api.Controllers
         /// Delete own account (Admin může delete kohokoliv).
         /// </summary>
         [HttpDelete("{userId:int}")]
+        [OpenApiOperation("User_Delete")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
             var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -112,6 +116,7 @@ namespace BirdWatching.Api.Controllers
         /// Get own profile (nebo Admin může get kohokoliv).
         /// </summary>
         [HttpGet("{userId:int}")]
+        [OpenApiOperation("User_Get")]
         public async Task<IActionResult> GetUser(int userId)
         {
             var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -134,6 +139,7 @@ namespace BirdWatching.Api.Controllers
         /// List all users (Admin only).
         /// </summary>
         [HttpGet("all")]
+        [OpenApiOperation("User_GetAll")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -151,6 +157,7 @@ namespace BirdWatching.Api.Controllers
         /// Add curated watcher to current user.
         /// </summary>
         [HttpPost("curate/{watcherPublicId}")]
+        [OpenApiOperation("User_AddCuratedWatcher")]
         public async Task<IActionResult> AddCuratedWatcher(string watcherPublicId)
         {
             if (string.IsNullOrWhiteSpace(watcherPublicId))

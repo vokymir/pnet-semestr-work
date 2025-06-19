@@ -4,15 +4,15 @@ using BirdWatching.Shared.Api;
 
 public class Program
 {
-    static HttpClient c = new HttpClient();
-    static BirdApiClient client = new BirdApiClient("http://localhost:5069/", c);
+    static HttpClient c = new HttpClient() { BaseAddress = new Uri("http://localhost:5069/") };
+    static BirdApiClient client = new BirdApiClient(c);
 
     static async Task Main(string[] args)
     {
         var log = new LoginDto("string", "string");
 
         // 1. Authenticate
-        string? token = await client.AuthAsync(log); // Assume it returns the JWT string
+        string? token = await client.Auth_LoginAsync(log);
         if (token is null)
             throw new ApplicationException("Invalid token");
 
@@ -22,12 +22,12 @@ public class Program
         // 3. Try calling the protected endpoints
         var bird = new BirdDto { Genus = "GEN", Species = "SPE" };
 
-        var birds = await client.BirdAllAsync();
+        var birds = await client.Bird_GetAllAsync();
         PrintBirds(birds);
 
-        await client.BirdPOSTAsync(bird);
+        await client.Bird_CreateAsync(bird);
 
-        birds = await client.BirdAllAsync();
+        birds = await client.Bird_GetAllAsync();
         PrintBirds(birds);
     }
 
