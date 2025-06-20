@@ -28,7 +28,7 @@ public partial interface IBirdApiClient
 {
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<string> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<TokenResponseDto> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task<FileResponse> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
@@ -164,7 +164,7 @@ partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.H
 partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<string> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<TokenResponseDto> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (login == null)
 throw new System.ArgumentNullException("login");
@@ -204,7 +204,7 @@ ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
 if (status_ == 200)
 {
-var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+var objectResponse_ = await ReadObjectResponseAsync<TokenResponseDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
 if (objectResponse_.Object == null)
 {
 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
