@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using BirdWatching.Shared.Model;
 
 namespace BirdWatching.Api.Controllers;
@@ -40,4 +42,11 @@ public class BaseApiController : ControllerBase
 
         return new string(result);
     }
+
+    protected int? GetCurrentUserId()
+    {
+        var claim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        return int.TryParse(claim, out var id) ? id : null;
+    }
+
 }

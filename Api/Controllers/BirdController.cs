@@ -3,9 +3,11 @@ namespace BirdWatching.Api.Controllers
     using BirdWatching.Shared.Model;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using NSwag.Annotations;
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using NSwag.Annotations;
 
     [ApiController]
     [Route("api/bird")]
@@ -15,20 +17,21 @@ namespace BirdWatching.Api.Controllers
 
         public BirdController(AppDbContext context, ILogger<BirdController> logger)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger;
             InitRepos__ContextMustNotBeNull();
         }
 
-        /// <summary>
-        /// Create a new bird.
-        /// </summary>
+        /// <summary>Create a new bird.</summary>
         [HttpPost]
         [OpenApiOperation("Bird_Create")]
+        [ProducesResponseType(typeof(BirdDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Create([FromBody] BirdDto dto)
         {
             if (dto == null)
-                return BadRequest("Bird data must be provided.");
+                return BadRequest(new ProblemDetails { Title = "Invalid data", Detail = "Bird data must be provided." });
 
             try
             {
@@ -43,9 +46,7 @@ namespace BirdWatching.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Get all birds.
-        /// </summary>
+        /// <summary>Get all birds.</summary>
         [HttpGet]
         [OpenApiOperation("Bird_GetAll")]
         [ProducesResponseType(typeof(BirdDto[]), StatusCodes.Status200OK)]
@@ -55,53 +56,56 @@ namespace BirdWatching.Api.Controllers
             return Ok(birds.Select(b => b.ToFullDto()));
         }
 
-        /// <summary>
-        /// Search birds by prefix.
-        /// </summary>
+        /// <summary>Search birds by name prefix.</summary>
         [HttpGet("search")]
         [OpenApiOperation("Bird_GetByPrefix")]
+        [ProducesResponseType(typeof(BirdDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByPrefix([FromQuery] string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
-                return BadRequest("Prefix must be provided.");
+                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Prefix must be provided." });
 
             var birds = await _birdRepo.GetByPrefixAsync(prefix) ?? Enumerable.Empty<Bird>();
             var dtos = birds.Select(b => b.ToFullDto()).ToList();
+
             return dtos.Any()
                 ? Ok(dtos)
-                : NotFound($"No birds found with prefix '{prefix}'.");
+                : NotFound(new ProblemDetails { Title = "Not Found", Detail = $"No birds found with prefix '{prefix}'." });
         }
 
-        /// <summary>
-        /// Get a bird by ID.
-        /// </summary>
+        /// <summary>Get a bird by ID.</summary>
         [HttpGet("{id:int}")]
         [OpenApiOperation("Bird_GetById")]
+        [ProducesResponseType(typeof(BirdDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
-                return BadRequest("Invalid bird ID.");
+                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Invalid bird ID." });
 
             var bird = await _birdRepo.GetByIdAsync(id);
-            if (bird == null)
-                return NotFound("Bird not found.");
-
-            return Ok(bird.ToFullDto());
+            return bird == null
+                ? NotFound(new ProblemDetails { Title = "Not Found", Detail = "Bird not found." })
+                : Ok(bird.ToFullDto());
         }
 
-        /// <summary>
-        /// Append text to a bird's comment.
-        /// </summary>
+        /// <summary>Append text to a bird's comment.</summary>
         [HttpPatch("comment/append/{birdId:int}")]
         [OpenApiOperation("Bird_AppendComment")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AppendComment(int birdId, [FromBody] string additional)
         {
-            if (birdId <= 0 || string.IsNullOrEmpty(additional))
-                return BadRequest("Bird ID and comment text must be provided.");
+            if (birdId <= 0 || string.IsNullOrWhiteSpace(additional))
+                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Bird ID and comment text must be provided." });
 
             var bird = await _birdRepo.GetByIdAsync(birdId);
             if (bird == null)
-                return NotFound("Bird not found.");
+                return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Bird not found." });
 
             bird.Comment += additional;
             try
@@ -116,20 +120,22 @@ namespace BirdWatching.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Replace a bird's comment (admin only).
-        /// </summary>
+        /// <summary>Replace a bird's comment (admin only).</summary>
         [HttpPatch("comment/replace/{birdId:int}")]
-        [OpenApiOperation("Bird_EditComment")]
         [Authorize(Roles = "Admin")]
+        [OpenApiOperation("Bird_EditComment")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> EditComment(int birdId, [FromBody] string newComment)
         {
             if (birdId <= 0 || newComment == null)
-                return BadRequest("Bird ID and new comment must be provided.");
+                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Bird ID and new comment must be provided." });
 
             var bird = await _birdRepo.GetByIdAsync(birdId);
             if (bird == null)
-                return NotFound("Bird not found.");
+                return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Bird not found." });
 
             bird.Comment = newComment;
             try

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using BirdWatching.Shared.Model;
 using NSwag.Annotations;
 
@@ -14,30 +13,33 @@ public class WatcherController : BaseApiController
 
     public WatcherController(AppDbContext context, ILogger<WatcherController> logger)
     {
-        _context = context;
-        _logger = logger;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         InitRepos__ContextMustNotBeNull();
     }
 
-    // used in this class to get the current user for auth
-    private async Task<User?> GetCurrentUserAsync()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return userId != null ? await _userRepo.GetByIdAsync(int.Parse(userId)) : null;
-    }
+    private bool IsAdmin => User.IsInRole("Admin");
 
-    private bool IsAdmin => User.IsInRole("admin");
-
+    /// <summary>Creates a new watcher entity (user must be logged in).</summary>
     [HttpPost]
-    [OpenApiOperation("Watcher_Create")]
+    [Authorize]
+    [OpenApiOperation("Watcher_Create", "Creates a new watcher and assigns current user as main curator.")]
+    [ProducesResponseType(typeof(WatcherDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateWatcher([FromBody] WatcherDto watcherDto)
     {
         if (watcherDto == null)
-            return BadRequest("Watcher data must be provided.");
+            return BadRequest(new ProblemDetails { Title = "Invalid Input", Detail = "Watcher data must be provided." });
 
-        var user = await GetCurrentUserAsync();
+        var userId = GetCurrentUserId();
+        if (userId is null)
+            return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "JWT token is missing or invalid." });
+
+        var user = await _userRepo.GetByIdAsync(userId.Value);
         if (user == null)
-            return Unauthorized("User not found.");
+            return Problem("Cannot find user.");
 
         try
         {
@@ -45,16 +47,15 @@ public class WatcherController : BaseApiController
             watcher.MainCuratorId = user.Id;
             watcher.Curators.Add(user);
 
-            // Generate unique public identifier
             string id;
-            do // while id already exists, regenerate
+            do
             {
                 id = GenerateUrlSafeString(5);
             } while (await _watcherRepo.GetByPublicIdAsync(id) != null);
+
             watcher.PublicIdentifier = id;
 
             await _watcherRepo.AddAsync(watcher);
-
             return Ok(watcher.ToFullDto());
         }
         catch (Exception ex)
@@ -64,9 +65,12 @@ public class WatcherController : BaseApiController
         }
     }
 
-    [Authorize(Roles = "Admin")]
-    [OpenApiOperation("Watcher_GetAll")]
+    /// <summary>Returns all watchers (admin only).</summary>
     [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    [OpenApiOperation("Watcher_GetAll", "Returns all watchers (admin only).")]
+    [ProducesResponseType(typeof(List<WatcherDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetAllIfAdmin()
     {
         var watchers = (await _watcherRepo.GetAllAsync())
@@ -76,13 +80,22 @@ public class WatcherController : BaseApiController
         return Ok(watchers);
     }
 
+    /// <summary>Returns all watchers where current user is a curator.</summary>
     [HttpGet]
-    [OpenApiOperation("Watcher_GetByUserCurrent")]
+    [Authorize]
+    [OpenApiOperation("Watcher_GetByUserCurrent", "Returns all watchers associated with current user.")]
+    [ProducesResponseType(typeof(List<WatcherDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetUserWatchers()
     {
-        var user = await GetCurrentUserAsync();
+        var userId = GetCurrentUserId();
+        if (userId is null)
+            return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "JWT token is missing or invalid." });
+
+        var user = await _userRepo.GetByIdAsync(userId.Value);
         if (user == null)
-            return Unauthorized("User not found.");
+            return Problem("Cannot find user.");
 
         var watchers = (await _watcherRepo.GetByUserAsync(user))
             .Select(w => w.ToFullDto())
@@ -91,50 +104,68 @@ public class WatcherController : BaseApiController
         return Ok(watchers);
     }
 
+    /// <summary>Gets a single watcher by its ID. This endpoint is public.</summary>
     [HttpGet("{id}")]
-    [OpenApiOperation("Watcher_Get")]
+    [AllowAnonymous]
+    [OpenApiOperation("Watcher_Get", "Returns a watcher by ID.")]
+    [ProducesResponseType(typeof(WatcherDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
         if (id <= 0)
-            return BadRequest("Invalid watcher ID.");
+            return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "Watcher ID must be greater than zero." });
 
         var watcher = await _watcherRepo.GetByIdAsync(id);
         if (watcher == null)
-            return NotFound("Watcher not found.");
+            return NotFound(new ProblemDetails { Title = "Not Found", Detail = $"Watcher with ID {id} does not exist." });
 
         return Ok(watcher.ToFullDto());
     }
 
+    /// <summary>Adds the specified watcher to the event's participants. Only curators can perform this.</summary>
     [HttpPost("join/{eventPublicId}")]
-    [OpenApiOperation("Watcher_JoinEvent")]
-    public async Task<IActionResult> JoinEvent(int watcherId, string eventPublicId)
+    [Authorize]
+    [OpenApiOperation("Watcher_JoinEvent", "Adds the watcher to a public event (curators only).")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> JoinEvent([FromQuery] int watcherId, string eventPublicId)
     {
-        var user = await GetCurrentUserAsync();
+        var userId = GetCurrentUserId();
+        if (userId is null)
+            return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "JWT token is missing or invalid." });
+
+        var user = await _userRepo.GetByIdAsync(userId.Value);
         if (user == null)
-            return Unauthorized("User not found.");
+            return Problem("Cannot find user.");
 
         var watcher = await _watcherRepo.GetByIdAsync(watcherId);
         if (watcher == null)
-            return NotFound("Watcher not found.");
-        if (!watcher.Curators.Contains(user))
-            return Forbid("You do not have permission to modify this watcher.");
+            return NotFound(new ProblemDetails { Title = "Watcher Not Found", Detail = $"Watcher with ID {watcherId} does not exist." });
 
-        var e = await _eventRepo.GetByPublicIdAsync(eventPublicId);
-        if (e == null)
-            return NotFound("Event not found.");
+        if (!watcher.Curators.Any(c => c.Id == user.Id))
+            return StatusCode(403, new ProblemDetails { Title = "Forbidden", Detail = "You are not a curator of this watcher." });
+
+        var ev = await _eventRepo.GetByPublicIdAsync(eventPublicId);
+        if (ev == null)
+            return NotFound(new ProblemDetails { Title = "Event Not Found", Detail = $"Event with public ID '{eventPublicId}' does not exist." });
+
+        if (watcher.Participating.Any(e => e.Id == ev.Id))
+            return Conflict(new ProblemDetails { Title = "Already Participating", Detail = "This watcher is already participating in the event." });
 
         try
         {
-            if (watcher.Participating.Any(ev => ev.Id == e.Id))
-                return Conflict("Watcher is already participating in this event.");
-
-            watcher.Participating.Add(e);
+            watcher.Participating.Add(ev);
             await _watcherRepo.UpdateAsync(watcher);
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error adding watcher {WatcherId} to event {EventId}.", watcherId, e.Id);
+            _logger.LogError(ex, "Error adding watcher {WatcherId} to event {EventId}.", watcherId, ev.Id);
             return Problem("Failed to join event.");
         }
     }

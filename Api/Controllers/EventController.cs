@@ -3,11 +3,10 @@ namespace BirdWatching.Api.Controllers
     using BirdWatching.Shared.Model;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using NSwag.Annotations;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/event")]
@@ -27,40 +26,34 @@ namespace BirdWatching.Api.Controllers
         /// </summary>
         [Authorize]
         [OpenApiOperation("Event_Create")]
+        [ProducesResponseType(typeof(EventDto), 201)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] EventDto eventDto)
+        public async Task<IActionResult> CreateEvent([FromBody] EventDto eventDto)
         {
-            if (eventDto == null)
-                return BadRequest("Event data must be provided.");
+            if (eventDto == null || string.IsNullOrWhiteSpace(eventDto.Name))
+                return BadRequest(new ProblemDetails { Title = "Invalid Input", Detail = "Event name is required." });
 
-            foreach (var c in User.Claims)
-                Console.WriteLine($"{c.Type} = {c.Value}");
-
-            // 🛡️ Kontrola, že uživatel je přihlášen
-            if (!User.Identity?.IsAuthenticated ?? true)
-                return Unauthorized("JWT token is missing or invalid.");
-
-            // ID aktuálního uživatele z claimu 'sub'
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            var userId = GetCurrentUserId();
+            if (userId is null)
+                return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "JWT token is missing or invalid." });
 
             try
             {
                 var e = eventDto.ToEntity();
-                e.MainAdminId = userId;
-                e.MainAdmin = (await _userRepo.GetByIdAsync(userId))!; // if any error, it's still invalid operation
+                e.MainAdminId = userId.Value;
+                e.MainAdmin = (await _userRepo.GetByIdAsync(userId.Value))!;
 
-                // unikátní public identifier
                 string pubId;
-                do // same as in watcherController
+                do
                 {
                     pubId = GenerateUrlSafeString(5);
                 } while (await _eventRepo.GetByPublicIdAsync(pubId) != null);
                 e.PublicIdentifier = pubId;
 
                 await _eventRepo.AddAsync(e);
-                return Ok(e.ToFullDto());
+                return CreatedAtAction(nameof(GetEventById), new { id = e.Id }, e.ToFullDto());
             }
             catch (Exception ex)
             {
@@ -73,8 +66,10 @@ namespace BirdWatching.Api.Controllers
         /// Get all public events.
         /// </summary>
         [HttpGet("all")]
+        [AllowAnonymous]
         [OpenApiOperation("Event_GetAll")]
-        public async Task<IActionResult> GetAll()
+        [ProducesResponseType(typeof(List<EventDto>), 200)]
+        public async Task<IActionResult> GetAllEvents()
         {
             var events = (await _eventRepo.GetAllAsync()).ToList();
             var dtos = events.Select(e => e.ToFullDto()).ToList();
@@ -85,13 +80,20 @@ namespace BirdWatching.Api.Controllers
         /// Get event by internal ID.
         /// </summary>
         [HttpGet("{id:int}")]
-        [OpenApiOperation("Event_GetById")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetById(int id)
+        [OpenApiOperation("Event_GetById")]
+        [ProducesResponseType(typeof(EventDto), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
+        public async Task<IActionResult> GetEventById(int id)
         {
-            if (id <= 0) return BadRequest("Invalid event ID.");
+            if (id <= 0)
+                return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "Event ID must be a positive integer." });
+
             var e = await _eventRepo.GetByIdAsync(id);
-            if (e == null) return NotFound("Event not found.");
+            if (e == null)
+                return NotFound(new ProblemDetails { Title = "Not Found", Detail = $"Event with ID {id} does not exist." });
+
             return Ok(e.ToFullDto());
         }
 
@@ -99,55 +101,69 @@ namespace BirdWatching.Api.Controllers
         /// Get event by public identifier.
         /// </summary>
         [HttpGet("public/{publicId}")]
+        [AllowAnonymous]
         [OpenApiOperation("Event_GetByPublicId")]
-        public async Task<IActionResult> GetByPublicId(string publicId)
+        [ProducesResponseType(typeof(EventDto), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
+        public async Task<IActionResult> GetEventByPublicId(string publicId)
         {
             if (string.IsNullOrWhiteSpace(publicId))
-                return BadRequest("Public identifier must be provided.");
+                return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "Public identifier must be provided." });
 
             var e = await _eventRepo.GetByPublicIdAsync(publicId);
-            if (e == null) return NotFound("Event not found.");
+            if (e == null)
+                return NotFound(new ProblemDetails { Title = "Not Found", Detail = $"No event found with public ID '{publicId}'." });
+
             return Ok(e.ToFullDto());
         }
 
         /// <summary>
         /// Get events administered by a given user.
         /// </summary>
+        [Authorize]
         [HttpGet("user/{userId:int}")]
         [OpenApiOperation("Event_GetByUserId")]
-        public async Task<IActionResult> GetByUserId(int userId)
+        [ProducesResponseType(typeof(List<EventDto>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        public async Task<IActionResult> GetEventsByUserId(int userId)
         {
-            if (userId <= 0) return BadRequest("Invalid user ID.");
+            if (userId <= 0)
+                return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "User ID must be a positive integer." });
+
             var list = await _eventRepo.GetByUserIdAsync(userId);
-            var dtos = list.Select(ev => {
-                var dto = ev.ToFullDto();
-                return dto ?? new EventDto { Id = ev.Id, Name = "(deleted)" };
-            }).ToList();
+            var dtos = list.Select(ev => ev.ToFullDto() ?? new EventDto { Id = ev.Id, Name = "(deleted)" }).ToList();
             return Ok(dtos);
         }
 
         /// <summary>
         /// Get events a watcher is participating in.
         /// </summary>
+        [Authorize]
         [HttpGet("watcher/{watcherId:int}")]
         [OpenApiOperation("Event_GetByWatcherId")]
-        public async Task<IActionResult> GetByWatcherId(int watcherId)
+        [ProducesResponseType(typeof(List<EventDto>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        public async Task<IActionResult> GetEventsByWatcherId(int watcherId)
         {
-            if (watcherId <= 0) return BadRequest("Invalid watcher ID.");
+            if (watcherId <= 0)
+                return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "Watcher ID must be a positive integer." });
+
             var list = await _eventRepo.GetByWatcherIdAsync(watcherId);
-            var dtos = list.Select(ev => {
-                var dto = ev.ToFullDto();
-                return dto ?? new EventDto { Id = ev.Id, Name = "(deleted)" };
-            }).ToList();
+            var dtos = list.Select(ev => ev.ToFullDto() ?? new EventDto { Id = ev.Id, Name = "(deleted)" }).ToList();
             return Ok(dtos);
         }
 
         /// <summary>
         /// Update an existing event (only its MainAdmin or Admin role).
         /// </summary>
+        [Authorize]
         [HttpPatch("update/{id:int}")]
         [OpenApiOperation("Event_Update")]
-        public async Task<IActionResult> Update(int id, [FromBody] EventDto dto)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ProblemDetails), 403)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
+        public async Task<IActionResult> UpdateEvent(int id, [FromBody] EventDto dto)
         {
             if (dto == null) return BadRequest("Event data must be provided.");
             if (id <= 0) return BadRequest("Invalid event ID.");
@@ -155,17 +171,13 @@ namespace BirdWatching.Api.Controllers
             var e = await _eventRepo.GetByIdAsync(id);
             if (e == null) return NotFound("Event not found.");
 
-            // ID uživatele z claimu 'sub'
-            var userIdClaim = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            if (!int.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            var userId = GetCurrentUserId();
+            if (userId is null) return Unauthorized();
 
-            // kontrola vlastníka nebo role Admin
             var isAdmin = User.IsInRole("Admin");
             if (e.MainAdminId != userId && !isAdmin)
                 return Forbid();
 
-            // aktualizace polí
             e.Name = dto.Name ?? e.Name;
             e.Start = dto.Start;
             e.End = dto.End;
@@ -188,13 +200,18 @@ namespace BirdWatching.Api.Controllers
         /// <summary>
         /// Get participants (watchers) of an event.
         /// </summary>
+        [Authorize]
         [HttpGet("participants/{eventId:int}")]
         [OpenApiOperation("Event_GetWatchers")]
-        public async Task<IActionResult> GetWatchers(int eventId)
+        [ProducesResponseType(typeof(List<WatcherDto>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        public async Task<IActionResult> GetWatchersForEvent(int eventId)
         {
-            if (eventId <= 0) return BadRequest("Invalid event ID.");
+            if (eventId <= 0)
+                return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "Event ID must be a positive integer." });
+
             var list = await _eventRepo.GetParticipantsAsync(eventId);
-            var dtos = list?.Select(w => w.ToFullDto()).ToList();
+            var dtos = list?.Select(w => w.ToFullDto()).ToList() ?? new List<WatcherDto>();
             return Ok(dtos);
         }
     }

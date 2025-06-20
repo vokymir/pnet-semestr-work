@@ -31,97 +31,163 @@ public partial interface IBirdApiClient
 System.Threading.Tasks.Task<TokenResponseDto> Auth_LoginAsync(LoginDto login, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<BirdDto> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
 System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> Bird_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Bird_GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> Bird_GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Bird_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<BirdDto> Bird_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Bird_AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task Bird_AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Bird_EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task Bird_EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<EventDto> Event_CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<EventDto>> Event_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<EventDto> Event_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<EventDto> Event_GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<EventDto>> Event_GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<EventDto>> Event_GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task Event_UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Event_GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<WatcherDto>> Event_GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Record_CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<RecordDto> Record_CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Record_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RecordDto>> Record_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Record_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<RecordDto> Record_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Record_GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RecordDto>> Record_GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Record_AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task Record_AppendCommentAsync(int recordId, CommentUpdateDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Record_EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task Record_EditCommentAsync(int recordId, CommentUpdateDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Create
+/// </summary>
+/// <remarks>
+/// Creates a new user account.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> User_CreateAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<UserDto> User_CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Update
+/// </summary>
+/// <remarks>
+/// Updates an existing user.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> User_UpdateAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task User_UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Delete
+/// </summary>
+/// <remarks>
+/// Deletes a user account.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> User_DeleteAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task User_DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Get
+/// </summary>
+/// <remarks>
+/// Gets a user profile.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> User_GetAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<UserDto> User_GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_GetAll
+/// </summary>
+/// <remarks>
+/// Lists all registered users.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> User_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserDto>> User_GetAllUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_AddCuratedWatcher
+/// </summary>
+/// <remarks>
+/// Adds a watcher to current user's curated list.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> User_AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task User_AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_Create
+/// </summary>
+/// <remarks>
+/// Creates a new watcher and assigns current user as main curator.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Watcher_CreateAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<WatcherDto> Watcher_CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_GetByUserCurrent
+/// </summary>
+/// <remarks>
+/// Returns all watchers associated with current user.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Watcher_GetByUserCurrentAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<WatcherDto>> Watcher_GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_GetAll
+/// </summary>
+/// <remarks>
+/// Returns all watchers (admin only).
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Watcher_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<System.Collections.Generic.ICollection<WatcherDto>> Watcher_GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_Get
+/// </summary>
+/// <remarks>
+/// Returns a watcher by ID.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Watcher_GetAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task<WatcherDto> Watcher_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_JoinEvent
+/// </summary>
+/// <remarks>
+/// Adds the watcher to a public event (curators only).
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-System.Threading.Tasks.Task<FileResponse> Watcher_JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+System.Threading.Tasks.Task Watcher_JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
@@ -242,7 +308,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<BirdDto> Bird_CreateAsync(BirdDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (dto == null)
 throw new System.ArgumentNullException("dto");
@@ -257,7 +323,7 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird"
@@ -280,12 +346,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<BirdDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -370,7 +458,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Bird_GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<BirdDto>> Bird_GetByPrefixAsync(string prefix = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -379,7 +467,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/search"
@@ -408,12 +496,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<BirdDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -436,7 +546,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Bird_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<BirdDto> Bird_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -447,7 +557,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/{id}"
@@ -471,12 +581,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<BirdDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -499,7 +631,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Bird_AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task Bird_AppendCommentAsync(int birdId, string additional, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (birdId == null)
 throw new System.ArgumentNullException("birdId");
@@ -516,7 +648,6 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/comment/append/{birdId}"
@@ -540,12 +671,29 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -568,7 +716,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Bird_EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task Bird_EditCommentAsync(int birdId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (birdId == null)
 throw new System.ArgumentNullException("birdId");
@@ -585,7 +733,6 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/comment/replace/{birdId}"
@@ -609,12 +756,39 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -637,7 +811,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<EventDto> Event_CreateAsync(EventDto eventDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventDto == null)
 throw new System.ArgumentNullException("eventDto");
@@ -652,7 +826,7 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event"
@@ -675,12 +849,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 201)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<EventDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -703,7 +899,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<EventDto>> Event_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -712,7 +908,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/all"
@@ -735,12 +931,14 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<EventDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
 }
 else
 {
@@ -763,7 +961,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<EventDto> Event_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -774,7 +972,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/{id}"
@@ -798,12 +996,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<EventDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -826,7 +1046,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<EventDto> Event_GetByPublicIdAsync(string publicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (publicId == null)
 throw new System.ArgumentNullException("publicId");
@@ -837,7 +1057,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/public/{publicId}"
@@ -861,12 +1081,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<EventDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -889,7 +1131,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<EventDto>> Event_GetByUserIdAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -900,7 +1142,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/user/{userId}"
@@ -924,12 +1166,24 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<EventDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -952,7 +1206,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<EventDto>> Event_GetByWatcherIdAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherId == null)
 throw new System.ArgumentNullException("watcherId");
@@ -963,7 +1217,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/watcher/{watcherId}"
@@ -987,12 +1241,24 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<EventDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1015,7 +1281,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task Event_UpdateAsync(int id, EventDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1032,7 +1298,6 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/update/{id}"
@@ -1056,12 +1321,29 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1084,7 +1366,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Event_GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<WatcherDto>> Event_GetWatchersAsync(int eventId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventId == null)
 throw new System.ArgumentNullException("eventId");
@@ -1095,7 +1377,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/participants/{eventId}"
@@ -1119,12 +1401,24 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<WatcherDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1147,7 +1441,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Record_CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<RecordDto> Record_CreateAsync(RecordDto recordDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordDto == null)
 throw new System.ArgumentNullException("recordDto");
@@ -1162,7 +1456,7 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record"
@@ -1185,12 +1479,64 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 201)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<RecordDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1213,7 +1559,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Record_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RecordDto>> Record_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1222,7 +1568,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/all"
@@ -1245,12 +1591,14 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<RecordDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
 }
 else
 {
@@ -1273,7 +1621,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Record_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<RecordDto> Record_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -1284,7 +1632,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/{id}"
@@ -1308,12 +1656,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<RecordDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1336,7 +1706,7 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Record_GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RecordDto>> Record_GetByWatcherAsync(int watcherId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherId == null)
 throw new System.ArgumentNullException("watcherId");
@@ -1347,7 +1717,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/watcher/{watcherId}"
@@ -1371,12 +1741,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<RecordDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1399,24 +1791,23 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Record_AppendCommentAsync(int recordId, string additionalText, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task Record_AppendCommentAsync(int recordId, CommentUpdateDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordId == null)
 throw new System.ArgumentNullException("recordId");
-if (additionalText == null)
-throw new System.ArgumentNullException("additionalText");
+if (dto == null)
+throw new System.ArgumentNullException("dto");
 var client_ = _httpClient;
 var disposeClient_ = false;
 try
 {
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
-var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(additionalText, JsonSerializerSettings);
+var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(dto, JsonSerializerSettings);
 var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/append/{recordId}"
@@ -1440,12 +1831,39 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1468,24 +1886,23 @@ client_.Dispose();
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Record_EditCommentAsync(int recordId, string newComment, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task Record_EditCommentAsync(int recordId, CommentUpdateDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (recordId == null)
 throw new System.ArgumentNullException("recordId");
-if (newComment == null)
-throw new System.ArgumentNullException("newComment");
+if (dto == null)
+throw new System.ArgumentNullException("dto");
 var client_ = _httpClient;
 var disposeClient_ = false;
 try
 {
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
-var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(newComment, JsonSerializerSettings);
+var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(dto, JsonSerializerSettings);
 var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/edit/{recordId}"
@@ -1509,12 +1926,59 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1536,8 +2000,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Create
+/// </summary>
+/// <remarks>
+/// Creates a new user account.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> User_CreateAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<UserDto> User_CreateUserAsync(UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userDto == null)
 throw new System.ArgumentNullException("userDto");
@@ -1552,7 +2022,7 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user"
@@ -1575,12 +2045,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<UserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1602,8 +2094,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Update
+/// </summary>
+/// <remarks>
+/// Updates an existing user.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> User_UpdateAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task User_UpdateUserAsync(int userId, UserDto userDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -1620,7 +2118,6 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PUT");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/{userId}"
@@ -1644,12 +2141,59 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1671,8 +2215,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Delete
+/// </summary>
+/// <remarks>
+/// Deletes a user account.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> User_DeleteAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task User_DeleteUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -1683,7 +2233,6 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("DELETE");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/{userId}"
@@ -1707,12 +2256,49 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1734,8 +2320,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_Get
+/// </summary>
+/// <remarks>
+/// Gets a user profile.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> User_GetAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<UserDto> User_GetUserAsync(int userId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (userId == null)
 throw new System.ArgumentNullException("userId");
@@ -1746,7 +2338,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/{userId}"
@@ -1770,12 +2362,44 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<UserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1797,8 +2421,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_GetAll
+/// </summary>
+/// <remarks>
+/// Lists all registered users.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> User_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserDto>> User_GetAllUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1807,7 +2437,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/all"
@@ -1830,12 +2460,14 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<UserDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
 }
 else
 {
@@ -1857,8 +2489,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// User_AddCuratedWatcher
+/// </summary>
+/// <remarks>
+/// Adds a watcher to current user's curated list.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> User_AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task User_AddCuratedWatcherAsync(string watcherPublicId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherPublicId == null)
 throw new System.ArgumentNullException("watcherPublicId");
@@ -1870,7 +2508,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/curate/{watcherPublicId}"
@@ -1894,12 +2531,59 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 409)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1921,8 +2605,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_Create
+/// </summary>
+/// <remarks>
+/// Creates a new watcher and assigns current user as main curator.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_CreateAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<WatcherDto> Watcher_CreateWatcherAsync(WatcherDto watcherDto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (watcherDto == null)
 throw new System.ArgumentNullException("watcherDto");
@@ -1937,7 +2627,7 @@ var content_ = new System.Net.Http.StringContent(json_);
 content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher"
@@ -1960,12 +2650,44 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<WatcherDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -1987,8 +2709,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_GetByUserCurrent
+/// </summary>
+/// <remarks>
+/// Returns all watchers associated with current user.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_GetByUserCurrentAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<WatcherDto>> Watcher_GetUserWatchersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -1997,7 +2725,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher"
@@ -2020,12 +2748,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<WatcherDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -2047,8 +2797,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_GetAll
+/// </summary>
+/// <remarks>
+/// Returns all watchers (admin only).
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<WatcherDto>> Watcher_GetAllIfAdminAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 var client_ = _httpClient;
 var disposeClient_ = false;
@@ -2057,7 +2813,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher/all"
@@ -2080,12 +2836,24 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<WatcherDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -2107,8 +2875,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_Get
+/// </summary>
+/// <remarks>
+/// Returns a watcher by ID.
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_GetAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task<WatcherDto> Watcher_GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (id == null)
 throw new System.ArgumentNullException("id");
@@ -2119,7 +2893,7 @@ try
 using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("GET");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher/{id}"
@@ -2143,12 +2917,34 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 200)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+var objectResponse_ = await ReadObjectResponseAsync<WatcherDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+return objectResponse_.Object;
+}
+else
+if (status_ == 400)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -2170,8 +2966,14 @@ client_.Dispose();
 }
 }
 /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+/// <summary>
+/// Watcher_JoinEvent
+/// </summary>
+/// <remarks>
+/// Adds the watcher to a public event (curators only).
+/// </remarks>
 /// <exception cref="ApiException">A server side error occurred.</exception>
-public virtual async System.Threading.Tasks.Task<FileResponse> Watcher_JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+public virtual async System.Threading.Tasks.Task Watcher_JoinEventAsync(string eventPublicId, int? watcherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 {
 if (eventPublicId == null)
 throw new System.ArgumentNullException("eventPublicId");
@@ -2183,7 +2985,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
 request_.Method = new System.Net.Http.HttpMethod("POST");
-request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 var urlBuilder_ = new System.Text.StringBuilder();
 if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher/join/{eventPublicId}"
@@ -2213,12 +3014,59 @@ headers_[item_.Key] = item_.Value;
 }
 ProcessResponse(client_, response_);
 var status_ = (int)response_.StatusCode;
-if (status_ == 200 || status_ == 206)
+if (status_ == 204)
 {
-var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-return fileResponse_;
+return;
+}
+else
+if (status_ == 401)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 403)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 404)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 409)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+}
+else
+if (status_ == 500)
+{
+var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+if (objectResponse_.Object == null)
+{
+throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+}
+throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
 }
 else
 {
@@ -2339,35 +3187,6 @@ return string.Join(",", valueTextArray);
 }
 var result = System.Convert.ToString(value, cultureInfo);
 return result == null ? "" : result;
-}
-}
-[System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
-public partial class FileResponse : System.IDisposable
-{
-private System.IDisposable _client;
-private System.IDisposable _response;
-public int StatusCode { get; private set; }
-public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
-public System.IO.Stream Stream { get; private set; }
-public bool IsPartial
-{
-get { return StatusCode == 206; }
-}
-public FileResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.IO.Stream stream, System.IDisposable client, System.IDisposable response)
-{
-StatusCode = statusCode;
-Headers = headers;
-Stream = stream;
-_client = client;
-_response = response;
-}
-public void Dispose()
-{
-Stream.Dispose();
-if (_response != null)
-_response.Dispose();
-if (_client != null)
-_client.Dispose();
 }
 }
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
