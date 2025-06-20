@@ -4,8 +4,8 @@
     "openApiToCSharpClient": {
       "className": "BirdApiClient",
       "namespace": "BirdWatching.Shared.Api",
-"operationGenerationMode": "SingleClientFromOperationId",
-"generateClientInterfaces": true,
+      "operationGenerationMode": "SingleClientFromOperationId",
+      "generateClientInterfaces": true,
       "useHttpClientCreationMethod": true,
       "generateDtoTypes": false,
       "generateSingleClient": true,
@@ -13,7 +13,8 @@
       "clientBaseClass": null,
       "exceptionClass": "ApiException",
       "wrapDtoExceptions": true,
-      "output": "Api/BirdApiClient.cs"
+      "output": "Api/BirdApiClient.cs",
+      "useBaseUrl": false
     }
   },
   "documentGenerator": {

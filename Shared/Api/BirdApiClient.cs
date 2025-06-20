@@ -192,9 +192,6 @@ System.Threading.Tasks.Task Watcher_JoinEventAsync(string eventPublicId, int? wa
 [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
 public partial class BirdApiClient : IBirdApiClient
 {
-#pragma warning disable 8618
-private string _baseUrl;
-#pragma warning restore 8618
 private System.Net.Http.HttpClient _httpClient;
 private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
@@ -202,7 +199,6 @@ private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
 public BirdApiClient(System.Net.Http.HttpClient httpClient)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 {
-BaseUrl = "http://localhost:5069";
 _httpClient = httpClient;
 Initialize();
 }
@@ -211,16 +207,6 @@ private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
 var settings = new Newtonsoft.Json.JsonSerializerSettings();
 UpdateJsonSerializerSettings(settings);
 return settings;
-}
-public string BaseUrl
-{
-get { return _baseUrl; }
-set
-{
-_baseUrl = value;
-if (!string.IsNullOrEmpty(_baseUrl) && !_baseUrl.EndsWith("/"))
-_baseUrl += '/';
-}
 }
 protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
 static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
@@ -247,7 +233,6 @@ request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/auth"
 urlBuilder_.Append("api/auth");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -325,7 +310,6 @@ request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird"
 urlBuilder_.Append("api/bird");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -407,7 +391,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird"
 urlBuilder_.Append("api/bird");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -469,7 +452,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/search"
 urlBuilder_.Append("api/bird/search");
 urlBuilder_.Append('?');
@@ -559,7 +541,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/{id}"
 urlBuilder_.Append("api/bird/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -649,7 +630,6 @@ content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Pars
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/comment/append/{birdId}"
 urlBuilder_.Append("api/bird/comment/append/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(birdId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -734,7 +714,6 @@ content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Pars
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/bird/comment/replace/{birdId}"
 urlBuilder_.Append("api/bird/comment/replace/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(birdId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -828,7 +807,6 @@ request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event"
 urlBuilder_.Append("api/event");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -910,7 +888,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/all"
 urlBuilder_.Append("api/event/all");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -974,7 +951,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/{id}"
 urlBuilder_.Append("api/event/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1059,7 +1035,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/public/{publicId}"
 urlBuilder_.Append("api/event/public/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(publicId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1144,7 +1119,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/user/{userId}"
 urlBuilder_.Append("api/event/user/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1219,7 +1193,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/watcher/{watcherId}"
 urlBuilder_.Append("api/event/watcher/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(watcherId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1299,7 +1272,6 @@ content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Pars
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/update/{id}"
 urlBuilder_.Append("api/event/update/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1379,7 +1351,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/event/participants/{eventId}"
 urlBuilder_.Append("api/event/participants/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(eventId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1458,7 +1429,6 @@ request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record"
 urlBuilder_.Append("api/record");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -1570,7 +1540,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/all"
 urlBuilder_.Append("api/record/all");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -1634,7 +1603,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/{id}"
 urlBuilder_.Append("api/record/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1719,7 +1687,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/watcher/{watcherId}"
 urlBuilder_.Append("api/record/watcher/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(watcherId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1809,7 +1776,6 @@ content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Pars
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/append/{recordId}"
 urlBuilder_.Append("api/record/append/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(recordId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1904,7 +1870,6 @@ content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Pars
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PATCH");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/record/edit/{recordId}"
 urlBuilder_.Append("api/record/edit/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(recordId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2024,7 +1989,6 @@ request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user"
 urlBuilder_.Append("api/user");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -2119,7 +2083,6 @@ content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Pars
 request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("PUT");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/{userId}"
 urlBuilder_.Append("api/user/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2234,7 +2197,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 {
 request_.Method = new System.Net.Http.HttpMethod("DELETE");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/{userId}"
 urlBuilder_.Append("api/user/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2340,7 +2302,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/{userId}"
 urlBuilder_.Append("api/user/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2439,7 +2400,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/all"
 urlBuilder_.Append("api/user/all");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -2509,7 +2469,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
 request_.Method = new System.Net.Http.HttpMethod("POST");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/user/curate/{watcherPublicId}"
 urlBuilder_.Append("api/user/curate/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(watcherPublicId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2629,7 +2588,6 @@ request_.Content = content_;
 request_.Method = new System.Net.Http.HttpMethod("POST");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher"
 urlBuilder_.Append("api/watcher");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -2727,7 +2685,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher"
 urlBuilder_.Append("api/watcher");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -2815,7 +2772,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher/all"
 urlBuilder_.Append("api/watcher/all");
 PrepareRequest(client_, request_, urlBuilder_);
@@ -2895,7 +2851,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Method = new System.Net.Http.HttpMethod("GET");
 request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher/{id}"
 urlBuilder_.Append("api/watcher/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2986,7 +2941,6 @@ using (var request_ = new System.Net.Http.HttpRequestMessage())
 request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
 request_.Method = new System.Net.Http.HttpMethod("POST");
 var urlBuilder_ = new System.Text.StringBuilder();
-if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
 // Operation Path: "api/watcher/join/{eventPublicId}"
 urlBuilder_.Append("api/watcher/join/");
 urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(eventPublicId, System.Globalization.CultureInfo.InvariantCulture)));
