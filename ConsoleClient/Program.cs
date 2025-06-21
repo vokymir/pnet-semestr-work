@@ -4,7 +4,7 @@ using System.CommandLine;
 
 namespace BirdWatching.ConsoleClient;
 
-public class Program
+public class BirdCLI
 {
     public static async Task<int> Main(string[] args)
     {
@@ -13,8 +13,16 @@ public class Program
 
         var storedInfoPath = Path.Combine(".", ".info");
 
+        ImportantStuff stuff = new(
+                birdApiClient,
+                storedInfoPath,
+                new ConsoleStyle(ConsoleColor.Green, null),
+                new ConsoleStyle(ConsoleColor.Yellow, null),
+                new ConsoleStyle(ConsoleColor.Red, null)
+        );
+
         var rootCommand = new RootCommand("A command-line client for the bird app.");
-        var loginCommand = new LoginCommand(birdApiClient, storedInfoPath);
+        var loginCommand = new LoginCommand(stuff);
 
         rootCommand.Subcommands.Add(loginCommand);
 

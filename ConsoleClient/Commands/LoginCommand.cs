@@ -26,14 +26,12 @@ public class LoginCommand : Command
         Description = "Duration in minutes the session should be valid (optional)."
     };
 
-    private readonly BirdApiClient _birdApiClient;
-    private readonly string _storedInfoPath;
+    private readonly ImportantStuff _impStuff;
 
-    public LoginCommand(BirdApiClient birdApiClient, string storedInfoPath)
+    public LoginCommand(ImportantStuff impStuff)
         : base("login", "Log in to the bird application.")
     {
-        _birdApiClient = birdApiClient;
-        _storedInfoPath = storedInfoPath;
+        _impStuff = impStuff;
 
         Add(_usernameOption);
         Add(_passwordOption);
@@ -44,15 +42,14 @@ public class LoginCommand : Command
             string password = parseResult.GetValue(_passwordOption)!;
             int? validMinutes = parseResult.GetValue(_validMinutesOption);
 
-            await HandleLoginCommand(username, password, validMinutes, _birdApiClient);
+            await HandleLoginCommand(username, password, validMinutes);
         });
     }
 
     private async Task HandleLoginCommand(
         string username,
         string password,
-        int? validMinutes,
-        BirdApiClient birdApiClient)
+        int? validMinutes)
     {
         Console.WriteLine($"Attempting to log in with username: '{username}'");
         Console.WriteLine($"Password provided (masked): '********'");
@@ -71,23 +68,40 @@ public class LoginCommand : Command
 
         try
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = _impStuff.Working.Foreground ?? Console.ForegroundColor;
+            Console.BackgroundColor = _impStuff.Working.Background ?? Console.BackgroundColor;
             Console.WriteLine("Sending login request to API...");
             Console.ResetColor();
 
-            var response = await birdApiClient.Auth_LoginAsync(new LoginDto(username, password, minutes));
+            var response = await _impStuff.BirdApiClient.Auth_LoginAsync(new LoginDto(username, password, minutes));
             if (response.Token is null) throw new ApplicationException("Cannot retrieve token from the api...");
 
-            var text = JsonSerializer.Serialize(response);
-            await File.WriteAllTextAsync(_storedInfoPath, text);
+            string infoJson = string.Empty;
+            StoredInfo infoClass = new();
 
-            Console.ForegroundColor = ConsoleColor.Green;
+            // get preexisting data
+            if (File.Exists(_impStuff.StoredInfoPath))
+            {
+                infoJson = await File.ReadAllTextAsync(_impStuff.StoredInfoPath, System.Text.Encoding.UTF8);
+                infoClass = JsonSerializer.Deserialize<StoredInfo>(infoJson) ?? new();
+            }
+
+            // add new information
+            infoClass.TokenResponseDto = response;
+
+            // write back to file
+            infoJson = JsonSerializer.Serialize(infoClass);
+            await File.WriteAllTextAsync(_impStuff.StoredInfoPath, infoJson);
+
+            Console.ForegroundColor = _impStuff.Success.Foreground ?? Console.ForegroundColor;
+            Console.BackgroundColor = _impStuff.Success.Background ?? Console.BackgroundColor;
             Console.WriteLine("Login successful!");
             Console.ResetColor();
         }
         catch (Exception ex)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = _impStuff.Failure.Foreground ?? Console.ForegroundColor;
+            Console.BackgroundColor = _impStuff.Failure.Background ?? Console.BackgroundColor;
             Console.Error.WriteLine($"Login failed: {ex.Message}");
             Console.ResetColor();
             Environment.Exit(1);
