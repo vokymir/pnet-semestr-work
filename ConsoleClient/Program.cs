@@ -1,48 +1,24 @@
-using System.Net.Http.Headers;
-using BirdWatching.Shared.Model;
 using BirdWatching.Shared.Api;
+
+using System.CommandLine;
+
+namespace BirdWatching.ConsoleClient;
 
 public class Program
 {
-    static HttpClient c = new HttpClient() { BaseAddress = new Uri("http://localhost:5069/") };
-    static BirdApiClient client = new BirdApiClient(c);
-
-    static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
-        var log = new LoginDto("string", "string");
+        var httpClient = new HttpClient() { BaseAddress = new Uri("http://localhost:5069") };
+        var birdApiClient = new BirdApiClient(httpClient);
 
-        // 1. Authenticate
-        TokenResponseDto? token = await client.Auth_LoginAsync(log);
-        if (token is null)
-            throw new ApplicationException("Invalid token");
+        var storedInfoPath = Path.Combine(".", ".info");
 
-        // 2. Attach the token
-        c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+        var rootCommand = new RootCommand("A command-line client for the bird app.");
+        var loginCommand = new LoginCommand(birdApiClient, storedInfoPath);
 
-        // 3. Try calling the protected endpoints
-        var bird = new BirdDto { Genus = "GEN", Species = "SPE" + DateTime.Now.ToString(" dd.MM.yyyy HH:mm:ss") };
+        rootCommand.Subcommands.Add(loginCommand);
 
-        var birds = await client.Bird_GetAllAsync();
-        PrintBirds(birds, "\n###\nBefore\n###");
-
-        await client.Bird_CreateAsync(bird);
-
-        birds = await client.Bird_GetAllAsync();
-        PrintBirds(birds, "\n###\nAfter\n###");
-    }
-
-    static void PrintBirds(ICollection<BirdDto>? birds, string? message = null)
-    {
-        if (message is not null)
-            Console.WriteLine(message);
-
-        if (birds is null)
-        {
-            Console.WriteLine("Birds is null...");
-            return;
-        }
-
-        foreach (var b in birds)
-            Console.WriteLine($"{b.Id}\t{b.Genus}\t{b.Species}");
+        return await rootCommand.Parse(args).InvokeAsync();
     }
 }
+
