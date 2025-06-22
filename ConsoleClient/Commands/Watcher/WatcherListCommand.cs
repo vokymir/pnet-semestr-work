@@ -12,6 +12,7 @@ public class WatcherListCommand : BWCommand
         SetAction(async (parseResult) => await HandleCommandWrapper(HandleCommand));
     }
 
+    // Get all watchers and return a function which will just print them.
     private async Task<Delegate> HandleCommand()
     {
         var data = await _impStuff.BirdApiClient.Watcher_GetUserWatchersAsync();
