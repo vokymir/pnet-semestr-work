@@ -20,7 +20,7 @@ public class LoginCommand : BWCommand
             string password = parseResult.GetValue(_passwordOption)!;
             int? validMinutes = parseResult.GetValue(_validMinutesOption);
 
-            await HandleCommand(username, password, validMinutes);
+            await HandleCommandWrapper(HandleCommand, username, password, validMinutes);
         });
     }
 
@@ -46,60 +46,31 @@ public class LoginCommand : BWCommand
         string password,
         int? validMinutes)
     {
-        Console.WriteLine($"Attempting to log in with username: '{username}'");
-        Console.WriteLine($"Password provided (masked): '********'");
         int minutes;
 
         if (validMinutes.HasValue)
-        {
-            Console.WriteLine($"Session will be valid for: {validMinutes.Value} minutes.");
             minutes = (int) validMinutes;
-        }
         else
-        {
-            Console.WriteLine("Using default session validity period.");
             minutes = 0;
-        }
 
-        try
+        var response = await _impStuff.BirdApiClient.Auth_LoginAsync(new LoginDto(username, password, minutes));
+        if (response.Token is null) throw new ApplicationException("Cannot retrieve token from the api...");
+
+        string infoJson = string.Empty;
+        StoredInfo infoClass = new();
+
+        // get preexisting data
+        if (File.Exists(_impStuff.StoredInfoPath))
         {
-            Console.ForegroundColor = _impStuff.Working.Foreground ?? Console.ForegroundColor;
-            Console.BackgroundColor = _impStuff.Working.Background ?? Console.BackgroundColor;
-            Console.WriteLine("Sending login request to API...");
-            Console.ResetColor();
-
-            var response = await _impStuff.BirdApiClient.Auth_LoginAsync(new LoginDto(username, password, minutes));
-            if (response.Token is null) throw new ApplicationException("Cannot retrieve token from the api...");
-
-            string infoJson = string.Empty;
-            StoredInfo infoClass = new();
-
-            // get preexisting data
-            if (File.Exists(_impStuff.StoredInfoPath))
-            {
-                infoJson = await File.ReadAllTextAsync(_impStuff.StoredInfoPath, System.Text.Encoding.UTF8);
-                infoClass = JsonSerializer.Deserialize<StoredInfo>(infoJson) ?? new();
-            }
-
-            // add new information
-            infoClass.TokenResponseDto = response;
-
-            // write back to file
-            infoJson = JsonSerializer.Serialize(infoClass);
-            await File.WriteAllTextAsync(_impStuff.StoredInfoPath, infoJson);
-
-            Console.ForegroundColor = _impStuff.Success.Foreground ?? Console.ForegroundColor;
-            Console.BackgroundColor = _impStuff.Success.Background ?? Console.BackgroundColor;
-            Console.WriteLine("Login successful!");
-            Console.ResetColor();
+            infoJson = await File.ReadAllTextAsync(_impStuff.StoredInfoPath, System.Text.Encoding.UTF8);
+            infoClass = JsonSerializer.Deserialize<StoredInfo>(infoJson) ?? new();
         }
-        catch (Exception ex)
-        {
-            Console.ForegroundColor = _impStuff.Failure.Foreground ?? Console.ForegroundColor;
-            Console.BackgroundColor = _impStuff.Failure.Background ?? Console.BackgroundColor;
-            Console.Error.WriteLine($"Login failed: {ex.Message}");
-            Console.ResetColor();
-            Environment.Exit(1);
-        }
+
+        // add new information
+        infoClass.TokenResponseDto = response;
+
+        // write back to file
+        infoJson = JsonSerializer.Serialize(infoClass);
+        await File.WriteAllTextAsync(_impStuff.StoredInfoPath, infoJson);
     }
 }

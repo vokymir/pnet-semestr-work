@@ -16,7 +16,7 @@ public class WatcherAddCommand : BWCommand
                     string fn = parseResult.GetValue(_firstNameOption) ?? "Jméno";
                     string ln = parseResult.GetValue(_lastNameOption) ?? "Příjmení";
 
-                    await HandleCommand(fn, ln);
+                    await HandleCommandWrapper(HandleCommand, fn, ln);
                 }
             );
     }
@@ -35,8 +35,6 @@ public class WatcherAddCommand : BWCommand
     {
         WatcherDto wd = new() { FirstName = firstName, LastName = lastName };
 
-        Console.WriteLine("Try request.");
         await _impStuff.BirdApiClient.Watcher_CreateWatcherAsync(wd);
-        Console.WriteLine("Request done.");
     }
 }
