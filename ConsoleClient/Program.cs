@@ -31,7 +31,9 @@ public class BirdCLI
         var watcherCommand = new WatcherCommand(stuff);
         {
             var watcherListCommand = new WatcherListCommand(stuff);
+            var watcherAddCommand = new WatcherAddCommand(stuff);
             watcherCommand.Subcommands.Add(watcherListCommand);
+            watcherCommand.Subcommands.Add(watcherAddCommand);
         }
 
         rootCommand.Subcommands.Add(loginCommand);
