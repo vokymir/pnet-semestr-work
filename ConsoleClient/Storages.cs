@@ -4,6 +4,7 @@ using BirdWatching.Shared.Model;
 namespace BirdWatching.ConsoleClient;
 
 public record ImportantStuff(
+        HttpClient HttpClient,
         BirdApiClient BirdApiClient,
         string StoredInfoPath,
         ConsoleStyle Success,

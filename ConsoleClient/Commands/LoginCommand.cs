@@ -4,11 +4,26 @@ using System.CommandLine;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-using BirdWatching.Shared.Api;
 using BirdWatching.Shared.Model;
 
-public class LoginCommand : Command
+public class LoginCommand : BWCommand
 {
+    public LoginCommand(ImportantStuff impStuff)
+        : base("login", "Log in to the bird application.", impStuff)
+    {
+        Add(_usernameOption);
+        Add(_passwordOption);
+        Add(_validMinutesOption);
+
+        SetAction(async (parseResult) => {
+            string username = parseResult.GetValue(_usernameOption)!;
+            string password = parseResult.GetValue(_passwordOption)!;
+            int? validMinutes = parseResult.GetValue(_validMinutesOption);
+
+            await HandleCommand(username, password, validMinutes);
+        });
+    }
+
     private readonly Option<string> _usernameOption = new("--username", "-u") {
         Required = true,
         Arity = ArgumentArity.ExactlyOne,
@@ -26,27 +41,7 @@ public class LoginCommand : Command
         Description = "Duration in minutes the session should be valid (optional)."
     };
 
-    private readonly ImportantStuff _impStuff;
-
-    public LoginCommand(ImportantStuff impStuff)
-        : base("login", "Log in to the bird application.")
-    {
-        _impStuff = impStuff;
-
-        Add(_usernameOption);
-        Add(_passwordOption);
-        Add(_validMinutesOption);
-
-        SetAction(async (parseResult) => {
-            string username = parseResult.GetValue(_usernameOption)!;
-            string password = parseResult.GetValue(_passwordOption)!;
-            int? validMinutes = parseResult.GetValue(_validMinutesOption);
-
-            await HandleLoginCommand(username, password, validMinutes);
-        });
-    }
-
-    private async Task HandleLoginCommand(
+    private async Task HandleCommand(
         string username,
         string password,
         int? validMinutes)
