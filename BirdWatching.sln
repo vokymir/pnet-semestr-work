@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{4217E1E0-41E7-4F17-BD6E-D85BC0FD1185}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{4C194AD1-699D-489B-9E6A-30E1C122D594}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "ConsoleClient\bw.csproj", "{4C194AD1-699D-489B-9E6A-30E1C122D594}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
