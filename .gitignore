@@ -12,6 +12,8 @@ obj/
 # don't include database
 *.db
 *.db*
+# some cache or plugin-wise stuff
+*.razor__virtual.*
 
 # =====
 
