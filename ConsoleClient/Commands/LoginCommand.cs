@@ -53,7 +53,7 @@ public class LoginCommand : BWCommand
         else
             minutes = 0;
 
-        var response = await _impStuff.BirdApiClient.Auth_LoginAsync(new LoginDto(username, password, minutes));
+        var response = await _impStuff.BirdApiClient.Auth_LoginAsync(new LoginDto() { username = username, passwordhash = password, WantedMinutes = minutes });
         if (response.Token is null) throw new ApplicationException("Cannot retrieve token from the api...");
 
         string infoJson = string.Empty;

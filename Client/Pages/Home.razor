@@ -5,3 +5,15 @@
 <h1>Hello, world! This is awesome...</h1>
 
 Welcome to your new app.
+
+<LoginForm OnLoginSuccess="@OnSuccess" />
+
+<h2>@s</h2>
+
+@code {
+    private string s = "jak to vypada?";
+    private void OnSuccess()
+    {
+        s = "jupi";
+    }
+}

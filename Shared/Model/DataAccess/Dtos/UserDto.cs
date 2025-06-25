@@ -3,6 +3,7 @@ namespace BirdWatching.Shared.Model;
 public class UserDto : IAmDto<User>
 {
     public int Id { get; set; }
+    public string Email { get; set; } = "email@email.com";
     public string UserName { get; set; } = "username";
     public string PasswordHash { get; set; } = "password";
     public bool IsAdmin { get; set; } = false;
@@ -19,7 +20,8 @@ public class UserDto : IAmDto<User>
             Id = Id,
             UserName = UserName,
             PasswordHash = PasswordHash,
-            IsAdmin = IsAdmin
+            IsAdmin = IsAdmin,
+            Email = Email,
         };
 
         return u;

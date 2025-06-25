@@ -1,3 +1,8 @@
 namespace BirdWatching.Shared.Model;
 
-public record LoginDto(string username, string passwordhash, int WantedMinutes = 0);
+public class LoginDto()
+{
+    public string username { get; set; } = "";
+    public string passwordhash { get; set; } = "";
+    public int WantedMinutes { get; set; } = 0;
+}

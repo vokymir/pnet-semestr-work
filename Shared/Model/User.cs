@@ -3,6 +3,7 @@ namespace BirdWatching.Shared.Model;
 public class User : IHaveDto<UserDto>
 {
     public int Id { get; set; }
+    public string Email { get; set; } = "email@email.com";
     public string UserName { get; set; } = "username";
     public string PasswordHash { get; set; } = "password";
     public bool IsAdmin { get; set; } = false;
@@ -21,7 +22,8 @@ public class User : IHaveDto<UserDto>
             Id = Id,
             UserName = UserName,
             PasswordHash = PasswordHash,
-            IsAdmin = IsAdmin
+            IsAdmin = IsAdmin,
+            Email = Email,
         };
 
         return u;
@@ -32,7 +34,8 @@ public class User : IHaveDto<UserDto>
             Id = Id,
             UserName = UserName,
             PasswordHash = PasswordHash,
-            IsAdmin = IsAdmin
+            IsAdmin = IsAdmin,
+            Email = Email,
         };
 
         if (u.Watchers is null) u.Watchers = new List<WatcherDto>();

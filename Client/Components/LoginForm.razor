@@ -1,0 +1,62 @@
+@using System.ComponentModel.DataAnnotations
+@using Blazored.LocalStorage
+@using BirdWatching.Shared.Api
+@inject BirdApiClient BAC
+@inject ILocalStorageService LocalStorage
+
+<EditForm Model="Model" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Přihlašovací jméno</label>
+        <InputText @bind-Value="Model.username" class="form-control" />
+    </div>
+    <div>
+        <label>Heslo</label>
+        <InputText @bind-Value="Model.passwordhash" type="password" class="form-control" />
+    </div>
+    <button type="submit">Přihlásit se</button>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="text-danger">@ErrorMessage</div>
+    }
+</EditForm>
+
+@code {
+    private LoginDto Model { get; set; } = new();
+    private string? ErrorMessage;
+
+    [Parameter]
+    public EventCallback OnLoginSuccess { get; set; }
+
+    private async Task HandleLogin()
+    {
+        ErrorMessage = null;
+
+        try
+        {
+            var response = await BAC.Auth_LoginAsync(Model);
+
+            if (!string.IsNullOrWhiteSpace(response?.Token))
+            {
+                await LocalStorage.SetItemAsync("authToken", response.Token);
+                await LocalStorage.SetItemAsync("authTokenExpireAt", response.ExpireAt);
+                await OnLoginSuccess.InvokeAsync();
+            }
+            else
+            {
+                ErrorMessage = "Invalid login.";
+            }
+        }
+        catch (ApiException ex)
+        {
+            ErrorMessage = $"Login failed: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Login failed. Please try again later. Cause of error: {ex.Message}";
+        }
+    }
+}
