@@ -1,4 +1,4 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Client</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -8,23 +8,14 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
+    @foreach (var item in navItems)
+    {
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="@item.Href" Match="@item.Match">
+                <span class="bi " Name="@item.IconName" aria-hidden="true"></span> @item.Text
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
+    }
 </div>
 
 @code {
@@ -35,5 +26,32 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    <!-- public class NavItem -->
+    <!-- { -->
+    <!--     public string Id { get; set; } = default!; -->
+    <!--     public string Href { get; set; } = default!; -->
+    <!--     public string Text { get; set; } = default!; -->
+    <!--     public string IconName { get; set; } = default!; -->
+    <!--     public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix; -->
+    <!-- } -->
+
+    private IEnumerable<NavItem> navItems = Enumerable.Empty<NavItem>();
+
+    protected override void OnInitialized()
+    {
+        navItems = GetNavItems();
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        return new List<NavItem>
+{
+new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Domů", Match = NavLinkMatch.All },
+new NavItem { Id = "2", Href = "/ptackari", IconName = IconName.PeopleFill, Text = "Ptáčkaři" },
+new NavItem { Id = "3", Href = "/souteze", IconName = IconName.CalendarCheckFill, Text = "Soutěže" },
+new NavItem { Id = "4", Href = "/nastaveni", IconName = IconName.GearFill, Text = "Nastavení" },
+};
     }
 }

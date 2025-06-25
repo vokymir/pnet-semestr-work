@@ -1,16 +1,58 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inherits LayoutComponentBase
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<BlazorBootstrapLayout StickyHeader="true">
+    <HeaderSection>
+        <Button Color="ButtonColor.Primary" @onclick="ToggleSidebar"> Navigace </Button>
+        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End" />
+    </HeaderSection>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    <SidebarSection>
+        <Sidebar2 @ref="sidebar"
+                  Href="/"
+                  ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+                  Title="Ptáčková aplikace"
+                  BadgeText="v1.0.0"
+                  DataProvider="Sidebar2DataProvider"
+                  Width="300"
+                  WidthUnit="Unit.Px"
+                  >
+
+        </Sidebar2>
+    </SidebarSection>
+
+    <ContentSection>
+        @Body
+    </ContentSection>
+
+    <FooterSection>
+        Footer links...
+    </FooterSection>
+</BlazorBootstrapLayout>
+
+@code {
+    private Sidebar2 sidebar = default!;
+    private IEnumerable<NavItem> navItems = default!;
+
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
+            new NavItem { Id = "2", Href = "/ptackari", IconName = IconName.PeopleFill, Text = "ptackari"},
+            new NavItem { Id = "3", Href = "/souteze", IconName = IconName.CalendarCheckFill, Text = "souteze"},
+            new NavItem { Id = "4", Href = "/nastaveni", IconName = IconName.GearFill, Text = "nastaveni"}
+        };
+
+        return navItems;
+    }
+
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
+}
