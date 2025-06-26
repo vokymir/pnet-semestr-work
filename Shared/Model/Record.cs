@@ -6,6 +6,8 @@ public class Record : IHaveDto<RecordDto>
     public DateTime DateSeen { get; set; } = DateTime.Now;
     public string Comment { get; set; } = string.Empty;
 
+    public int Count { get; set; } = 1; // how many same birds together - may be useful in some events
+
     public int BirdId { get; set; }
     public Bird Bird { get; set; } = null!;
 
@@ -20,6 +22,7 @@ public class Record : IHaveDto<RecordDto>
             BirdId = BirdId,
             WatcherId = WatcherId,
             Comment = Comment,
+            Count = Count,
             Bird = Bird.ToDto(),
         };
 
@@ -34,6 +37,7 @@ public class Record : IHaveDto<RecordDto>
             BirdId = BirdId,
             WatcherId = WatcherId,
             Comment = Comment,
+            Count = Count,
             Bird = Bird.ToDto(),
             Watcher = Watcher.ToDto()
         };

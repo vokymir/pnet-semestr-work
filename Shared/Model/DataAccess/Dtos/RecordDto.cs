@@ -7,6 +7,8 @@ public class RecordDto : IAmDto<Record>
 
     public string Comment { get; set; } = string.Empty;
 
+    public int Count { get; set; } = 1;
+
     public int BirdId { get; set; }
     public BirdDto? Bird { get; set; }
 
@@ -19,6 +21,7 @@ public class RecordDto : IAmDto<Record>
             Id = Id,
             DateSeen = DateSeen,
             Comment = Comment,
+            Count = Count,
         };
 
         return r;

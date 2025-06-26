@@ -1,0 +1,89 @@
+@page "/soutez/nova"
+@inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
+
+<PageTitle>Nová soutěž</PageTitle>
+
+<h3>Vytvořit novou soutěž</h3>
+
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
+
+<EditForm Model="Event" OnValidSubmit="CreateEvent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Název</label>
+        <InputText id="name" class="form-control" @bind-Value="Event.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="start" class="form-label">Začátek</label>
+        <InputDate id="start" class="form-control" @bind-Value="Event.Start" />
+    </div>
+
+    <div class="mb-3">
+        <label for="end" class="form-label">Konec</label>
+        <InputDate id="end" class="form-control" @bind-Value="Event.End" />
+    </div>
+
+    <div class="mb-3">
+        <label for="ordo" class="form-label">Řád regex</label>
+        <InputText id="ordo" class="form-control" @bind-Value="Event.OrdoRegex" />
+        <small class="form-text text-muted">Nechte <code>*</code> pro všechny řády.</small>
+    </div>
+
+    <div class="mb-3">
+        <label for="familia" class="form-label">Čeleď regex</label>
+        <InputText id="familia" class="form-control" @bind-Value="Event.FamiliaRegex" />
+    </div>
+
+    <div class="mb-3">
+        <label for="genus" class="form-label">Rod regex</label>
+        <InputText id="genus" class="form-control" @bind-Value="Event.GenusRegex" />
+    </div>
+
+    <div class="mb-3">
+        <label for="species" class="form-label">Druh regex</label>
+        <InputText id="species" class="form-control" @bind-Value="Event.SpeciesRegex" />
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox id="allowDuplicates" class="form-check-input" @bind-Value="Event.AllowDuplicates" />
+        <label for="allowDuplicates" class="form-check-label">Povolit duplicity</label>
+        <small class="form-text text-muted">Duplicita je, když ptáčkař vidí sýkorku v pondělí a úterý, obě dvě si zapíše, a o
+
+
+            bě dvě se mu počítají.</small>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Vytvořit soutěž</button>
+</EditForm>
+
+@code {
+    private BirdWatching.Shared.Model.Event Event = new();
+    private List<ToastMessage> messages = new();
+
+    private async Task CreateEvent()
+    {
+        try
+        {
+            EventDto e = Event.ToFullDto();
+            await BAC.Event_CreateAsync(e);
+
+            NavManager.NavigateTo("/souteze");
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Title = "Nelze vytvořit soutěž",
+                Message = ex.Message,
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = true
+            });
+        }
+    }
+}

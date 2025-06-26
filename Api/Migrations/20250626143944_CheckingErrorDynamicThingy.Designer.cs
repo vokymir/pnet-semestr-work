@@ -3,6 +3,7 @@ using System;
 using BirdWatching.Shared.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250626143944_CheckingErrorDynamicThingy")]
+    partial class CheckingErrorDynamicThingy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.5");
@@ -60,10 +63,6 @@ namespace Api.Migrations
                     b.Property<DateTime>("End")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FamiliaRegex")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("GenusRegex")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -72,10 +71,6 @@ namespace Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OrdoRegex")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -114,9 +109,6 @@ namespace Api.Migrations
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("DateSeen")
                         .HasColumnType("TEXT");

@@ -1,12 +1,15 @@
 @page "/souteze"
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject BirdApiClient BAC
 
 <PageTitle>Soutěže</PageTitle>
 
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
+
 <h1>Events</h1>
 
-Welcome to your new app.
+Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby se dalo vybrat všechny/moje/účastním se/neúčastním se. Plus bych mohl vymyslet pagination, zakomponovanou rovnou v API, protože brzo asi bude hodně věcí. Tak uvidíme.
+
+<Button Type="ButtonType.Link" To="/soutez/nova" Color="ButtonColor.Primary">Vytvořit soutěž</Button>
 
 <CardGroup>
 
@@ -21,7 +24,8 @@ Welcome to your new app.
             <Card Style="width:18rem;">
                 <CardBody>
                     <CardTitle>@e.Name</CardTitle>
-                    <CardText>@e.PublicIdentifier</CardText>
+                    <CardText>@e.PublicIdentifier A tady by mělo být info, že to je moje soutěž, anebo, který z mých ptáčkařů se jí účastní
+                        (vyjmenovaní všichni).</CardText>
                     <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}/{e.Id}")
                         Type="ButtonType.Link">Zobrazit</Button>
                 </CardBody>
@@ -31,32 +35,27 @@ Welcome to your new app.
 
 </CardGroup>
 
-@if (ShowError)
-{
-    <Alert Color="AlertColor.Danger" IsDismissible="true" OnDismissed="() => ShowError = false">
-        @ErrorMessage
-    </Alert>
-}
 
 @code {
     private ICollection<EventDto>? E = null;
-    private bool ShowError = false;
-    private string ErrorMessage = "";
+    private List<ToastMessage> messages = new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var U = await LocalStorage.GetItemAsync<UserDto>("userDto");
-            if (U is null)
-                return;
-
-            E = await BAC.Event_GetByUserIdAsync(U.Id);
+            E = await BAC.Event_GetAllAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            ErrorMessage = ex.Message;
-            ShowError = true;
+            var toast = new ToastMessage();
+            toast.Type = ToastType.Warning;
+            toast.Title = "Chyba";
+            toast.HelpText = $"{DateTime.Now}";
+            toast.Message = "Problém s načítáním soutěží. Zkontrolujte, že jste přihlášeni.";
+            toast.AutoHide = true;
+
+            messages.Add(toast);
         }
     }
 }
