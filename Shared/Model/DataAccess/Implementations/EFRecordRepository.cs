@@ -15,6 +15,14 @@ public class EFRecordRepository : IRecordRepository
         set { }
     }
 
+    public IQueryable<Record> RecordsWithBird {
+        get {
+            return _context.Records
+                .Include(r => r.Bird);
+        }
+        set { }
+    }
+
     public EFRecordRepository(AppDbContext context)
     {
         _context = context;
@@ -61,5 +69,19 @@ public class EFRecordRepository : IRecordRepository
         return await RecordsWithDetails
             .Where(r => r.WatcherId == watcherId)
             .ToArrayAsync();
+    }
+
+    public async Task<Record[]> GetValidEventsWatcherRecordsAsync(int watcherId, string eventPubId)
+    {
+        return await (
+            from r in _context.Records
+            join e in _context.Events on eventPubId equals e.PublicIdentifier
+            where r.WatcherId == watcherId
+                  && r.DateSeen >= e.Start
+                  && r.DateSeen <= e.End
+            select r
+        )
+        .Include(r => r.Bird)
+        .ToArrayAsync();
     }
 }

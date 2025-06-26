@@ -1,1 +1,104 @@
-@page "/soutez"
+@page "/soutez/{PublicEventId}"
+@inject BirdApiClient BAC
+
+<PageTitle>Soutěž</PageTitle>
+
+<h2>@Evnt?.Name</h2>
+
+@if (Evnt is null)
+{
+    <p>Načítání soutěže…</p>
+}
+else
+{
+    <div class="mb-4">
+        <h5>Kritéria</h5>
+        <ul>
+            <li><strong>Řád:</strong> @Evnt.OrdoRegex</li>
+            <li><strong>Čeleď:</strong> @Evnt.FamiliaRegex</li>
+            <li><strong>Rod:</strong> @Evnt.GenusRegex</li>
+            <li><strong>Druh:</strong> @Evnt.SpeciesRegex</li>
+            <li><strong>Duplicitní druhy:</strong> @(Evnt.AllowDuplicates ? "Povoleny" : "Nepovoleny")</li>
+        </ul>
+    </div>
+
+    <h4>Účastníci</h4>
+
+    @if (Leaderboard is null)
+    {
+        <p>Načítání účastníků…</p>
+    }
+    else if (!Leaderboard.Any())
+    {
+        <p>Žádní účastníci.</p>
+    }
+    else
+    {
+        <div class="accordion" id="leaderboardAccordion">
+            @foreach (var (watcher, index) in Leaderboard.OrderByDescending(w => w.ValidRecords.Count).Select((w, i) => (w, i)))
+            {
+                var collapseId = $"collapse{index}";
+                var headingId = $"heading{index}";
+
+                <div class="accordion-item" @key="watcher.Id">
+                    <h2 class="accordion-header" id="@headingId">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                            @watcher.Name (@watcher.ValidRecords.Count záznamů)
+                        </button>
+                    </h2>
+                    <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId"
+                        data-bs-parent="#leaderboardAccordion">
+                        <div class="accordion-body">
+                            @if (watcher.ValidRecords is null || !watcher.ValidRecords.Any())
+                            {
+                                <p>Žádné platné záznamy.</p>
+                            }
+                            else
+                            {
+                                <ul class="list-group">
+                                    @foreach (var record in watcher.ValidRecords)
+                                    {
+                                        <li class="list-group-item">
+                                            <strong>@record.Bird?.BinomicName</strong> — @record.DateSeen.ToString("F");
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+[Parameter]
+public string PublicEventId { get; set; } = default!;
+
+private BirdWatching.Shared.Model.Event? Evnt;
+private List<BirdWatching.Shared.Model.WatcherOnLeaderboardDto> Leaderboard = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+    try
+    {
+    var edto = await BAC.Event_GetByPublicIdAsync(PublicEventId);
+    Evnt = edto.ToEntity();
+
+    Leaderboard = new();
+
+    foreach (var w in Evnt.Participants)
+    {
+    var wol = await BAC.Watcher_GetByIdAndEventAsync(w.Id, Evnt.PublicIdentifier);
+    if (wol is not null)
+    Leaderboard.Add(wol);
+    }
+    }
+    catch (Exception ex)
+    {
+    Console.WriteLine($"Chyba při načítání: {ex.Message}");
+    }
+    }
+    }

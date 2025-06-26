@@ -26,7 +26,7 @@ Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby 
                     <CardTitle>@e.Name</CardTitle>
                     <CardText>@e.PublicIdentifier A tady by mělo být info, že to je moje soutěž, anebo, který z mých ptáčkařů se jí účastní
                         (vyjmenovaní všichni).</CardText>
-                    <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}/{e.Id}")
+                    <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}")
                         Type="ButtonType.Link">Zobrazit</Button>
                 </CardBody>
             </Card>

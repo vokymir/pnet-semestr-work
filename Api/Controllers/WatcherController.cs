@@ -123,6 +123,42 @@ public class WatcherController : BaseApiController
         return Ok(watcher.ToFullDto());
     }
 
+    [HttpGet("leaderboard/{ePubId}/{wId:int}")]
+    [AllowAnonymous]
+    [OpenApiOperation("Watcher_GetForLeaderboard", "Returns a special watcherDTO by ID.")]
+    [ProducesResponseType(typeof(WatcherOnLeaderboardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByIdAndEvent(int wId, string ePubId)
+    {
+        if (wId <= 0)
+            return BadRequest(new ProblemDetails { Title = "Invalid watcher ID", Detail = "Watcher ID must be greater than zero." });
+        if (string.IsNullOrWhiteSpace(ePubId))
+            return BadRequest(new ProblemDetails { Title = "Invalid event public ID", Detail = "Event public ID mustn't be empty string." });
+
+        WatcherOnLeaderboardDto w = new();
+
+        try
+        {
+            var ww = await _watcherRepo.GetByIdAsync(wId);
+            if (ww is null) throw new Exception("Cannot find watcher by ID.");
+            w.Id = ww.Id;
+            w.Name = $"{ww.FirstName} {ww.LastName}";
+
+            var x = await _recordRepo.GetValidEventsWatcherRecordsAsync(wId, ePubId);
+
+            if (x.Count() > 0)
+                foreach (var r in x)
+                    w.ValidRecords.Add(r.ToFullDto());
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new ProblemDetails { Title = "Something wrong", Detail = $"SQL call failed, details: {ex.Message}" });
+        }
+
+        return Ok(w);
+    }
+
     /// <summary>Adds the specified watcher to the event's participants. Only curators can perform this.</summary>
     [HttpPost("join/{eventPublicId}")]
     [Authorize]
