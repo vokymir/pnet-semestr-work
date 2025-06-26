@@ -136,15 +136,14 @@ public class WatcherController : BaseApiController
         if (string.IsNullOrWhiteSpace(ePubId))
             return BadRequest(new ProblemDetails { Title = "Invalid event public ID", Detail = "Event public ID mustn't be empty string." });
 
-        WatcherOnLeaderboardDto w = new();
+        WatcherOnLeaderboardDto w = new() {
+            Id = wId,
+            Name = "Nezjisteno",
+            ValidRecords = new()
+        };
 
         try
         {
-            var ww = await _watcherRepo.GetByIdAsync(wId);
-            if (ww is null) throw new Exception("Cannot find watcher by ID.");
-            w.Id = ww.Id;
-            w.Name = $"{ww.FirstName} {ww.LastName}";
-
             var x = await _recordRepo.GetValidEventsWatcherRecordsAsync(wId, ePubId);
 
             if (x.Count() > 0)

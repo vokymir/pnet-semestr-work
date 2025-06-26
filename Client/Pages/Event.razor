@@ -24,18 +24,14 @@ else
 
     <h4>Účastníci</h4>
 
-    @if (Leaderboard is null)
-    {
-        <p>Načítání účastníků…</p>
-    }
-    else if (!Leaderboard.Any())
+    @if (Leaderboard is null || Leaderboard.Count == 0)
     {
         <p>Žádní účastníci.</p>
     }
     else
     {
         <div class="accordion" id="leaderboardAccordion">
-            @foreach (var (watcher, index) in Leaderboard.OrderByDescending(w => w.ValidRecords.Count).Select((w, i) => (w, i)))
+            @foreach (var (watcher, index) in Leaderboard.Select((w, i) => (w, i)))
             {
                 var collapseId = $"collapse{index}";
                 var headingId = $"heading{index}";
@@ -44,13 +40,17 @@ else
                     <h2 class="accordion-header" id="@headingId">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                            @watcher.Name (@watcher.ValidRecords.Count záznamů)
+                            @watcher.Name (@(watcher.ValidRecords?.Count ?? 0) záznamů)
                         </button>
                     </h2>
                     <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId"
                         data-bs-parent="#leaderboardAccordion">
                         <div class="accordion-body">
-                            @if (watcher.ValidRecords is null || !watcher.ValidRecords.Any())
+                            @if (watcher.ValidRecords is null)
+                            {
+                                <p>Načítání záznamů…</p>
+                            }
+                            else if (!watcher.ValidRecords.Any())
                             {
                                 <p>Žádné platné záznamy.</p>
                             }
@@ -74,31 +74,58 @@ else
 }
 
 @code {
-[Parameter]
-public string PublicEventId { get; set; } = default!;
+    [Parameter]
+    public string PublicEventId { get; set; } = default!;
 
-private BirdWatching.Shared.Model.Event? Evnt;
-private List<BirdWatching.Shared.Model.WatcherOnLeaderboardDto> Leaderboard = new();
+    private BirdWatching.Shared.Model.Event? Evnt;
+    private List<BirdWatching.Shared.Model.WatcherOnLeaderboardDto> Leaderboard = new();
 
     protected override async Task OnInitializedAsync()
     {
-    try
-    {
-    var edto = await BAC.Event_GetByPublicIdAsync(PublicEventId);
-    Evnt = edto.ToEntity();
+        try
+        {
+            var edto = await BAC.Event_GetByPublicIdAsync(PublicEventId);
+            Evnt = edto.ToEntity();
 
-    Leaderboard = new();
+            // Create placeholder leaderboard entries from participants
+            Leaderboard = Evnt.Participants
+            .Select(w => new WatcherOnLeaderboardDto
+            {
+                Id = w.Id,
+                Name = $"{w.FirstName} {w.LastName}",
+                ValidRecords = null!,
+            }).ToList();
 
-    foreach (var w in Evnt.Participants)
+            // Now load their records in parallel
+            foreach (var watcher in Leaderboard)
+            {
+                _ = LoadRecordsAsync(watcher); // fire and forget
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Chyba při načítání: {ex.Message}");
+        }
+    }
+
+    private async Task LoadRecordsAsync(WatcherOnLeaderboardDto watcher)
     {
-    var wol = await BAC.Watcher_GetByIdAndEventAsync(w.Id, Evnt.PublicIdentifier);
-    if (wol is not null)
-    Leaderboard.Add(wol);
+        try
+        {
+            var updated = await BAC.Watcher_GetByIdAndEventAsync(watcher.Id, Evnt!.PublicIdentifier);
+            if (updated is not null)
+            {
+                var target = Leaderboard.FirstOrDefault(w => w.Id == updated.Id);
+                if (target is not null)
+                {
+                    target.ValidRecords = updated.ValidRecords;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Chyba při načítání záznamů pro {watcher.Name}: {ex.Message}");
+        }
     }
-    }
-    catch (Exception ex)
-    {
-    Console.WriteLine($"Chyba při načítání: {ex.Message}");
-    }
-    }
-    }
+}
