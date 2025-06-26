@@ -1,7 +1,26 @@
 @page "/ptackari"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject BirdApiClient BAC
 
 <PageTitle>Ptáčkaři</PageTitle>
 
 <h1>Watchers</h1>
 
 Welcome to your new app.
+
+<CardGroup>
+
+    @foreach (var watcherDto in W ?? Array.Empty<WatcherDto>())
+    {
+        <Card Style="width:18rem;">
+            <CardBody>
+                <CardTitle>@watcherDto.FirstName @watcherDto.LastName</CardTitle>
+                <CardText>@watcherDto.PublicIdentifier</CardText>
+                <Button Color="ButtonColor.Primary" To=@($"/ptackar/{watcherDto.PublicIdentifier}/{watcherDto.Id}")
+                    Type="ButtonType.Link">Zobrazit</Button>
+            </CardBody>
+        </Card>
+    }
+
+</CardGroup>
+

@@ -8,6 +8,8 @@ public class User : IHaveDto<UserDto>
     public string PasswordHash { get; set; } = "password";
     public bool IsAdmin { get; set; } = false;
 
+    public string DisplayName { get; set; } = $"uzivatel-{DateTime.Now.ToString("dd.MM.yyyy HH:ss")}";
+
     // “Owns” these
     public ICollection<Watcher> Watchers { get; set; } = new List<Watcher>();
     public ICollection<Event> Events { get; set; } = new List<Event>();
@@ -24,6 +26,7 @@ public class User : IHaveDto<UserDto>
             PasswordHash = PasswordHash,
             IsAdmin = IsAdmin,
             Email = Email,
+            DisplayName = DisplayName,
         };
 
         return u;
@@ -36,6 +39,7 @@ public class User : IHaveDto<UserDto>
             PasswordHash = PasswordHash,
             IsAdmin = IsAdmin,
             Email = Email,
+            DisplayName = DisplayName,
         };
 
         if (u.Watchers is null) u.Watchers = new List<WatcherDto>();

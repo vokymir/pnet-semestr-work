@@ -1,19 +1,26 @@
 @page "/"
+@inject NavigationManager NavManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world! This is awesome...</h1>
 
-Welcome to your new app.
+Welcome @(UserDto?.UserName ?? "here")!
 
-<LoginForm OnLoginSuccess="@OnSuccess" />
+<Button Color="ButtonColor.Danger" Size="ButtonSize.ExtraLarge" @onclick="LogOut">Odhlásit se</Button>
 
-<h2>@s</h2>
+@code{
+    private UserDto? UserDto = null;
 
-@code {
-    private string s = "jak to vypada?";
-    private void OnSuccess()
-    {
-        s = "jupi";
+    protected override async Task OnInitializedAsync(){
+        UserDto = await LocalStorage.GetItemAsync<UserDto>("userDto");
+    }
+
+    private async Task LogOut(){
+        await LocalStorage.RemoveItemAsync("authToken");
+        await LocalStorage.RemoveItemAsync("authTokenExpireAt");
+
+        NavManager.NavigateTo("/login");
     }
 }

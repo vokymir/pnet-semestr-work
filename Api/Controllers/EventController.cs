@@ -128,7 +128,7 @@ namespace BirdWatching.Api.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         public async Task<IActionResult> GetEventsByUserId(int userId)
         {
-            if (userId <= 0)
+            if (userId <= 0 && !(DEBUG && userId == -1))
                 return BadRequest(new ProblemDetails { Title = "Invalid ID", Detail = "User ID must be a positive integer." });
 
             var list = await _eventRepo.GetByUserIdAsync(userId);

@@ -20,6 +20,7 @@ public class Record : IHaveDto<RecordDto>
             BirdId = BirdId,
             WatcherId = WatcherId,
             Comment = Comment,
+            Bird = Bird.ToDto(),
         };
 
         return r;

@@ -43,6 +43,7 @@
             {
                 await LocalStorage.SetItemAsync("authToken", response.Token);
                 await LocalStorage.SetItemAsync("authTokenExpireAt", response.ExpireAt);
+                await LocalStorage.SetItemAsync("userDto", response.UserDto);
                 await OnLoginSuccess.InvokeAsync();
             }
             else

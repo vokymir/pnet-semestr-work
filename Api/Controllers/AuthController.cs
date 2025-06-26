@@ -76,8 +76,10 @@ public class AuthController : BaseApiController
             expires: expires,
             signingCredentials: creds
         );
-
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-        return Ok(new TokenResponseDto(tokenString, expires));
+
+        var userDto = user.ToFullDto();
+        userDto.PasswordHash = "Haha :>)";
+        return Ok(new TokenResponseDto(tokenString, expires, userDto));
     }
 }

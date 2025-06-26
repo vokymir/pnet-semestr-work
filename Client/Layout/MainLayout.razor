@@ -1,4 +1,6 @@
 @inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
@@ -15,10 +17,7 @@
                   BadgeText="v1.0.0"
                   DataProvider="Sidebar2DataProvider"
                   Width="300"
-                  WidthUnit="Unit.Px"
-                  >
-
-        </Sidebar2>
+                  WidthUnit="Unit.Px" />
     </SidebarSection>
 
     <ContentSection>
@@ -37,7 +36,7 @@
     private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {
         if (navItems is null)
-            navItems = GetNavItems();
+            navItems ??= GetNavItems();
 
         return await Task.FromResult(request.ApplyTo(navItems));
     }
@@ -56,4 +55,28 @@
     }
 
     private void ToggleSidebar() => sidebar.ToggleSidebar();
+
+    private bool? isLoggedIn = null;
+    private string token = "token";
+    private DateTime ExpireAt = DateTime.Now;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await LocalStorage.GetItemAsync<string>("authToken") ?? "nic";
+        var expireAt = await LocalStorage.GetItemAsync<string>("authTokenExpireAt");
+
+        if (token is not null && !string.IsNullOrEmpty(token) && DateTime.TryParse(expireAt, out ExpireAt))
+        {
+            var now = DateTime.Now;
+            isLoggedIn = now < ExpireAt;
+        }
+        else
+        {
+            isLoggedIn = false;
+        }
+
+        if (isLoggedIn is null || (isLoggedIn is not null && !(bool)isLoggedIn)){
+            NavManager.NavigateTo("/login");
+        }
+    }
 }

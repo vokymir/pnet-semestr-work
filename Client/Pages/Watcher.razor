@@ -1,1 +1,101 @@
-@page "/ptackar"
+@page "/ptackar/{PublicIdentifier}/{Id:int}"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject BirdApiClient BAC
+
+<PageTitle>Ptáčkař: @watcher?.FirstName @watcher?.LastName</PageTitle>
+
+@if (watcher == null)
+{
+    <h1>Detail ptáčkaře</h1>
+    <p>Načítání...</p>
+}
+else
+{
+    <h1>@watcher.FirstName @watcher.LastName</h1>
+
+    <h5 class="mt-4">Kurátoři</h5>
+    @if (watcher.Curators is not null && watcher.Curators.Any())
+    {
+        <ul>
+            @foreach (var curator in watcher.Curators)
+            {
+                <li>
+                    @if (curator.Id == watcher.MainCuratorId)
+                    {
+                        <b>@curator.DisplayName</b>
+                    }
+                    else
+                    {
+                        @curator.DisplayName
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Žádní kurátoři.</p>
+    }
+
+    <h5 class="mt-4">Soutěže</h5>
+    @if (watcher.Participating is not null && watcher.Participating.Any())
+    {
+        <CardGroup>
+            @foreach (var ev in watcher.Participating)
+            {
+                <Card Style="width:18rem;">
+                    <CardBody>
+                        <CardTitle>@ev.Name</CardTitle>
+                        <CardText>@ev.PublicIdentifier</CardText>
+                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.Id}") Type="ButtonType.Link">Zobrazit</Button>
+                    </CardBody>
+                </Card>
+            }
+        </CardGroup>
+    }
+    else
+    {
+        <p>Nesoutěží nikde.</p>
+    }
+
+    <h5 class="mt-4">Záznamy</h5>
+    @if (watcher.Records is not null && watcher.Records.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Druh</th>
+                    <th>Datum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var record in watcher.Records)
+                {
+                    <tr>
+                        <td>@(record.Bird?.Genus ?? ":)") @(record.Bird?.Species ?? ":]")</td>
+                        <td>@record.DateSeen.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Žádné záznamy.</p>
+    }
+}
+
+@code {
+    [Parameter]
+    public string PublicIdentifier { get; set; } = default!;
+
+    [Parameter]
+    public int Id { get; set; } = default!;
+
+    private WatcherDto? watcher;
+
+    protected override async Task OnInitializedAsync()
+    {
+        watcher = await BAC.Watcher_GetByIdAsync(Id);
+    }
+}

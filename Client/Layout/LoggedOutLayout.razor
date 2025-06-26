@@ -1,0 +1,40 @@
+@inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
+
+<BlazorBootstrapLayout StickyHeader="true">
+    <HeaderSection>
+        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End" />
+    </HeaderSection>
+
+    <ContentSection>
+        @Body
+    </ContentSection>
+</BlazorBootstrapLayout>
+
+@code {
+    private bool isLoggedIn = false;
+    private string token = "token";
+    private DateTime ExpireAt = DateTime.Now;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await LocalStorage.GetItemAsync<string>("authToken") ?? "nic";
+        var expireAt = await LocalStorage.GetItemAsync<string>("authTokenExpireAt");
+
+        if (token is not null && !string.IsNullOrEmpty(token) && DateTime.TryParse(expireAt, out ExpireAt))
+        {
+            var now = DateTime.Now;
+            isLoggedIn = now < ExpireAt;
+        }
+        else
+        {
+            isLoggedIn = false;
+        }
+
+        if (isLoggedIn)
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+}

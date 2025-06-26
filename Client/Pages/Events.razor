@@ -1,7 +1,62 @@
 @page "/souteze"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject BirdApiClient BAC
 
 <PageTitle>Soutěže</PageTitle>
 
 <h1>Events</h1>
 
 Welcome to your new app.
+
+<CardGroup>
+
+    @if (E is null || !E.Any())
+    {
+        <p>Žádné soutěže...</p>
+    }
+    else
+    {
+        @foreach (var e in E ?? Array.Empty<EventDto>())
+        {
+            <Card Style="width:18rem;">
+                <CardBody>
+                    <CardTitle>@e.Name</CardTitle>
+                    <CardText>@e.PublicIdentifier</CardText>
+                    <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}/{e.Id}")
+                        Type="ButtonType.Link">Zobrazit</Button>
+                </CardBody>
+            </Card>
+        }
+    }
+
+</CardGroup>
+
+@if (ShowError)
+{
+    <Alert Color="AlertColor.Danger" IsDismissible="true" OnDismissed="() => ShowError = false">
+        @ErrorMessage
+    </Alert>
+}
+
+@code {
+    private ICollection<EventDto>? E = null;
+    private bool ShowError = false;
+    private string ErrorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            if (U is null)
+                return;
+
+            E = await BAC.Event_GetByUserIdAsync(U.Id);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            ShowError = true;
+        }
+    }
+}

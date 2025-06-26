@@ -17,6 +17,8 @@ public class BaseApiController : ControllerBase
     protected IUserRepository _userRepo = null!;
     protected IWatcherRepository _watcherRepo = null!;
 
+    protected readonly bool DEBUG = true;
+
     protected void InitRepos__ContextMustNotBeNull()
     {
         _birdRepo = new EFBirdRepository(_context);

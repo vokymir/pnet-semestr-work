@@ -1,0 +1,17 @@
+@page "/login"
+@layout LoggedOutLayout
+@inject NavigationManager NavManager
+
+<h1>Přihlásit se</h1>
+
+<LoginForm OnLoginSuccess="@OnSuccess" />
+
+<h2>@s</h2>
+
+@code {
+    private string s = "jak to vypada?";
+    private void OnSuccess()
+    {
+        NavManager.NavigateTo("/");
+    }
+}

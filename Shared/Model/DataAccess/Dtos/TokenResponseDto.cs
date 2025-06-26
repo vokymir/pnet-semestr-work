@@ -1,3 +1,3 @@
 namespace BirdWatching.Shared.Model;
 
-public record TokenResponseDto(string Token, DateTime ExpireAt);
+public record TokenResponseDto(string Token, DateTime ExpireAt, UserDto UserDto);
