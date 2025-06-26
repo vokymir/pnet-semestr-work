@@ -1,5 +1,6 @@
 @page "/souteze"
 @inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTitle>Soutěže</PageTitle>
 
@@ -9,7 +10,10 @@
 
 Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby se dalo vybrat všechny/moje/účastním se/neúčastním se. Plus bych mohl vymyslet pagination, zakomponovanou rovnou v API, protože brzo asi bude hodně věcí. Tak uvidíme.
 
+here: @submittedValue
+
 <Button Type="ButtonType.Link" To="/soutez/nova" Color="ButtonColor.Primary">Vytvořit soutěž</Button>
+<Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat se do soutěže</Button>
 
 <CardGroup>
 
@@ -35,27 +39,144 @@ Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby 
 
 </CardGroup>
 
+<Modal @ref="JoinEventModal"
+       title="Připojit se do soutěže"
+       IsVerticallyCentered="true"
+       IsScrollable="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="eventCode">Zadejte kód soutěže:</label>
+            <InputText id="eventCode" class="form-control" @bind-Value="inputValue" />
+            <small class="form-text text-muted">Kód je ve tvaru <code>aBy9x</code>, pět znaků.</small>
+        </div>
+
+        <div class="mb-3">
+            <label>Vyberte ptáčkaře:</label>
+                @if (U?.Watchers is not null)
+                {
+                    @foreach (var watcher in U.Watchers)
+                    {
+                        var localWatcherId = watcher.Id;
+
+                        <div class="form-check">
+                            <InputCheckbox class="form-check-input"
+                                           Value="watcherSelections[localWatcherId]"
+                                           ValueChanged="val => watcherSelections[localWatcherId] = val"
+                                           ValueExpression="() => watcherSelections[localWatcherId]" />
+                            <label class="form-check-label">
+                                @watcher.FirstName @watcher.LastName
+                            </label>
+                        </div>
+                    }
+                }
+            <small class="form-text text-muted">Zaškrtněte jednoho nebo více, za které se chcete připojit.</small>
+        </div>
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="CloseModal">Zavřít</Button>
+        <Button Color="ButtonColor.Primary" @onclick="SubmitValue" Disabled="@IsSubmitDisabled">Uložit</Button>
+    </FooterTemplate>
+</Modal>
+
 
 @code {
+    private UserDto? U = null;
     private ICollection<EventDto>? E = null;
     private List<ToastMessage> messages = new();
+
+    private Modal? JoinEventModal;
+    private string inputValue = string.Empty;
+    private Dictionary<int, bool> watcherSelections = new();
+    private string submittedValue = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            E = await BAC.Event_GetAllAsync();
-        }
-        catch
-        {
-            var toast = new ToastMessage();
-            toast.Type = ToastType.Warning;
-            toast.Title = "Chyba";
-            toast.HelpText = $"{DateTime.Now}";
-            toast.Message = "Problém s načítáním soutěží. Zkontrolujte, že jste přihlášeni.";
-            toast.AutoHide = true;
+            U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            if (U is null) throw new Exception("Cannot find userDto in local storage.");
+            watcherSelections = U!.Watchers?.ToDictionary(w => w.Id, w => U!.Watchers.Count() == 1 ? true : false) ?? new();
 
-            messages.Add(toast);
+            var result = new List<EventDto>();
+            var seenIds = new HashSet<int>();
+
+            // Events user is admin of
+            var userEvents = await BAC.Event_GetByUserIdAsync(U.Id);
+            foreach (var e in userEvents)
+            {
+                if (seenIds.Add(e.Id))
+                    result.Add(e);
+            }
+
+            // Events where user's watchers are participants
+            if (U.Watchers is not null)
+            {
+                foreach (var W in U.Watchers)
+                {
+                    var watcherEvents = await BAC.Event_GetByWatcherIdAsync(W.Id);
+                    foreach (var e in watcherEvents)
+                    {
+                        if (seenIds.Add(e.Id))
+                            result.Add(e);
+                    }
+                }
+            }
+
+            E = result;
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Warning,
+                Title = "Chyba",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Problém s načítáním soutěží. Zkontrolujte, že jste přihlášeni.<br/>Problém: {ex.Message}",
+                AutoHide = true
+            });
         }
     }
+
+     private async Task ShowModal()
+    {
+        if (JoinEventModal is not null)
+            await JoinEventModal.ShowAsync();
+    }
+
+    private async Task CloseModal()
+    {
+        if (JoinEventModal is not null)
+            await JoinEventModal.HideAsync();
+    }
+
+    private async Task SubmitValue()
+    {
+        var selectedWatcherIds = watcherSelections
+            .Where(kv => kv.Value)
+            .Select(kv => kv.Key)
+            .ToList();
+
+        if (!selectedWatcherIds.Any())
+            return;
+
+        foreach (var watcherId in selectedWatcherIds)
+        {
+            await JoinEventAsync(inputValue, watcherId);
+        }
+        await CloseModal();
+    }
+
+    private async Task JoinEventAsync(string evntPubId, int watcherId)
+    {
+        Console.WriteLine($"Joining with evntPubId {evntPubId} as watcher ID {watcherId}");
+        try{
+            await BAC.Watcher_JoinEventAsync(evntPubId, watcherId);
+        }catch (Exception ex){
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private bool IsSubmitDisabled =>
+    string.IsNullOrWhiteSpace(inputValue) || !watcherSelections.Values.Any(v => v);
 }

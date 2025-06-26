@@ -47,7 +47,7 @@ else
                     <CardBody>
                         <CardTitle>@ev.Name</CardTitle>
                         <CardText>@ev.PublicIdentifier</CardText>
-                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.Id}") Type="ButtonType.Link">Zobrazit</Button>
+                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.PublicIdentifier}") Type="ButtonType.Link">Zobrazit</Button>
                     </CardBody>
                 </Card>
             }

@@ -85,22 +85,26 @@ else
         try
         {
             var edto = await BAC.Event_GetByPublicIdAsync(PublicEventId);
+            if (edto is null) edto = new();
             Evnt = edto.ToEntity();
 
             // Create placeholder leaderboard entries from participants
-            Leaderboard = Evnt.Participants
+            Leaderboard = edto.Participants?
             .Select(w => new WatcherOnLeaderboardDto
             {
                 Id = w.Id,
                 Name = $"{w.FirstName} {w.LastName}",
-                ValidRecords = null!,
-            }).ToList();
+                ValidRecords = null,
+            }).ToList() ?? new();
+
+            Console.WriteLine(Leaderboard.Count());
 
             // Now load their records in parallel
             foreach (var watcher in Leaderboard)
             {
                 _ = LoadRecordsAsync(watcher); // fire and forget
             }
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {

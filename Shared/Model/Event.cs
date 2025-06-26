@@ -10,10 +10,10 @@ public class Event : IHaveDto<EventDto>
     public DateTime Start { get; set; } = DateTime.Now;
     public DateTime End { get; set; } = DateTime.MaxValue;
     public bool AllowDuplicates { get; set; } = false; // wheter to allow having the same bird twice in an event
-    public string OrdoRegex { get; set; } = "*";
-    public string FamiliaRegex { get; set; } = "*";
-    public string GenusRegex { get; set; } = "*";
-    public string SpeciesRegex { get; set; } = "*";
+    public string OrdoRegex { get; set; } = ".*";
+    public string FamiliaRegex { get; set; } = ".*";
+    public string GenusRegex { get; set; } = ".*";
+    public string SpeciesRegex { get; set; } = ".*";
 
     public int MainAdminId { get; set; }
     public User MainAdmin { get; set; } = null!;

@@ -91,10 +91,10 @@ public class EFRecordRepository : IRecordRepository
             .ToListAsync();
 
         // 3. Připrav regexy
-        var ordoRegex = new Regex(e.OrdoRegex, RegexOptions.IgnoreCase);
-        var familiaRegex = new Regex(e.FamiliaRegex, RegexOptions.IgnoreCase);
-        var genusRegex = new Regex(e.GenusRegex, RegexOptions.IgnoreCase);
-        var speciesRegex = new Regex(e.SpeciesRegex, RegexOptions.IgnoreCase);
+        var ordoRegex = new Regex(SanitizeRegex(e.OrdoRegex), RegexOptions.IgnoreCase);
+        var familiaRegex = new Regex(SanitizeRegex(e.FamiliaRegex), RegexOptions.IgnoreCase);
+        var genusRegex = new Regex(SanitizeRegex(e.GenusRegex), RegexOptions.IgnoreCase);
+        var speciesRegex = new Regex(SanitizeRegex(e.SpeciesRegex), RegexOptions.IgnoreCase);
 
         // 4. Filtrování podle regexů
         var validRecords = records
@@ -116,5 +116,26 @@ public class EFRecordRepository : IRecordRepository
         }
 
         return validRecords.ToArray();
+    }
+
+    private string SanitizeRegex(string? pattern)
+    {
+        if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegex(pattern))
+            return ".*"; // match anything
+
+        return pattern;
+    }
+
+    private bool IsValidRegex(string pattern)
+    {
+        try
+        {
+            _ = Regex.Match("", pattern);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
