@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace BirdWatching.Shared.Model;
 
@@ -73,15 +74,47 @@ public class EFRecordRepository : IRecordRepository
 
     public async Task<Record[]> GetValidEventsWatcherRecordsAsync(int watcherId, string eventPubId)
     {
-        return await (
-            from r in _context.Records
-            join e in _context.Events on eventPubId equals e.PublicIdentifier
-            where r.WatcherId == watcherId
-                  && r.DateSeen >= e.Start
-                  && r.DateSeen <= e.End
-            select r
-        )
-        .Include(r => r.Bird)
-        .ToArrayAsync();
+        // 1. Najdi event
+        var e = await _context.Events
+            .FirstOrDefaultAsync(ev => ev.PublicIdentifier == eventPubId);
+
+        if (e is null)
+            return Array.Empty<Record>();
+
+        // 2. Načti záznamy pro daného uživatele a čas
+        var records = await _context.Records
+            .Include(r => r.Bird)
+            .Where(r =>
+                r.WatcherId == watcherId &&
+                r.DateSeen >= e.Start &&
+                r.DateSeen <= e.End)
+            .ToListAsync();
+
+        // 3. Připrav regexy
+        var ordoRegex = new Regex(e.OrdoRegex, RegexOptions.IgnoreCase);
+        var familiaRegex = new Regex(e.FamiliaRegex, RegexOptions.IgnoreCase);
+        var genusRegex = new Regex(e.GenusRegex, RegexOptions.IgnoreCase);
+        var speciesRegex = new Regex(e.SpeciesRegex, RegexOptions.IgnoreCase);
+
+        // 4. Filtrování podle regexů
+        var validRecords = records
+            .Where(r =>
+                r.Bird is not null &&
+                ordoRegex.IsMatch(r.Bird.Ordo ?? "") &&
+                familiaRegex.IsMatch(r.Bird.Familia ?? "") &&
+                genusRegex.IsMatch(r.Bird.Genus ?? "") &&
+                speciesRegex.IsMatch(r.Bird.Species ?? ""))
+            .ToList();
+
+        // 5. Pokud nejsou povolené duplicity, omezíme na první výskyt každého ptáka
+        if (!e.AllowDuplicates)
+        {
+            validRecords = validRecords
+                .GroupBy(r => r.Bird.Id)
+                .Select(g => g.OrderBy(r => r.DateSeen).First()) // první výskyt
+                .ToList();
+        }
+
+        return validRecords.ToArray();
     }
 }
