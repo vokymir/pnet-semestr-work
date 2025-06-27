@@ -1,6 +1,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject BirdApiClient BAC
 
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
 <Modal @ref="ModalRef"
        title="Připojit se do soutěže"
        IsVerticallyCentered="true"
@@ -40,6 +41,7 @@
 
 @code {
     private Modal? ModalRef;
+    private List<ToastMessage> messages = new();
 
     [Parameter] public UserDto? User { get; set; }
 
@@ -67,11 +69,38 @@
         if (selected.Any())
         {
             foreach(var wId in selected)
+            {
+                WatcherDto? w = User?.Watchers?.FirstOrDefault<WatcherDto>(w => w.Id == wId);
+                if (w is null)
+                    continue;
+
                 try{
                     await BAC.Watcher_JoinEventAsync(InputValue, wId);
-                }catch (Exception ex){
-                    Console.WriteLine(ex.Message);
+                    messages.Add(new ToastMessage(){
+                        Type = ToastType.Success,
+                        Title = "A je tam",
+                        Message = $"Ptáčkař {w.FirstName} {w.LastName} se přidal do soutěže.",
+                    });
                 }
+                catch (ApiException aEx){
+                    Console.WriteLine(aEx.Message);
+                    if (aEx.StatusCode == 409)
+                        messages.Add(new ToastMessage(){
+                            Type = ToastType.Warning,
+                            Title = "Už tam je",
+                            Message = $"Ptáčkař {w.FirstName} {w.LastName} se už soutěže účastní.",
+                        });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    messages.Add(new ToastMessage(){
+                        Type = ToastType.Danger,
+                        Title = "Něco se nepovedlo",
+                        Message = $"Ptáčkař {w.FirstName} {w.LastName} nemohl být přidán do soutěže.",
+                    });
+                }
+            }
 
             await HideAsync();
         }
