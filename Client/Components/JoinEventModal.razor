@@ -1,0 +1,87 @@
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject BirdApiClient BAC
+
+<Modal @ref="ModalRef"
+       title="Připojit se do soutěže"
+       IsVerticallyCentered="true"
+       IsScrollable="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="eventCode">Zadejte kód soutěže:</label>
+            <InputText id="eventCode" class="form-control" @bind-Value="InputValue" />
+            <small class="form-text text-muted">Kód je ve tvaru <code>aBy9x</code>, pět znaků.</small>
+        </div>
+
+        <div class="mb-3">
+            <label>Vyberte ptáčkaře:</label>
+            @if (User?.Watchers is not null)
+            {
+                @foreach (var watcher in User.Watchers)
+                {
+                    var id = watcher.Id;
+                    <div class="form-check">
+                        <InputCheckbox class="form-check-input"
+                                       Value="WatcherSelections[id]"
+                                       ValueChanged="val => WatcherSelections[id] = val"
+                                       ValueExpression="() => WatcherSelections[id]" />
+                        <label class="form-check-label">@watcher.FirstName @watcher.LastName</label>
+                    </div>
+                }
+            }
+            <small class="form-text text-muted">Zaškrtněte jednoho nebo více, za které se chcete připojit.</small>
+        </div>
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="Close">Zavřít</Button>
+        <Button Color="ButtonColor.Primary" @onclick="Submit" Disabled="@IsSubmitDisabled">Uložit</Button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Modal? ModalRef;
+
+    [Parameter] public UserDto? User { get; set; }
+
+    private string InputValue = string.Empty;
+    private Dictionary<int, bool> WatcherSelections = new();
+
+    public async Task ShowAsync(UserDto? user)
+    {
+        User = user;
+        InputValue = string.Empty;
+        WatcherSelections = User?.Watchers?.ToDictionary(w => w.Id, w => User.Watchers.Count == 1) ?? new();
+        if (ModalRef is not null)
+            await ModalRef.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        if (ModalRef is not null)
+            await ModalRef.HideAsync();
+    }
+
+    private async Task Submit()
+    {
+        var selected = WatcherSelections.Where(x => x.Value).Select(x => x.Key).ToList();
+        if (selected.Any())
+        {
+            foreach(var wId in selected)
+                try{
+                    await BAC.Watcher_JoinEventAsync(InputValue, wId);
+                }catch (Exception ex){
+                    Console.WriteLine(ex.Message);
+                }
+
+            await HideAsync();
+        }
+    }
+
+    private async Task Close()
+    {
+        await HideAsync();
+    }
+
+    private bool IsSubmitDisabled =>
+        string.IsNullOrWhiteSpace(InputValue) || !WatcherSelections.Values.Any(x => x);
+}
