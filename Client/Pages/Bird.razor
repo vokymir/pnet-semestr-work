@@ -1,0 +1,66 @@
+@page "/ptacek/{id:int}"
+@inject BirdApiClient BAC
+@inject NavigationManager NavigationManager
+
+<h3>Detail ptáčka</h3>
+
+@if (isLoading)
+{
+    <p>Načítám...</p>
+}
+else if (bird is null)
+{
+    <div class="alert alert-danger">
+        Ptáčka s tímto ID se nepodařilo najít.
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">@bird.BinomicName</h4>
+            <h6 class="card-subtitle mb-2 text-muted">@bird.FullName</h6>
+
+            <dl class="row">
+                <dt class="col-sm-3">Řád</dt>
+                <dd class="col-sm-9">@bird.Ordo</dd>
+
+                <dt class="col-sm-3">Čeleď</dt>
+                <dd class="col-sm-9">@bird.Familia</dd>
+
+                <dt class="col-sm-3">Rod</dt>
+                <dd class="col-sm-9">@bird.Genus</dd>
+
+                <dt class="col-sm-3">Druh</dt>
+                <dd class="col-sm-9">@bird.Species</dd>
+
+                @if (!string.IsNullOrWhiteSpace(bird.Comment))
+                {
+                    <dt class="col-sm-3">Poznámka</dt>
+                    <dd class="col-sm-9">@bird.Comment</dd>
+                }
+            </dl>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private BirdDto? bird;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            bird = await BAC.Bird_GetByIdAsync(id);
+        }
+        catch
+        {
+            bird = null;
+        }
+
+        isLoading = false;
+    }
+}
