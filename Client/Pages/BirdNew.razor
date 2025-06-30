@@ -1,0 +1,66 @@
+@page "/ptacek/novy"
+@inject BirdApiClient BAC
+@inject NavigationManager NavManager
+
+<PageTitle>Nový ptáček</PageTitle>
+
+<h3>Přidat nového ptáčka</h3>
+
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
+
+<EditForm Model="Bird" OnValidSubmit="CreateBird">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="ordo" class="form-label">Řád</label>
+        <InputText id="ordo" class="form-control" @bind-Value="Bird.Ordo" />
+    </div>
+
+    <div class="mb-3">
+        <label for="familia" class="form-label">Čeleď</label>
+        <InputText id="familia" class="form-control" @bind-Value="Bird.Familia" />
+    </div>
+
+    <div class="mb-3">
+        <label for="genus" class="form-label">Rod</label>
+        <InputText id="genus" class="form-control" @bind-Value="Bird.Genus" />
+    </div>
+
+    <div class="mb-3">
+        <label for="species" class="form-label">Druh</label>
+        <InputText id="species" class="form-control" @bind-Value="Bird.Species" />
+    </div>
+
+    <div class="mb-3">
+        <label for="comment" class="form-label">Poznámka</label>
+        <InputTextArea id="comment" class="form-control" @bind-Value="Bird.Comment" rows="3" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Přidat ptáčka</button>
+</EditForm>
+
+@code {
+    private BirdWatching.Shared.Model.BirdDto Bird = new();
+    private List<ToastMessage> messages = new();
+
+    private async Task CreateBird()
+    {
+        try
+        {
+            BirdDto b = await BAC.Bird_CreateAsync(Bird);
+            NavManager.NavigateTo($"/ptacek/{b.Id}");
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Title = "Nelze přidat ptáčka",
+                Message = ex.Message,
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = true
+            });
+        }
+    }
+}

@@ -8,7 +8,7 @@
 
 Blablabala.
 
-<Button Type="ButtonType.Link" To="/ptacetk/novy" Color="ButtonColor.Primary">Vytvořit ptáčka</Button>
+<Button Type="ButtonType.Link" To="/ptacek/novy" Color="ButtonColor.Primary">Vytvořit ptáčka</Button>
 
 <div class="row">
     @if (B is null || !B.Any())
@@ -24,9 +24,7 @@ Blablabala.
                     <CardBody>
                         <CardTitle>@b.BinomicName</CardTitle>
                         <CardText>@b.FullName</CardText>
-                        <Button Color="ButtonColor.Primary"
-                                To=@($"/ptacek/{b.Id}")
-                                Type="ButtonType.Link">
+                        <Button Color="ButtonColor.Primary" To=@($"/ptacek/{b.Id}") Type="ButtonType.Link">
                             Zobrazit
                         </Button>
                     </CardBody>
