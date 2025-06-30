@@ -12,8 +12,7 @@ Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby 
 <Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat se do soutěže</Button>
 <JoinEventModal @ref="JoinModal" User="U" />
 
-<CardGroup>
-
+<div class="row">
     @if (E is null || !E.Any())
     {
         <p>Žádné soutěže...</p>
@@ -22,7 +21,8 @@ Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby 
     {
         @foreach (var e in E ?? Array.Empty<EventDto>())
         {
-            <Card Style="width:18rem;">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <Card class="h-100">
                 <CardBody>
                     <CardTitle>@e.Name</CardTitle>
                     <CardText>@e.PublicIdentifier A tady by mělo být info, že to je moje soutěž, anebo, který z mých ptáčkařů se jí účastní
@@ -30,11 +30,11 @@ Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby 
                     <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}")
                         Type="ButtonType.Link">Zobrazit</Button>
                 </CardBody>
-            </Card>
+                </Card>
+            </div>
         }
     }
-
-</CardGroup>
+</div>
 
 
 @code {

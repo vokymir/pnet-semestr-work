@@ -10,8 +10,7 @@ Blablabala.
 
 <Button Type="ButtonType.Link" To="/ptacetk/novy" Color="ButtonColor.Primary">Vytvořit ptáčka</Button>
 
-<CardGroup>
-
+<div class="row">
     @if (B is null || !B.Any())
     {
         <p>Žádný ptáček...</p>
@@ -20,18 +19,22 @@ Blablabala.
     {
         @foreach (var b in B ?? Array.Empty<BirdDto>())
         {
-            <Card Style="width:18rem;">
-                <CardBody>
-                    <CardTitle>@b.BinomicName</CardTitle>
-                    <CardText>@b.FullName</CardText>
-                    <Button Color="ButtonColor.Primary" To=@($"/ptacek/{b.Id}")
-                        Type="ButtonType.Link">Zobrazit</Button>
-                </CardBody>
-            </Card>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <Card class="h-100">
+                    <CardBody>
+                        <CardTitle>@b.BinomicName</CardTitle>
+                        <CardText>@b.FullName</CardText>
+                        <Button Color="ButtonColor.Primary"
+                                To=@($"/ptacek/{b.Id}")
+                                Type="ButtonType.Link">
+                            Zobrazit
+                        </Button>
+                    </CardBody>
+                </Card>
+            </div>
         }
     }
-
-</CardGroup>
+</div>
 
 
 @code {
