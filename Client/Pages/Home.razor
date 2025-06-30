@@ -10,7 +10,7 @@
 Welcome @(UserDto?.UserName ?? "here")!
 
 <Button Color="ButtonColor.Danger" Size="ButtonSize.ExtraLarge" @onclick="LogOut">Odhlásit se</Button>
-<Button Color="ButtonColor.Primary" Size="ButtonSize.ExtraLarge" @onclick="AddRecord">Odhlásit se</Button>
+<Button Type="ButtonType.Link" Color="ButtonColor.Primary" Size="ButtonSize.ExtraLarge" To="/zaznam/novy">Přidat záznam</Button>
 
 @code{
     private UserDto? UserDto = null;
@@ -24,9 +24,5 @@ Welcome @(UserDto?.UserName ?? "here")!
         await LocalStorage.RemoveItemAsync("authTokenExpireAt");
 
         NavManager.NavigateTo("/login");
-    }
-
-    private async Task AddRecord(){
-       await BAC.Record_CreateAsync(new RecordDto()); // TODO
     }
 }

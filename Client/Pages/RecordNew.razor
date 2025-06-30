@@ -1,0 +1,154 @@
+@page "/zaznam/novy"
+@inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
+
+<h3>Nový záznam</h3>
+
+<EditForm Model="record" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="dateSeen" class="form-label">Datum a čas</label>
+        <input type="datetime-local" class="form-control" id="dateSeen"
+               @bind="record.DateSeen"
+               @bind:format="dd.MM.yyyy HH:mm" /> // TODO: weird behavior in browser, try it
+    </div>
+
+    <div class="mb-3">
+        <label for="bird" class="form-label">Ptáček</label>
+        <InputText id="bird" class="form-control" @bind-Value="birdSearch"
+                   oninput="@OnBirdSearchInput" placeholder="Začněte psát..." /> // TODO: What is this warning?
+        <ul class="list-group">
+            @if (birdSuggestions is not null && birdSuggestions.Any())
+            {
+                @foreach (var b in birdSuggestions)
+                {
+                    <li class="list-group-item list-group-item-action" style="cursor: pointer"
+                        @onclick="@(() => SelectBird(b))">@b.FullName</li>
+                }
+            }
+        </ul>
+        @if (record.Bird is not null)
+        {
+            <p><strong>Vybraný ptáček:</strong> @record.Bird.FullName</p>
+        }
+        <Button Color="ButtonColor.Secondary" To="/ptacek/novy" Type="ButtonType.Link">Vytvořit nového ptáčka</Button>
+    </div>
+
+    <div class="mb-3">
+        <label for="count" class="form-label">Počet</label>
+        <InputNumber id="count" class="form-control" @bind-Value="record.Count" />
+    </div>
+
+    <div class="mb-3">
+        <label for="comment" class="form-label">Poznámka</label>
+        <InputTextArea id="comment" class="form-control" @bind-Value="record.Comment" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Komu z pozorovatelů přidat záznam</label>
+        @if (watchers.Any())
+        {
+            @foreach (var w in watchers)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="watcher_@w.Id"
+                           value="@w.Id" @onchange="e => ToggleWatcher(w.Id, e.Value?.ToString())"
+                           checked="@selectedWatcherIds.Contains(w.Id)">
+                    <label class="form-check-label" for="watcher_@w.Id">@w.FirstName @w.LastName</label>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Načítám pozorovatele...</p>
+        }
+    </div>
+
+    <button class="btn btn-primary" type="submit">Uložit záznam</button>
+</EditForm>
+
+@code {
+    private RecordDto record = new();
+    private List<WatcherDto> watchers = new();
+    private List<int> selectedWatcherIds = new();
+    private string birdSearch = "";
+    private ICollection<BirdDto> birdSuggestions = new List<BirdDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // načti pozorovatele
+        var U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+        if (U is null || U.Watchers is null) throw new Exception("User is not here or have no watchers.");
+        foreach(var w in U.Watchers){
+            watchers.Add(await BAC.Watcher_GetByIdAsync(w.Id));
+        }
+
+        // zkus načíst watchersGroup z localstorage
+        if (await LocalStorage.ContainKeyAsync("watchersGroup"))
+        {
+            try
+            {
+                selectedWatcherIds = await LocalStorage.GetItemAsync<List<int>>("watchersGroup") ?? new();
+            }
+            catch
+            {
+                selectedWatcherIds = new();
+            }
+        }
+    }
+
+    private async Task OnBirdSearchInput(ChangeEventArgs e)
+    {
+        birdSearch = e.Value?.ToString() ?? "";
+        if (!string.IsNullOrWhiteSpace(birdSearch))
+        {
+            birdSuggestions = await BAC.Bird_GetByPrefixAsync(birdSearch);
+            if (birdSuggestions.Count == 0)
+                birdSuggestions = await BAC.Bird_GetByContainsAsync(birdSearch);
+        }
+        else
+        {
+            birdSuggestions = Array.Empty<BirdDto>();
+        }
+    }
+
+    private void SelectBird(BirdDto bird)
+    {
+        record.BirdId = bird.Id;
+        record.Bird = bird;
+        birdSearch = bird.FullName;
+        birdSuggestions = Array.Empty<BirdDto>();
+    }
+
+    private void ToggleWatcher(int id, string? value)
+    {
+        if (selectedWatcherIds.Contains(id))
+            selectedWatcherIds.Remove(id);
+        else
+            selectedWatcherIds.Add(id);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        foreach (var wid in selectedWatcherIds)
+        {
+            var newRecord = new RecordDto
+            {
+                DateSeen = record.DateSeen,
+                Comment = record.Comment,
+                Count = record.Count,
+                BirdId = record.BirdId,
+                WatcherId = wid
+            };
+
+            await BAC.Record_CreateAsync(newRecord);
+        }
+
+        await LocalStorage.SetItemAsync("watchersGroup", selectedWatcherIds);
+
+        NavManager.NavigateTo("/");
+    }
+}

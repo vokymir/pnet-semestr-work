@@ -57,14 +57,36 @@ public class EFBirdRepository : IBirdRepository
     public async Task<Bird[]> GetByPrefixAsync(string prefix)
     {
         return await BirdsWithDetails
-            .Where(b => b.FullName.StartsWith(prefix))
+            .Where(b => EF.Functions.Like(
+                (b.Genus ?? "") + " " +
+                (b.Species ?? "") + " " +
+                (b.Ordo ?? "") + " " +
+                (b.Familia ?? ""),
+                 prefix + "%"))
+            .ToArrayAsync();
+    }
+
+    public async Task<Bird[]> GetByContainsAsync(string str)
+    {
+        return await BirdsWithDetails
+            .Where(b => EF.Functions.Like(
+                (b.Genus ?? "") + " " +
+                (b.Species ?? "") + " " +
+                (b.Ordo ?? "") + " " +
+                (b.Familia ?? ""),
+                "%" + str + "%"))
             .ToArrayAsync();
     }
 
     public async Task<Bird[]> GetByPrefixFastAsync(string prefix)
     {
         return await _context.Birds
-            .Where(b => b.FullName.StartsWith(prefix))
+            .Where(b => EF.Functions.Like(
+                (b.Genus ?? "") + " " +
+                (b.Species ?? "") + " " +
+                (b.Ordo ?? "") + " " +
+                (b.Familia ?? ""),
+                 prefix + "%"))
             .ToArrayAsync();
     }
 }

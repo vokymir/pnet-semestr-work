@@ -23,8 +23,10 @@ public class Record : IHaveDto<RecordDto>
             WatcherId = WatcherId,
             Comment = Comment,
             Count = Count,
-            Bird = Bird.ToDto(),
         };
+
+        if (Bird is not null)
+            r.Bird = Bird.ToDto();
 
         return r;
     }
@@ -38,9 +40,13 @@ public class Record : IHaveDto<RecordDto>
             WatcherId = WatcherId,
             Comment = Comment,
             Count = Count,
-            Bird = Bird.ToDto(),
-            Watcher = Watcher.ToDto()
         };
+
+        if (Bird is not null)
+            r.Bird = Bird.ToDto();
+
+        if (Watcher is not null)
+            r.Watcher = Watcher.ToDto();
 
         return r;
     }

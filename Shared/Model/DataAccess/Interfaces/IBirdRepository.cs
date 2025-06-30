@@ -9,4 +9,5 @@ public interface IBirdRepository
     Task<Bird[]> GetAllAsync();
     Task<Bird[]> GetByPrefixAsync(string prefix);
     Task<Bird[]> GetByPrefixFastAsync(string prefix);
+    Task<Bird[]> GetByContainsAsync(string str);
 }

@@ -70,9 +70,28 @@ namespace BirdWatching.Api.Controllers
             var birds = await _birdRepo.GetByPrefixAsync(prefix) ?? Enumerable.Empty<Bird>();
             var dtos = birds.Select(b => b.ToFullDto()).ToList();
 
-            return dtos.Any()
+            return dtos is not null
                 ? Ok(dtos)
                 : NotFound(new ProblemDetails { Title = "Not Found", Detail = $"No birds found with prefix '{prefix}'." });
+        }
+
+        /// <summary>Search birds by name prefix.</summary>
+        [HttpGet("search/contains")]
+        [OpenApiOperation("Bird_GetByContains")]
+        [ProducesResponseType(typeof(BirdDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByContains([FromQuery] string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Prefix must be provided." });
+
+            var birds = await _birdRepo.GetByContainsAsync(str) ?? Enumerable.Empty<Bird>();
+            var dtos = birds.Select(b => b.ToFullDto()).ToList();
+
+            return dtos is not null
+                ? Ok(dtos)
+                : NotFound(new ProblemDetails { Title = "Not Found", Detail = $"No birds found with prefix '{str}'." });
         }
 
         /// <summary>Get a bird by ID.</summary>
