@@ -19,7 +19,6 @@ else
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">@bird.BinomicName</h4>
-            <h6 class="card-subtitle mb-2 text-muted">@bird.FullName</h6>
 
             <dl class="row">
                 <dt class="col-sm-3">Řád</dt>
@@ -40,6 +39,8 @@ else
                     <dd class="col-sm-9">@bird.Comment</dd>
                 }
             </dl>
+
+            <Button Color="ButtonColor.Primary" To=@($"/ptacek/{id}/upravit") Type="ButtonType.Link">Upravit</Button>
         </div>
     </div>
 }

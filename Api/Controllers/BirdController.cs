@@ -149,5 +149,39 @@ namespace BirdWatching.Api.Controllers
                 return Problem("Failed to replace comment.");
             }
         }
+
+        /// <summary>Replace a bird's comment (admin only).</summary>
+        [HttpPatch("update/{birdId:int}")]
+        [Authorize(Roles = "Admin")]
+        [OpenApiOperation("Bird_Update")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> Update(int birdId, [FromBody] BirdDto newBird)
+        {
+            if (birdId <= 0 || newBird == null)
+                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Bird ID and new bird info must be provided." });
+
+            var bird = await _birdRepo.GetByIdAsync(birdId);
+            if (bird == null)
+                return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Bird not found." });
+
+            bird.Species = newBird.Species;
+            bird.Genus = newBird.Genus;
+            bird.Familia = newBird.Familia;
+            bird.Ordo = newBird.Ordo;
+            bird.Comment = newBird.Comment;
+            try
+            {
+                await _birdRepo.UpdateAsync(bird);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error replacing info for bird {BirdId}.", birdId);
+                return Problem("Failed to replace info.");
+            }
+        }
     }
 }

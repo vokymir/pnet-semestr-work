@@ -1,0 +1,112 @@
+@page "/ptacek/{id:int}/upravit"
+@inject BirdApiClient BAC
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<h3>Upravit ptáčka</h3>
+
+@if (isLoading)
+{
+    <p>Načítám...</p>
+}
+else if (bird is null)
+{
+    <div class="alert alert-danger">Ptáčka se nepodařilo načíst.</div>
+}
+else
+{
+    <EditForm Model="bird" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        @if (isAdmin)
+        {
+            <div class="mb-3">
+                <label class="form-label">Řád</label>
+                <InputText class="form-control" @bind-Value="bird.Ordo" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Čeleď</label>
+                <InputText class="form-control" @bind-Value="bird.Familia" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Rod</label>
+                <InputText class="form-control" @bind-Value="bird.Genus" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Druh</label>
+                <InputText class="form-control" @bind-Value="bird.Species" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Poznámka</label>
+                <InputTextArea class="form-control" @bind-Value="bird.Comment" Rows="4" />
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">Přidat poznámku</label>
+                <InputTextArea class="form-control" @bind-Value="newComment" Rows="4" />
+                <small class="form-text text-muted">Vaše poznámka bude připojena ke stávajícím.</small>
+            </div>
+        }
+
+        <button class="btn btn-primary" type="submit">Uložit</button>
+        <Button Color="ButtonColor.Secondary" To=@($"/ptacek/{id}") Type="ButtonType.Link">Zpět</Button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private BirdDto? bird;
+    private bool isLoading = true;
+    private bool isAdmin = false;
+    private UserDto? U;
+    private string newComment = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            bird = await BAC.Bird_GetByIdAsync(id);
+            U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            if (U is null) throw new Exception("Cannot find userDto in local storage.");
+
+            isAdmin = U.IsAdmin;
+        }
+        catch
+        {
+            bird = null;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (bird is null) return;
+
+        try
+        {
+            if (isAdmin)
+            {
+                await BAC.Bird_UpdateAsync(bird.Id, bird); // full update for admins
+            }
+            else
+            {
+                await BAC.Bird_AppendCommentAsync(bird.Id, newComment); // partial update for others
+            }
+
+            NavigationManager.NavigateTo($"/ptacek/{id}");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Chyba při ukládání: {ex.Message}");
+        }
+    }
+}
