@@ -1,0 +1,66 @@
+@page "/ptacci"
+@inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Ptáčci</PageTitle>
+
+<h1>Birds</h1>
+
+Blablabala.
+
+<Button Type="ButtonType.Link" To="/ptacetk/novy" Color="ButtonColor.Primary">Vytvořit ptáčka</Button>
+
+<CardGroup>
+
+    @if (B is null || !B.Any())
+    {
+        <p>Žádný ptáček...</p>
+    }
+    else
+    {
+        @foreach (var b in B ?? Array.Empty<BirdDto>())
+        {
+            <Card Style="width:18rem;">
+                <CardBody>
+                    <CardTitle>@b.BinomicName</CardTitle>
+                    <CardText>@b.FullName</CardText>
+                    <Button Color="ButtonColor.Primary" To=@($"/ptacek/{b.Id}")
+                        Type="ButtonType.Link">Zobrazit</Button>
+                </CardBody>
+            </Card>
+        }
+    }
+
+</CardGroup>
+
+
+@code {
+    private UserDto? U = null;
+    private ICollection<BirdDto>? B = null;
+    private List<ToastMessage> messages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            if (U is null) throw new Exception("Cannot find userDto in local storage.");
+
+            var result = new List<BirdDto>();
+
+            B = await BAC.Bird_GetAllAsync();
+
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Warning,
+                Title = "Chyba",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Problém s načítáním ptáčků. Zkontrolujte, že jste přihlášeni.<br/>Problém: {ex.Message}",
+                AutoHide = true
+            });
+        }
+    }
+}
