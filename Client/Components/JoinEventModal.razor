@@ -52,7 +52,19 @@
     {
         User = user;
         InputValue = string.Empty;
-        WatcherSelections = User?.Watchers?.ToDictionary(w => w.Id, w => User.Watchers.Count == 1) ?? new();
+
+        if (await LocalStorage.ContainKeyAsync("watchersGroup"))
+        {
+            try
+            {
+                var selected = await LocalStorage.GetItemAsync<List<int>>("watchersGroup") ?? new();
+                WatcherSelections = User?.Watchers?.ToDictionary(w => w.Id, w => selected.Contains(w.Id)) ?? new();
+            }
+            catch
+            {
+                WatcherSelections = User?.Watchers?.ToDictionary(w => w.Id, w => User.Watchers.Count == 1) ?? new();
+            }
+        }
         if (ModalRef is not null)
             await ModalRef.ShowAsync();
     }
