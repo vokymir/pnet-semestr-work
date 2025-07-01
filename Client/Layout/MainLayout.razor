@@ -4,17 +4,17 @@
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <Button Color="ButtonColor.Primary" @onclick="ToggleSidebar"> Navigace </Button>
-        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End" />
-        <Button Type="ButtonType.Link" Color="ButtonColor.Secondary" Outline="true" To="/nastaveni"><Icon Name="IconName.PersonFill" /></Button>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ToggleSidebar"><Icon Name=@(IconNameCurrent) /></Button>
+        <ThemeSwitcher Class="ps-3 ps-lg-2 ms-auto" Position="DropdownMenuPosition.End" />
+        <Button Type="ButtonType.Link" Color="ButtonColor.Secondary" To="/nastaveni"><Icon Name="IconName.PersonFill" /></Button>
     </HeaderSection>
 
     <SidebarSection>
         <Sidebar2 @ref="sidebar"
                   Href="/"
                   ImageSrc="logo-sranda.png"
-                  Title="Ptáčková aplikace"
-                  BadgeText="v1.0.0"
+                  Title="Pozorování ptáčků"
+                  BadgeText="55.ph RR"
                   DataProvider="Sidebar2DataProvider"
                   Width="300"
                   WidthUnit="Unit.Px" />
@@ -32,6 +32,10 @@
 @code {
     private Sidebar2 sidebar = default!;
     private IEnumerable<NavItem> navItems = default!;
+    private IconName IconNameCurrent = IconName.ArrowLeft;
+    private bool? isLoggedIn = null;
+    private string token = "token";
+    private DateTime ExpireAt = DateTime.Now;
 
     private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {
@@ -45,22 +49,22 @@
     {
         navItems = new List<NavItem>
         {
-            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
-            new NavItem { Id = "2", Href = "/ptackari", IconName = IconName.PeopleFill, Text = "ptackari"},
-            new NavItem { Id = "3", Href = "/souteze", IconName = IconName.CalendarCheckFill, Text = "souteze"},
-            new NavItem { Id = "4", Href = "/nastaveni", IconName = IconName.GearFill, Text = "nastaveni"},
-            new NavItem { Id = "5", Href = "/ptacci", IconName = IconName.Twitter, Text = "ptacci"},
-            new NavItem { Id = "6", Href = "/zaznam/novy", IconName = IconName.PlusSquareFill, Text = "novy zaznam"}
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Domů", Match=NavLinkMatch.All},
+            new NavItem { Id = "2", Href = "/ptackari", IconName = IconName.PeopleFill, Text = "Ptáčkaři"},
+            new NavItem { Id = "3", Href = "/souteze", IconName = IconName.CalendarCheckFill, Text = "Soutěže"},
+            new NavItem { Id = "4", Href = "/nastaveni", IconName = IconName.GearFill, Text = "Nastavení"},
+            new NavItem { Id = "5", Href = "/ptacci", IconName = IconName.Twitter, Text = "Ptáčci"},
+            new NavItem { Id = "6", Href = "/zaznam/novy", IconName = IconName.PlusSquareFill, Text = "Nový záznam"}
         };
 
         return navItems;
     }
 
-    private void ToggleSidebar() => sidebar.ToggleSidebar();
-
-    private bool? isLoggedIn = null;
-    private string token = "token";
-    private DateTime ExpireAt = DateTime.Now;
+    private void ToggleSidebar()
+    {
+        sidebar.ToggleSidebar();
+        IconNameCurrent = IconNameCurrent == IconName.ArrowLeft ? IconName.ArrowRight : IconName.ArrowLeft;
+    }
 
     protected override async Task OnInitializedAsync()
     {
