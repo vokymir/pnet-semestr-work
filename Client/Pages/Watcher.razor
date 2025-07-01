@@ -59,25 +59,31 @@ else
     }
 
     <h5 class="mt-4">Záznamy</h5>
-    @if (watcher.Records is not null && watcher.Records.Any())
+    @if (watcher.Records is not null && watcher.Records.Any() && records is not null)
     {
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Druh</th>
                     <th>Datum</th>
+                    <th>Počet</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var record in watcher.Records)
+                @foreach (var record in records)
                 {
                     <tr>
-                        <td>@(record.Bird?.Genus ?? ":)") @(record.Bird?.Species ?? ":]")</td>
+                        <td>@(record.Bird?.FullName ?? "Problém s načítáním záznamu")</td>
                         <td>@record.DateSeen.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@record.Count</td>
                     </tr>
                 }
             </tbody>
         </table>
+    }
+    else if (watcher.Records is not null && watcher.Records.Any() && records is null)
+    {
+        <p>Načítání záznamů...</p>
     }
     else
     {
@@ -93,9 +99,16 @@ else
     public int Id { get; set; } = default!;
 
     private WatcherDto? watcher;
+    private List<RecordDto>? records;
 
     protected override async Task OnInitializedAsync()
     {
         watcher = await BAC.Watcher_GetByIdAsync(Id);
+
+        if (watcher is not null)
+        {
+            var r = await BAC.Record_GetByWatcherAsync(watcher.Id);
+            records = r.ToList();
+        }
     }
 }
