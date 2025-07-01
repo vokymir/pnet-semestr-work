@@ -1,0 +1,23 @@
+.login-background {
+    background: url('../bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 400px;
+    width: 100%;
+    background-color: rgba(var(--bs-body-bg-rgb), 0.8);
+}
+
+.logo-img {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1rem;
+}

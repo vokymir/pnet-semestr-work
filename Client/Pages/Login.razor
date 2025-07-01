@@ -2,19 +2,23 @@
 @layout LoggedOutLayout
 @inject NavigationManager NavManager
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
-        <h3 class="text-center mb-4">Přihlášení</h3>
+<PageTitle>Pozorování ptáčků - přihlaste se!</PageTitle>
+
+<div class="login-background">
+    <div class="login-card shadow-sm">
+
+        <div class="text-center">
+            <img src="logo-sranda.png" alt="Logo" class="logo-img" />
+        </div>
+
+        <h1 class="h2 fw-bold">Pozorování ptáčků</h1>
 
         <LoginForm OnLoginSuccess="@OnSuccess" />
 
-        <p class="text-center text-muted mt-3">@s</p>
     </div>
 </div>
 
 @code {
-    private string s = "Zadejte své údaje pro přihlášení.";
-
     private void OnSuccess()
     {
         NavManager.NavigateTo("/");

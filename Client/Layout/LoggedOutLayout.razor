@@ -3,9 +3,23 @@
 @inject NavigationManager NavManager
 
 <BlazorBootstrapLayout StickyHeader="true">
-    <HeaderSection>
-        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End" />
-    </HeaderSection>
+<HeaderSection>
+    <div class="d-flex align-items-center px-3 w-100">
+        <img src="logo-sranda.png" alt="Logo" style="height: 40px;" />
+
+        <!-- Full text: visible only on 800px+ -->
+        <h5 class="ms-3 mb-0 text-muted d-none d-md-inline">
+            Ptáčková aplikace 55. přední hlídky Royal Rangers v Přešticích
+        </h5>
+
+        <!-- Medium text: visible 500px to ~800px -->
+        <h5 class="ms-3 mb-0 text-muted d-none d-sm-inline d-md-none">
+            Ptáčková aplikace
+        </h5>
+
+        <ThemeSwitcher Class="ps-3 ps-lg-2 ms-auto" Position="DropdownMenuPosition.End" />
+    </div>
+</HeaderSection>
 
     <ContentSection>
         @Body
