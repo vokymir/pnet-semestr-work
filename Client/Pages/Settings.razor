@@ -4,4 +4,14 @@
 
 <h1>Settings</h1>
 
+<Button Color="ButtonColor.Danger" Size="ButtonSize.ExtraLarge" @onclick="LogOut">Odhlásit se</Button>
 Welcome to your new app.
+
+@code{
+    private async Task LogOut(){
+        await LocalStorage.RemoveItemAsync("authToken");
+        await LocalStorage.RemoveItemAsync("authTokenExpireAt");
+
+        NavManager.NavigateTo("/login");
+    }
+}
