@@ -4,22 +4,26 @@
 @inject NavigationManager NavManager
 
 <h3>Nový záznam</h3>
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
 
 <EditForm Model="record" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3">
-        <label for="dateSeen" class="form-label">Datum a čas</label>
-        <input type="datetime-local" class="form-control" id="dateSeen"
-               @bind="record.DateSeen"
-               @bind:format="dd.MM.yyyy HH:mm" /> // TODO: weird behavior in browser, try it
+        <label for="dateInput" class="form-label">Datum</label>
+        <InputDate id="dateInput" class="form-control" @bind-Value="datePart" />
+    </div>
+
+    <div class="mb-3">
+        <label for="timeInput" class="form-label">Čas</label>
+        <InputText id="timeInput" class="form-control" @bind-Value="timePartString" type="time" />
     </div>
 
     <div class="mb-3">
         <label for="bird" class="form-label">Ptáček</label>
         <InputText id="bird" class="form-control" @bind-Value="birdSearch"
-                   oninput="@OnBirdSearchInput" placeholder="Začněte psát..." /> // TODO: What is this warning?
+               @oninput="OnBirdSearchInput" placeholder="Začněte psát..." />
         <ul class="list-group">
             @if (birdSuggestions is not null && birdSuggestions.Any())
             {
@@ -30,11 +34,10 @@
                 }
             }
         </ul>
-        @if (record.Bird is not null)
+        @if (record.Bird is null)
         {
-            <p><strong>Vybraný ptáček:</strong> @record.Bird.FullName</p>
+            <Button Color="ButtonColor.Secondary" To="/ptacek/novy" Type="ButtonType.Link">Vytvořit nového ptáčka</Button>
         }
-        <Button Color="ButtonColor.Secondary" To="/ptacek/novy" Type="ButtonType.Link">Vytvořit nového ptáčka</Button>
     </div>
 
     <div class="mb-3">
@@ -63,7 +66,7 @@
         }
         else
         {
-            <p>Načítám pozorovatele...</p>
+            <p>Načítám ptáčkaře...</p>
         }
     </div>
 
@@ -76,15 +79,35 @@
     private List<int> selectedWatcherIds = new();
     private string birdSearch = "";
     private ICollection<BirdDto> birdSuggestions = new List<BirdDto>();
+    private DateTime datePart = DateTime.Today;
+    private string timePartString = DateTime.Now.ToString("HH:mm");
+    private List<ToastMessage> messages = new();
+
 
     protected override async Task OnInitializedAsync()
     {
+        if (record.DateSeen != default)
+           {
+               datePart = record.DateSeen.Date;
+               timePartString = record.DateSeen.ToString("HH:mm");
+           }
+
         // načti pozorovatele
         var U = await LocalStorage.GetItemAsync<UserDto>("userDto");
-        if (U is null || U.Watchers is null) throw new Exception("User is not here or have no watchers.");
-        foreach(var w in U.Watchers){
-            watchers.Add(await BAC.Watcher_GetByIdAsync(w.Id));
-        }
+        if (U is null || U.Watchers is null)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Warning,
+                Title = "Chyba",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Problém s načítáním přihlášeného uživatele a ptáčkařů. Zkontrolujte, že jste přihlášeni.",
+                AutoHide = true
+            });
+        }else
+            foreach(var w in U.Watchers){
+                watchers.Add(await BAC.Watcher_GetByIdAsync(w.Id));
+            }
 
         // zkus načíst watchersGroup z localstorage
         if (await LocalStorage.ContainKeyAsync("watchersGroup"))
@@ -98,6 +121,24 @@
                 selectedWatcherIds = new();
             }
         }
+    }
+
+    private void UpdateDateTime()
+    {
+        if (TimeOnly.TryParse(timePartString, out var time))
+        {
+            record.DateSeen = datePart.Date.Add(time.ToTimeSpan());
+        }
+        else
+        {
+            // fallback – nastav na půlnoc
+            record.DateSeen = datePart.Date;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        UpdateDateTime();
     }
 
     private async Task OnBirdSearchInput(ChangeEventArgs e)
@@ -133,6 +174,8 @@
 
     private async Task HandleValidSubmit()
     {
+        UpdateDateTime();
+
         foreach (var wid in selectedWatcherIds)
         {
             var newRecord = new RecordDto
