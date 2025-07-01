@@ -8,19 +8,21 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div>
-        <label>Přihlašovací jméno</label>
+    <div class="mb-3">
+        <label class="form-label">Přihlašovací jméno</label>
         <InputText @bind-Value="Model.username" class="form-control" />
     </div>
-    <div>
-        <label>Heslo</label>
+
+    <div class="mb-3">
+        <label class="form-label">Heslo</label>
         <InputText @bind-Value="Model.passwordhash" type="password" class="form-control" />
     </div>
-    <button type="submit">Přihlásit se</button>
+
+    <button type="submit" class="btn btn-primary w-100">Přihlásit se</button>
 
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
-        <div class="text-danger">@ErrorMessage</div>
+        <div class="alert alert-danger mt-3" role="alert">@ErrorMessage</div>
     }
 </EditForm>
 
