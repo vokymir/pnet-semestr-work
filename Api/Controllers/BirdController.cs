@@ -112,6 +112,7 @@ namespace BirdWatching.Api.Controllers
         }
 
         /// <summary>Append text to a bird's comment.</summary>
+        [Authorize]
         [HttpPatch("comment/append/{birdId:int}")]
         [OpenApiOperation("Bird_AppendComment")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -126,7 +127,12 @@ namespace BirdWatching.Api.Controllers
             if (bird == null)
                 return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Bird not found." });
 
-            bird.Comment += additional;
+            var userId = GetCurrentUserId();
+            if (userId is null)
+                return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+            var user = await _userRepo.GetByIdAsync((int) userId);
+
+            bird.Comment += $"{user?.DisplayName ?? "Anonym"}: {additional}";
             try
             {
                 await _birdRepo.UpdateAsync(bird);

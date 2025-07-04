@@ -15,6 +15,13 @@ else if (record is null)
 }
 else
 {
+    <h5 class="card-title">
+        👀 Ptáček: <strong>@record.Bird?.BinomicName</strong>
+    </h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+        👤 @record.Watcher?.FirstName @record.Watcher?.LastName — @record.DateSeen.ToString("dd.MM.yyyy HH:mm")
+    </h6>
+
     <EditForm Model="record" OnValidSubmit="SaveChanges">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -126,10 +133,10 @@ else
     private async Task AppendComment()
     {
         if (string.IsNullOrWhiteSpace(newComment)) return;
+        string uri = $"/ptackar/{record?.Watcher?.PublicIdentifier}/{record?.WatcherId}";
 
         await BAC.Record_AppendCommentAsync(id, new CommentUpdateDto(newComment));
-        record!.Comment += newComment;
-        newComment = "";
+        Nav.NavigateTo($"/zaznam/{record?.Id}");
     }
 
     private void ShowDeleteConfirm() => confirmDelete = true;
@@ -137,7 +144,7 @@ else
     private async Task DeleteRecord()
     {
         isDeleting = true;
-        string uri = $"/ptackar/{record.Watcher.PublicIdentifier}/{record.WatcherId}";
+        string uri = $"/ptackar/{record?.Watcher?.PublicIdentifier}/{record?.WatcherId}";
         await BAC.Record_DeleteAsync(id);
         Nav.NavigateTo(uri);
     }

@@ -111,6 +111,7 @@ namespace BirdWatching.Api.Controllers
         }
 
         /// <summary>Append text to a record's comment</summary>
+        [Authorize]
         [HttpPatch("append/{recordId:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
@@ -125,7 +126,12 @@ namespace BirdWatching.Api.Controllers
             if (record == null)
                 return NotFound(new ProblemDetails { Title = "Record not found" });
 
-            record.Comment += dto.Text;
+            var userId = GetCurrentUserId();
+            if (userId is null)
+                return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+            var user = await _userRepo.GetByIdAsync((int) userId);
+
+            record.Comment += $"\n{user?.DisplayName ?? "Anonym"}: {dto.Text}";
 
             try
             {
@@ -159,8 +165,9 @@ namespace BirdWatching.Api.Controllers
             var userId = GetCurrentUserId();
             if (userId is null)
                 return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+            var user = await _userRepo.GetByIdAsync((int) userId);
 
-            var isCurator = record.Watcher.Curators.Any(u => u.Id == userId);
+            var isCurator = user?.Watchers.Any(w => w.Id == record!.WatcherId) ?? false;
             if (!isCurator && !User.IsInRole("Admin"))
                 return Forbid();
 
@@ -198,8 +205,9 @@ namespace BirdWatching.Api.Controllers
             var userId = GetCurrentUserId();
             if (userId is null)
                 return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+            var user = await _userRepo.GetByIdAsync((int) userId);
 
-            var isCurator = record.Watcher.Curators.Any(u => u.Id == userId);
+            var isCurator = user?.Watchers.Any(w => w.Id == record!.WatcherId) ?? false;
             if (!isCurator && !User.IsInRole("Admin"))
                 return Forbid();
 
