@@ -13,6 +13,8 @@
       "clientBaseClass": null,
       "exceptionClass": "ApiException",
       "wrapDtoExceptions": true,
+      "throwExceptionOnHttpError": true,
+      "handleHttpResponse": true,
       "output": "Api/BirdApiClient.cs",
       "useBaseUrl": false
     }

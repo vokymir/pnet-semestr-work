@@ -96,9 +96,9 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     [HttpPost("register")]
     [OpenApiOperation("Auth_Register")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<TokenResponseDto>> Register([FromBody] RegisterDto register)
+    public async Task<IActionResult> Register([FromBody] RegisterDto register)
     {
         if (register == null || string.IsNullOrWhiteSpace(register.Username) || string.IsNullOrWhiteSpace(register.Password))
         {
@@ -109,7 +109,6 @@ public class AuthController : BaseApiController
             });
         }
 
-        // Check for existing user
         var existingUser = await _userRepo.GetByUsernameAsync(register.Username);
         if (existingUser != null)
         {
@@ -123,11 +122,12 @@ public class AuthController : BaseApiController
         var passwordHasher = new PasswordHasher<User>();
         var user = new User {
             UserName = register.Username,
-            DisplayName = register.DisplayName
+            DisplayName = register.DisplayName,
+            PasswordHash = passwordHasher.HashPassword(null!, register.Password)
         };
-        user.PasswordHash = passwordHasher.HashPassword(user, register.Password);
+
         await _userRepo.AddAsync(user);
 
-        return Ok("super");
+        return NoContent();
     }
 }

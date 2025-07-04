@@ -53,6 +53,9 @@
                 ErrorMessage = "Invalid login.";
             }
         }
+        catch (ApiException<ProblemDetails> ex){
+            ErrorMessage = ex.Result?.Detail ?? "Neznámá chyba.";
+        }
         catch (ApiException ex)
         {
             ErrorMessage = $"Login failed: {ex.Message}";
