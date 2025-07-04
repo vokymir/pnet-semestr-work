@@ -3,7 +3,6 @@
 @inject BirdApiClient BAC
 
 <PageTitle>Ptáčkař: @watcher?.FirstName @watcher?.LastName</PageTitle>
-
 @if (watcher == null)
 {
     <h1>Detail ptáčkaře</h1>
@@ -13,10 +12,10 @@ else
 {
     <h1>@watcher.FirstName @watcher.LastName</h1>
 
-    <h3>@PublicIdentifier</h3>
+    <h3>Kód ptáčkaře: @PublicIdentifier</h3>
 
     <h5 class="mt-4">Kurátoři</h5>
-    @if (watcher.Curators is not null && watcher.Curators.Any())
+    @if (watcher is not null && watcher.Curators is not null && watcher.Curators.Any())
     {
         <ul>
             @foreach (var curator in watcher.Curators)
@@ -40,7 +39,7 @@ else
     }
 
     <h5 class="mt-4">Soutěže</h5>
-    @if (watcher.Participating is not null && watcher.Participating.Any())
+    @if (watcher is not null && watcher.Participating is not null && watcher.Participating.Any())
     {
         <CardGroup>
             @foreach (var ev in watcher.Participating)
@@ -49,7 +48,8 @@ else
                     <CardBody>
                         <CardTitle>@ev.Name</CardTitle>
                         <CardText>@ev.PublicIdentifier</CardText>
-                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.PublicIdentifier}") Type="ButtonType.Link">Zobrazit</Button>
+                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.PublicIdentifier}")
+                            Type="ButtonType.Link">Zobrazit</Button>
                     </CardBody>
                 </Card>
             }
@@ -61,7 +61,7 @@ else
     }
 
     <h5 class="mt-4">Záznamy</h5>
-    @if (watcher.Records is not null && watcher.Records.Any() && records is not null)
+    @if (watcher is not null && watcher.Records is not null && watcher.Records.Any() && records is not null)
     {
         <table class="table table-striped">
             <thead>
@@ -83,7 +83,8 @@ else
             </tbody>
         </table>
     }
-    else if (watcher.Records is not null && watcher.Records.Any() && records is null)
+    else if (watcher is null || watcher is not null && watcher.Records is not null && watcher.Records.Any() && records is
+    null)
     {
         <p>Načítání záznamů...</p>
     }
@@ -91,6 +92,31 @@ else
     {
         <p>Žádné záznamy.</p>
     }
+
+<div class="mt-4">
+    @if (!showDeleteConfirm)
+    {
+        <Button Color="ButtonColor.Danger" @onclick="@(() => showDeleteConfirm = true)">
+            🗑 Přestat spravovat ptáčkaře
+        </Button>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            Opravdu chcete opustit ptáčkaře <strong>@watcher?.FirstName @watcher?.LastName</strong>?
+            <br />
+            <div class="mt-2">
+               <Button Color="ButtonColor.Danger" Disabled="@isDeleting" @onclick="RemoveWatcherAsync">
+                     ✅ Ano, opustit
+                </Button>
+               <Button Color="ButtonColor.Secondary" Disabled="@isDeleting" @onclick="@(() => showDeleteConfirm = false)"
+                   class="ms-2">
+                     Zrušit
+                </Button>
+            </div>
+        </div>
+    }
+</div>
 }
 
 @code {
@@ -102,6 +128,8 @@ else
 
     private WatcherDto? watcher;
     private List<RecordDto>? records;
+    private bool showDeleteConfirm = false;
+    private bool isDeleting = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,6 +139,38 @@ else
         {
             var r = await BAC.Record_GetByWatcherAsync(watcher.Id);
             records = r.ToList();
+        }
+    }
+
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private async Task RemoveWatcherAsync()
+    {
+        isDeleting = true;
+        try
+        {
+            if (watcher is null) return;
+
+            var user = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            if (user == null)
+            {
+                Console.WriteLine("Uživatel není přihlášen.");
+                return;
+            }
+
+            // Odeber aktuálního uživatele z kurátorů
+            watcher.Curators = watcher.Curators?
+            .Where(c => c.Id != user.Id)
+            .ToList();
+
+            await BAC.Watcher_UpdateWatcherAsync(watcher.Id, watcher);
+
+            Nav.NavigateTo("/ptackari");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Chyba při mazání: {ex.Message}");
+            isDeleting = false;
         }
     }
 }

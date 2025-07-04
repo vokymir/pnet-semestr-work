@@ -204,4 +204,100 @@ public class WatcherController : BaseApiController
             return Problem("Failed to join event.");
         }
     }
+
+    /// <summary>Updates a watcher entity. Only admins or curators can perform this.</summary>
+    [HttpPut("{id}")]
+    [Authorize]
+    [OpenApiOperation("Watcher_Update", "Updates an existing watcher (admin or curator only).")]
+    [ProducesResponseType(typeof(WatcherDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateWatcher(int id, [FromBody] WatcherDto watcherDto)
+    {
+        if (watcherDto == null || id != watcherDto.Id)
+            return BadRequest(new ProblemDetails {
+                Title = "Invalid Input",
+                Detail = "Watcher data is missing or ID mismatch."
+            });
+
+        var userId = GetCurrentUserId();
+        if (userId is null)
+            return Unauthorized(new ProblemDetails {
+                Title = "Unauthorized",
+                Detail = "JWT token is missing or invalid."
+            });
+
+        var user = await _userRepo.GetByIdAsync(userId.Value);
+        if (user == null)
+            return Problem("Cannot find user.");
+
+        var existingWatcher = await _watcherRepo.GetByIdAsync(id);
+        if (existingWatcher == null)
+            return NotFound(new ProblemDetails {
+                Title = "Not Found",
+                Detail = $"Watcher with ID {id} does not exist."
+            });
+
+        // Authorization check: admin or curator
+        if (!IsAdmin && !existingWatcher.Curators.Any(c => c.Id == user.Id))
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails {
+                Title = "Forbidden",
+                Detail = "Only admins or curators of this watcher can update it."
+            });
+
+        try
+        {
+            // Update základních údajů
+            existingWatcher.FirstName = watcherDto.FirstName;
+            existingWatcher.LastName = watcherDto.LastName;
+
+            if (IsAdmin || existingWatcher.MainCuratorId == user.Id)
+            {
+                // Upravujeme seznam Participating eventů – najdi entitu podle ID
+                if (watcherDto.Participating != null)
+                {
+                    existingWatcher.Participating.Clear();
+                    foreach (var eventDto in watcherDto.Participating)
+                    {
+                        var ev = await _eventRepo.GetByIdAsync(eventDto.Id);
+                        if (ev != null)
+                            existingWatcher.Participating.Add(ev);
+                    }
+                }
+
+                // Upravujeme seznam kurátorů – podobně
+                if (watcherDto.Curators != null)
+                {
+                    existingWatcher.Curators.Clear();
+                    foreach (var curatorDto in watcherDto.Curators)
+                    {
+                        var curator = await _userRepo.GetByIdAsync(curatorDto.Id);
+                        if (curator != null)
+                            existingWatcher.Curators.Add(curator);
+                    }
+                }
+            }
+            else if (watcherDto.Curators?.Any(c => c.Id == user.Id) == false)
+            {
+                // Odebrání sebe sama z kurátorů
+                var curatorToRemove = existingWatcher.Curators.FirstOrDefault(c => c.Id == user.Id);
+                if (curatorToRemove != null && curatorToRemove.Id != existingWatcher.MainCuratorId)
+                {
+                    existingWatcher.Curators.Remove(curatorToRemove);
+                }
+            }
+
+            await _watcherRepo.UpdateAsync(existingWatcher);
+
+            return Ok(existingWatcher.ToFullDto());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating watcher {WatcherId}.", id);
+            return Problem("An error occurred while updating the watcher.");
+        }
+    }
 }
