@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using BirdWatching.Shared.Model;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -45,8 +46,20 @@ public class AuthController : BaseApiController
             });
         }
 
+        var passwordHasher = new PasswordHasher<User>();
+
         var user = await _userRepo.GetByUsernameAsync(login.username);
-        if (user == null || user.PasswordHash != login.passwordhash)
+        PasswordVerificationResult res = PasswordVerificationResult.Failed;
+        try
+        {
+            string hash = passwordHasher.HashPassword(user!, login.passwordhash);
+            res = passwordHasher.VerifyHashedPassword(user!, user!.PasswordHash, hash);
+        }
+        catch
+        {
+        }
+        if (user is not null && user.Id == -1 && user.PasswordHash == login.passwordhash) { }
+        else if (user == null || res == PasswordVerificationResult.Failed)
         {
             return Unauthorized(new ProblemDetails {
                 Status = StatusCodes.Status401Unauthorized,
@@ -79,7 +92,65 @@ public class AuthController : BaseApiController
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
         var userDto = user.ToFullDto();
-        userDto.PasswordHash = "Haha :>)";
+        userDto.PasswordHash = "Ptáčková aplikace je prostě nejlepší!";
+        return Ok(new TokenResponseDto(tokenString, expires, userDto));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("register")]
+    [OpenApiOperation("Auth_Register")]
+    [ProducesResponseType(typeof(TokenResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<TokenResponseDto>> Register([FromBody] RegisterDto Register)
+    {
+        if (Register is null || string.IsNullOrWhiteSpace(Register.Username) || string.IsNullOrWhiteSpace(Register.Password))
+        {
+            return Unauthorized(new ProblemDetails {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized",
+                Detail = "Přihlašovací údaje nejsou platné."
+            });
+        }
+
+        var passwordHasher = new PasswordHasher<User>();
+        User user = new User() { UserName = Register.Username, DisplayName = Register.DisplayName };
+
+        string hash = passwordHasher.HashPassword(user, Register.Password);
+        user.PasswordHash = hash;
+        await _userRepo.AddAsync(user);
+        user = await _userRepo.GetByUsernameAsync(user.UserName) ?? new User();
+        if (!user.PasswordHash.Equals(hash))
+            return Unauthorized(new ProblemDetails {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized",
+                Detail = "Nelze se registrovat."
+            });
+
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var issuer = _config["JWT:Issuer"];
+        var audience = _config["JWT:Audience"];
+        var expires = DateTime.UtcNow.AddMinutes(ValidMinutesDefault);
+
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: expires,
+            signingCredentials: creds
+        );
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        var userDto = user.ToFullDto();
+        userDto.PasswordHash = "Ptáčková aplikace je prostě nejlepší!";
         return Ok(new TokenResponseDto(tokenString, expires, userDto));
     }
 }

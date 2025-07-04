@@ -1,8 +1,8 @@
-@page "/login"
+@page "/registrace"
 @layout LoggedOutLayout
 @inject NavigationManager NavManager
 
-<PageTitle>Pozorování ptáčků - přihlaste se!</PageTitle>
+<PageTitle>Pozorování ptáčků - registrujte se!</PageTitle>
 
 <div class="login-background">
     <div class="login-card shadow-sm">
@@ -13,10 +13,10 @@
 
         <h1 class="h2 fw-bold">Pozorování ptáčků</h1>
 
-        <LoginForm OnLoginSuccess="@OnSuccess" />
+        <RegisterForm OnRegisterSuccess="@OnSuccess" />
 
-        <NavLink href="/registrace" class="btn btn-outline-secondary w-100 mt-3">
-            Nemáte účet? Registrujte se →
+        <NavLink href="/login" class="btn btn-outline-secondary w-100 mt-3">
+            Máte účet? Přihlaste se →
         </NavLink>
 
     </div>

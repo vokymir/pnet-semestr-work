@@ -1,0 +1,67 @@
+@using System.ComponentModel.DataAnnotations
+@using Blazored.LocalStorage
+@using BirdWatching.Shared.Api
+@using BirdWatching.Shared.Model
+@inject BirdApiClient BAC
+@inject ILocalStorageService LocalStorage
+
+<EditForm Model="Model" OnValidSubmit="HandleRegister">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Přihlašovací jméno</label>
+        <InputText @bind-Value="Model.Username" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Zobrazované jméno</label>
+        <InputText @bind-Value="Model.DisplayName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Heslo</label>
+        <InputText @bind-Value="Model.Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Zaregistrovat se</button>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger mt-3" role="alert">@ErrorMessage</div>
+    }
+</EditForm>
+
+@code {
+    private RegisterDto Model { get; set; } = new();
+    private string? ErrorMessage;
+
+    [Parameter]
+    public EventCallback OnRegisterSuccess { get; set; }
+
+    private async Task HandleRegister()
+    {
+        ErrorMessage = null;
+
+        try
+        {
+            var loginResponse = await BAC.Auth_RegisterAsync(Model);
+
+            if (!string.IsNullOrWhiteSpace(loginResponse?.Token))
+            {
+                await LocalStorage.SetItemAsync("authToken", loginResponse.Token);
+                await LocalStorage.SetItemAsync("authTokenExpireAt", loginResponse.ExpireAt);
+                await LocalStorage.SetItemAsync("userDto", loginResponse.UserDto);
+                await OnRegisterSuccess.InvokeAsync();
+            }
+        }
+        catch (ApiException ex)
+        {
+            ErrorMessage = $"Registrace selhala: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Registrace se nezdařila. Zkuste to prosím později. Chyba: {ex.Message}";
+        }
+    }
+}
