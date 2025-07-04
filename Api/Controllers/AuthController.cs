@@ -52,19 +52,16 @@ public class AuthController : BaseApiController
         PasswordVerificationResult res = PasswordVerificationResult.Failed;
         try
         {
-            string hash = passwordHasher.HashPassword(user!, login.passwordhash);
-            res = passwordHasher.VerifyHashedPassword(user!, user!.PasswordHash, hash);
+            res = passwordHasher.VerifyHashedPassword(user!, user!.PasswordHash, login.passwordhash);
         }
-        catch
-        {
-        }
+        catch { } // HEHE
         if (user is not null && user.Id == -1 && user.PasswordHash == login.passwordhash) { }
-        else if (user == null || res == PasswordVerificationResult.Failed)
+        else if (user is null || res == PasswordVerificationResult.Failed)
         {
             return Unauthorized(new ProblemDetails {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized",
-                Detail = "Neplatné jméno nebo heslo."
+                Detail = $"Neplatné jméno nebo heslo."
             });
         }
 
@@ -99,58 +96,38 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     [HttpPost("register")]
     [OpenApiOperation("Auth_Register")]
-    [ProducesResponseType(typeof(TokenResponseDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<TokenResponseDto>> Register([FromBody] RegisterDto Register)
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<TokenResponseDto>> Register([FromBody] RegisterDto register)
     {
-        if (Register is null || string.IsNullOrWhiteSpace(Register.Username) || string.IsNullOrWhiteSpace(Register.Password))
+        if (register == null || string.IsNullOrWhiteSpace(register.Username) || string.IsNullOrWhiteSpace(register.Password))
         {
-            return Unauthorized(new ProblemDetails {
-                Status = StatusCodes.Status401Unauthorized,
-                Title = "Unauthorized",
-                Detail = "Přihlašovací údaje nejsou platné."
+            return BadRequest(new ProblemDetails {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Chyba registrace",
+                Detail = "Musíte vyplnit uživatelské jméno a heslo."
+            });
+        }
+
+        // Check for existing user
+        var existingUser = await _userRepo.GetByUsernameAsync(register.Username);
+        if (existingUser != null)
+        {
+            return BadRequest(new ProblemDetails {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Chyba registrace",
+                Detail = "Uživatel s tímto jménem již existuje."
             });
         }
 
         var passwordHasher = new PasswordHasher<User>();
-        User user = new User() { UserName = Register.Username, DisplayName = Register.DisplayName };
-
-        string hash = passwordHasher.HashPassword(user, Register.Password);
-        user.PasswordHash = hash;
-        await _userRepo.AddAsync(user);
-        user = await _userRepo.GetByUsernameAsync(user.UserName) ?? new User();
-        if (!user.PasswordHash.Equals(hash))
-            return Unauthorized(new ProblemDetails {
-                Status = StatusCodes.Status401Unauthorized,
-                Title = "Unauthorized",
-                Detail = "Nelze se registrovat."
-            });
-
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+        var user = new User {
+            UserName = register.Username,
+            DisplayName = register.DisplayName
         };
+        user.PasswordHash = passwordHasher.HashPassword(user, register.Password);
+        await _userRepo.AddAsync(user);
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var issuer = _config["JWT:Issuer"];
-        var audience = _config["JWT:Audience"];
-        var expires = DateTime.UtcNow.AddMinutes(ValidMinutesDefault);
-
-        var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
-            claims: claims,
-            expires: expires,
-            signingCredentials: creds
-        );
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        var userDto = user.ToFullDto();
-        userDto.PasswordHash = "Ptáčková aplikace je prostě nejlepší!";
-        return Ok(new TokenResponseDto(tokenString, expires, userDto));
+        return Ok("super");
     }
 }

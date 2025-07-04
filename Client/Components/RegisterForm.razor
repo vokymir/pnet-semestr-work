@@ -45,7 +45,9 @@
 
         try
         {
-            var loginResponse = await BAC.Auth_RegisterAsync(Model);
+            await BAC.Auth_RegisterAsync(Model);
+
+            var loginResponse = await BAC.Auth_LoginAsync(new LoginDto(){username = Model.Username, passwordhash = Model.Password});
 
             if (!string.IsNullOrWhiteSpace(loginResponse?.Token))
             {
