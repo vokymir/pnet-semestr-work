@@ -4,94 +4,158 @@
 
 <PageTitle>Soutěže</PageTitle>
 
-<h1>Events</h1>
+<h1>Soutěže</h1>
 
-Welcome to your new app. Tohle by pak ideálně mělo nějaký "sortění", aby se dalo vybrat všechny/moje/účastním se/neúčastním se. Plus bych mohl vymyslet pagination, zakomponovanou rovnou v API, protože brzo asi bude hodně věcí. Tak uvidíme.
+<div class="mb-3">
+    <label for="filter" class="form-label">Filtrovat:</label>
+    <select id="filter" class="form-select w-auto" @bind="SelectedFilter">
+        <option value="all">Všechny</option>
+        <option value="mine">Moje</option>
+        <option value="participating">Účastním se</option>
+    </select>
+</div>
 
-<Button Type="ButtonType.Link" To="/soutez/nova" Color="ButtonColor.Primary">Vytvořit soutěž</Button>
-<Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat se do soutěže</Button>
+<div class="mb-4">
+    <Button Type="ButtonType.Link" To="/soutez/nova" Color="ButtonColor.Primary">Vytvořit soutěž</Button>
+    <Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat se do soutěže</Button>
+</div>
+
 <JoinEventModal @ref="JoinModal" User="U" />
 
 <div class="row">
-    @if (E is null || !E.Any())
+    @if (FilteredEvents is null || !FilteredEvents.Any())
     {
         <p>Žádné soutěže...</p>
     }
     else
     {
-        @foreach (var e in E ?? Array.Empty<EventDto>())
+        @foreach (var e in FilteredEvents)
         {
+            var isMine = MyEventIds.Contains(e.Id);
+            var participatingWatchers = U?.Watchers?
+            .Where(w => e.Participants?.Any(p => p.Id == w.Id) == true)
+            .ToList() ?? new();
+
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                 <Card class="h-100">
-                <CardBody>
-                    <CardTitle>@e.Name</CardTitle>
-                    <CardText>@e.PublicIdentifier A tady by mělo být info, že to je moje soutěž, anebo, který z mých ptáčkařů se jí účastní
-                        (vyjmenovaní všichni).</CardText>
-                    <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}")
-                        Type="ButtonType.Link">Zobrazit</Button>
-                </CardBody>
+                    <CardBody>
+                        <CardTitle>@e.Name</CardTitle>
+                        <CardText>
+                            <div><strong>Kód:</strong> @e.PublicIdentifier</div>
+
+                            @if (isMine)
+                            {
+                                <div class="text-success">🟢 Moje soutěž</div>
+                            }
+                            @if (participatingWatchers.Any())
+                            {
+                                <div class="text-primary">
+                                    🐦 Účastní se:
+                                    <ul class="mb-0">
+                                        @foreach (var w in participatingWatchers)
+                                        {
+                                            <li>@w.FirstName @w.LastName</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </CardText>
+                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}")
+                            Type="ButtonType.Link">Zobrazit</Button>
+                    </CardBody>
                 </Card>
             </div>
         }
     }
 </div>
 
-
 @code {
     private UserDto? U = null;
-    private ICollection<EventDto>? E = null;
-    private List<ToastMessage> messages = new();
+    private List<EventDto> AllEvents = new();
+    private List<EventDto> FilteredEvents = new();
+    private HashSet<int> MyEventIds = new();
+    private JoinEventModal? JoinModal;
 
-    private JoinEventModal? JoinModal = default;
+    private string selectedFilter = "all";
+    private string SelectedFilter
+    {
+        get => selectedFilter;
+        set
+        {
+            if (selectedFilter != value)
+            {
+                selectedFilter = value;
+                ApplyFilter();
+            }
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             U = await LocalStorage.GetItemAsync<UserDto>("userDto");
-            if (U is null) throw new Exception("Cannot find userDto in local storage.");
+            if (U is null) throw new Exception("Nelze načíst userDto z local storage.");
 
-            var result = new List<EventDto>();
             var seenIds = new HashSet<int>();
 
-            // Events user is admin of
-            var userEvents = await BAC.Event_GetByUserIdAsync(U.Id);
-            foreach (var e in userEvents)
+            // Moje soutěže
+            var mine = await BAC.Event_GetByUserIdAsync(U.Id);
+            foreach (var e in mine)
             {
+                e.Participants ??= new List<WatcherDto>();
                 if (seenIds.Add(e.Id))
-                    result.Add(e);
+                {
+                    AllEvents.Add(e);
+                    MyEventIds.Add(e.Id);
+                }
             }
 
-            // Events where user's watchers are participants
+            // Soutěže, kde se účastní moji ptáčkaři
             if (U.Watchers is not null)
             {
-                foreach (var W in U.Watchers)
+                foreach (var w in U.Watchers)
                 {
-                    var watcherEvents = await BAC.Event_GetByWatcherIdAsync(W.Id);
-                    foreach (var e in watcherEvents)
+                    var joined = await BAC.Event_GetByWatcherIdAsync(w.Id);
+                    foreach (var e in joined)
                     {
+                        e.Participants ??= new List<WatcherDto>();
+
                         if (seenIds.Add(e.Id))
-                            result.Add(e);
+                        {
+                            AllEvents.Add(e);
+                        }
+
+                        // Přidat účastníka, pokud chybí
+                        if (!e.Participants.Any(p => p.Id == w.Id))
+                        {
+                            e.Participants.Add(new WatcherDto { Id = w.Id });
+                        }
                     }
                 }
             }
 
-            E = result;
+            ApplyFilter();
         }
         catch (Exception ex)
         {
-            messages.Add(new ToastMessage
-            {
-                Type = ToastType.Warning,
-                Title = "Chyba",
-                HelpText = $"{DateTime.Now}",
-                Message = $"Problém s načítáním soutěží. Zkontrolujte, že jste přihlášeni.<br/>Problém: {ex.Message}",
-                AutoHide = true
-            });
+            Console.WriteLine($"Chyba při načítání soutěží: {ex.Message}");
         }
     }
 
-     private async Task ShowModal()
+    private void ApplyFilter()
+    {
+        FilteredEvents = SelectedFilter switch
+        {
+            "mine" => AllEvents.Where(e => MyEventIds.Contains(e.Id)).ToList(),
+            "participating" => AllEvents
+            .Where(e => U?.Watchers?.Any(w => e.Participants?.Any(p => p.Id == w.Id) == true) == true)
+            .ToList(),
+            _ => AllEvents.ToList()
+        };
+    }
+
+    private async Task ShowModal()
     {
         if (JoinModal is not null)
             await JoinModal.ShowAsync(U);
