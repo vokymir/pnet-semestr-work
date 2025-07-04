@@ -1,0 +1,74 @@
+@using BirdWatching.Shared.Model
+@inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
+<Modal @ref="ModalRef"
+    Title="Přidat existujícího ptáčkaře"
+    IsVerticallyCentered="true"
+    IsScrollable="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="codeInput" class="form-label">Veřejný kód ptáčkaře:</label>
+            <InputText id="codeInput" @bind-Value="InputCode" class="form-control" />
+        </div>
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <div class="d-flex justify-content-end">
+            <Button Color="ButtonColor.Secondary" @onclick="HideAsync">Zavřít</Button>
+            <Button Color="ButtonColor.Primary" class="ms-2" @onclick="AddWatcher">Přidat</Button>
+        </div>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback OnWatcherAdded { get; set; }
+    private List<ToastMessage> messages = new();
+
+    private Modal? ModalRef;
+    private string InputCode = "";
+    private UserDto? User;
+
+    public async Task ShowAsync()
+    {
+        User = await LocalStorage.GetItemAsync<UserDto>("userDto");
+        InputCode = "";
+        if (ModalRef is not null)
+            await ModalRef.ShowAsync();
+    }
+
+    private async Task HideAsync()
+    {
+        if (ModalRef is not null)
+            await ModalRef.HideAsync();
+    }
+
+    private async Task AddWatcher()
+    {
+        try
+        {
+            if (User is null)
+                throw new Exception("Uživatel není přihlášen.");
+
+            await BAC.User_AddCuratedWatcherAsync(InputCode);
+            await OnWatcherAdded.InvokeAsync();
+            await HideAsync();
+        }
+        catch (ApiException<ProblemDetails> ex){
+            messages.Add(new ToastMessage(){
+                Type = ToastType.Warning,
+                Title = "Něco se nepovedlo",
+                Message = $"Nepodařilo se přidat ptáčkaře. Zkontrolujte, že máte správný kód. \n{ex.Result?.Detail ?? ""}",
+            });
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage(){
+                Type = ToastType.Danger,
+                Title = "Něco se nepovedlo",
+                Message = $"Nepodařilo se přidat ptáčkaře. Zkontrolujte, že máte správný kód. \n{ex}",
+            });
+        }
+    }
+}

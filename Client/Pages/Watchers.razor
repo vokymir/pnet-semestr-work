@@ -6,9 +6,11 @@
 
 <h1>Watchers</h1>
 
-Welcome to your new app.
+<Button Type="ButtonType.Link" To="/ptackar/novy" Color="ButtonColor.Primary">Vytvořit ptáčkaře</Button>
+<Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat existujícího</Button>
+<AddWatcherModal @ref="AddModal" OnWatcherAdded="ReloadWatchers" />
 
-<div class="row">
+<div class="row mt-4">
     @if (W is null || !W.Any())
     {
         <p>Žádní ptáčkaři...</p>
@@ -23,7 +25,7 @@ Welcome to your new app.
                         <CardTitle>@watcherDto.FirstName @watcherDto.LastName</CardTitle>
                         <CardText>@watcherDto.PublicIdentifier</CardText>
                         <Button Color="ButtonColor.Primary" To=@($"/ptackar/{watcherDto.PublicIdentifier}/{watcherDto.Id}")
-                            Type="ButtonType.Link">Zobrazit</Button>
+                                Type="ButtonType.Link">Zobrazit</Button>
                     </CardBody>
                 </Card>
             </div>
@@ -31,3 +33,26 @@ Welcome to your new app.
     }
 </div>
 
+@code{
+    private ICollection<WatcherDto>? W = null;
+    private AddWatcherModal? AddModal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadWatchers();
+    }
+
+    private async Task ReloadWatchers()
+    {
+        W = await BAC.Watcher_GetUserWatchersAsync();
+        StateHasChanged();
+    }
+
+    private async Task ShowModal()
+    {
+        if (AddModal is not null)
+            await AddModal.ShowAsync();
+        else
+            Console.WriteLine("ajaj");
+    }
+}
