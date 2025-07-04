@@ -123,6 +123,11 @@ else
                 if (target is not null)
                 {
                     target.ValidRecords = updated.ValidRecords;
+
+                    Leaderboard = Leaderboard
+                    .OrderByDescending(w => w.ValidRecords?.Count ?? 0)
+                    .ToList();
+
                     await InvokeAsync(StateHasChanged);
                 }
             }
