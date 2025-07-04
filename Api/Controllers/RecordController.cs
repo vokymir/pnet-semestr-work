@@ -253,8 +253,9 @@ namespace BirdWatching.Api.Controllers
             var userId = GetCurrentUserId();
             if (userId is null)
                 return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+            var user = await _userRepo.GetByIdAsync((int) userId);
 
-            var isCurator = record.Watcher.Curators.Any(u => u.Id == userId);
+            var isCurator = user?.Watchers.Any(w => w.Id == record!.WatcherId) ?? false;
             if (!isCurator && !User.IsInRole("Admin"))
                 return Forbid();
 

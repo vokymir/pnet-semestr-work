@@ -21,27 +21,27 @@ else
 
         <div class="mb-3">
             <label class="form-label">Datum pozorování</label>
-            <InputDate class="form-control" @bind-Value="record.DateSeen" />
+            <InputDate class="form-control" @bind-Value="record.DateSeen" Disabled="@(!CanEdit)" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Počet</label>
-            <InputNumber class="form-control" @bind-Value="record.Count" />
+            <InputNumber class="form-control" @bind-Value="record.Count" Disabled="@(!CanEdit)" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Přesnost (m)</label>
-            <InputNumber class="form-control" @bind-Value="record.Accuracy" />
+            <InputNumber class="form-control" @bind-Value="record.Accuracy" Disabled="@(!CanEdit)" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Popis lokace</label>
-            <InputText class="form-control" @bind-Value="record.LocationDescribed" />
+            <InputText class="form-control" @bind-Value="record.LocationDescribed" Disabled="@(!CanEdit)" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Celý komentář</label>
-            <InputTextArea class="form-control" @bind-Value="record.Comment" rows="4" />
+            <InputTextArea class="form-control" @bind-Value="record.Comment" rows="4" Disabled="@(!CanEdit)" />
         </div>
 
         @if (CanEdit)
@@ -53,20 +53,20 @@ else
             <div class="mb-3">
                 <label class="form-label">Přidat komentář</label>
                 <InputTextArea class="form-control" @bind-Value="newComment" rows="3" />
-                <Button class="mt-2" Color="ButtonColor.Secondary" OnClick="AppendComment">📌 Přidat</Button>
+                <Button class="mt-2" Color="ButtonColor.Secondary" @onclick="AppendComment">📌 Přidat</Button>
             </div>
         }
 
         @if (CanEdit)
         {
-            <Button class="ms-2" Color="ButtonColor.Danger" OnClick="ShowDeleteConfirm">🗑 Smazat záznam</Button>
+            <Button class="ms-2" Color="ButtonColor.Danger" @onclick="ShowDeleteConfirm">🗑 Smazat záznam</Button>
         }
 
         @if (confirmDelete)
         {
             <div class="alert alert-danger mt-3">
                 Opravdu chcete smazat tento záznam?<br />
-                <Button class="mt-2" Color="ButtonColor.Danger" Disabled="@isDeleting" OnClick="DeleteRecord">✅ Ano, smazat</Button>
+                <Button class="mt-2" Color="ButtonColor.Danger" Disabled="@isDeleting" @onclick="DeleteRecord">✅ Ano, smazat</Button>
                 <Button class="mt-2 ms-2" Color="ButtonColor.Secondary" @onclick="(() => confirmDelete = false)">Zrušit</Button>
             </div>
         }
@@ -83,7 +83,7 @@ else
     private bool confirmDelete = false;
     private bool isDeleting = false;
 
-    private bool CanEdit => userDto?.IsAdmin == true || userDto?.Id == record?.Watcher?.Id;
+    private bool CanEdit = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,6 +104,15 @@ else
         }
 
         isLoading = false;
+
+        CanEdit = userDto?.IsAdmin ?? false;
+        if(!CanEdit)
+            foreach(var w in userDto?.Watchers ?? Array.Empty<WatcherDto>())
+                if(w.Id == record?.WatcherId){
+                    CanEdit = true;
+                    break;
+                }
+
     }
 
     private async Task SaveChanges()
@@ -128,7 +137,8 @@ else
     private async Task DeleteRecord()
     {
         isDeleting = true;
+        string uri = $"/ptackar/{record.Watcher.PublicIdentifier}/{record.WatcherId}";
         await BAC.Record_DeleteAsync(id);
-        Nav.NavigateTo("/zaznamy");
+        Nav.NavigateTo(uri);
     }
 }
