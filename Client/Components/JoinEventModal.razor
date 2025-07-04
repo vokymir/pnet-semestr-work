@@ -1,4 +1,5 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
 @inject BirdApiClient BAC
 
 <Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
@@ -44,6 +45,8 @@
     private List<ToastMessage> messages = new();
 
     [Parameter] public UserDto? User { get; set; }
+
+    [Parameter] public EventCallback OnEventJoined {get;set;}
 
     private string InputValue = string.Empty;
     private Dictionary<int, bool> WatcherSelections = new();
@@ -115,6 +118,7 @@
             }
 
             await HideAsync();
+            await OnEventJoined.InvokeAsync();
         }
     }
 

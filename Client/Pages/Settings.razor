@@ -10,9 +10,13 @@
 Welcome to your new app.
 
 @code{
+
+    protected async override Task OnInitializedAsync(){
+
+    }
+
     private async Task LogOut(){
-        await LocalStorage.RemoveItemAsync("authToken");
-        await LocalStorage.RemoveItemAsync("authTokenExpireAt");
+        await LocalStorage.ClearAsync();
 
         NavManager.NavigateTo("/login");
     }

@@ -20,7 +20,7 @@
     <Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat se do soutěže</Button>
 </div>
 
-<JoinEventModal @ref="JoinModal" User="U" />
+<JoinEventModal @ref="JoinModal" User="U" OnEventJoined="LoadEvents" />
 
 <div class="row">
     @if (FilteredEvents is null || !FilteredEvents.Any())
@@ -94,52 +94,59 @@
     {
         try
         {
-            U = await LocalStorage.GetItemAsync<UserDto>("userDto");
-            if (U is null) throw new Exception("Nelze načíst userDto z local storage.");
-
-            var seenIds = new HashSet<int>();
-
-            // Moje soutěže
-            var mine = await BAC.Event_GetByUserIdAsync(U.Id);
-            foreach (var e in mine)
-            {
-                e.Participants ??= new List<WatcherDto>();
-                if (seenIds.Add(e.Id))
-                {
-                    AllEvents.Add(e);
-                    MyEventIds.Add(e.Id);
-                }
-            }
-
-            // Soutěže, kde se účastní moji ptáčkaři
-            if (U.Watchers is not null)
-            {
-                foreach (var w in U.Watchers)
-                {
-                    var joined = await BAC.Event_GetByWatcherIdAsync(w.Id);
-                    foreach (var e in joined)
-                    {
-                        e.Participants ??= new List<WatcherDto>();
-
-                        if (seenIds.Add(e.Id))
-                        {
-                            AllEvents.Add(e);
-                        }
-
-                        // Přidat účastníka, pokud chybí
-                        if (!e.Participants.Any(p => p.Id == w.Id))
-                        {
-                            e.Participants.Add(new WatcherDto { Id = w.Id });
-                        }
-                    }
-                }
-            }
-
+            await LoadUser();
+            await LoadEvents();
             ApplyFilter();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Chyba při načítání soutěží: {ex.Message}");
+        }
+    }
+
+    private async Task LoadUser(){
+        U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+        if (U is null) throw new Exception("Nelze načíst userDto z local storage.");
+    }
+
+    private async Task LoadEvents(){
+        var seenIds = new HashSet<int>();
+
+        // Moje soutěže
+        if (U is null) throw new Exception("UserDto is not loaded.");
+        var mine = await BAC.Event_GetByUserIdAsync(U.Id);
+        foreach (var e in mine)
+        {
+            e.Participants ??= new List<WatcherDto>();
+            if (seenIds.Add(e.Id))
+            {
+                AllEvents.Add(e);
+                MyEventIds.Add(e.Id);
+            }
+        }
+
+        // Soutěže, kde se účastní moji ptáčkaři
+        if (U.Watchers is not null)
+        {
+            foreach (var w in U.Watchers)
+            {
+                var joined = await BAC.Event_GetByWatcherIdAsync(w.Id);
+                foreach (var e in joined)
+                {
+                    e.Participants ??= new List<WatcherDto>();
+
+                    if (seenIds.Add(e.Id))
+                    {
+                        AllEvents.Add(e);
+                    }
+
+                    // Přidat účastníka, pokud chybí
+                    if (!e.Participants.Any(p => p.Id == w.Id))
+                    {
+                        e.Participants.Add(new WatcherDto { Id = w.Id });
+                    }
+                }
+            }
         }
     }
 
