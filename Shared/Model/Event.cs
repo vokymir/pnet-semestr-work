@@ -6,6 +6,8 @@ public class Event : IHaveDto<EventDto>
     public string PublicIdentifier { get; set; } = string.Empty;
 
     public string Name { get; set; } = "Nepojmenovany event";
+    public string Description { get; set; } = string.Empty;
+    public bool IsPublic { get; set; } = false;
     // event parameters
     public DateTime Start { get; set; } = DateTime.Now;
     public DateTime End { get; set; } = DateTime.MaxValue;
@@ -34,6 +36,8 @@ public class Event : IHaveDto<EventDto>
             FamiliaRegex = FamiliaRegex,
             GenusRegex = GenusRegex,
             SpeciesRegex = SpeciesRegex,
+            Description = Description,
+            IsPublic = IsPublic,
         };
 
         return e;
@@ -53,6 +57,8 @@ public class Event : IHaveDto<EventDto>
             FamiliaRegex = FamiliaRegex,
             GenusRegex = GenusRegex,
             SpeciesRegex = SpeciesRegex,
+            Description = Description,
+            IsPublic = IsPublic,
         };
 
         if (MainAdmin is not null) e.MainAdmin = MainAdmin.ToDto();

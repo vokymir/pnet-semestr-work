@@ -7,6 +7,7 @@ public class User : IHaveDto<UserDto>
     public string UserName { get; set; } = "username";
     public string PasswordHash { get; set; } = "password";
     public bool IsAdmin { get; set; } = false;
+    public int PreferenceLoginMinutes = -1;
 
     public string DisplayName { get; set; } = $"uzivatel-{DateTime.Now.ToString("dd.MM.yyyy HH:ss")}";
 
@@ -27,6 +28,7 @@ public class User : IHaveDto<UserDto>
             IsAdmin = IsAdmin,
             Email = Email,
             DisplayName = DisplayName,
+            PreferenceLoginMinutes = PreferenceLoginMinutes,
         };
 
         return u;
@@ -40,6 +42,7 @@ public class User : IHaveDto<UserDto>
             IsAdmin = IsAdmin,
             Email = Email,
             DisplayName = DisplayName,
+            PreferenceLoginMinutes = PreferenceLoginMinutes,
         };
 
         if (u.Watchers is null) u.Watchers = new List<WatcherDto>();

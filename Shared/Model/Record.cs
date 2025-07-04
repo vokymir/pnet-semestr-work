@@ -8,6 +8,11 @@ public class Record : IHaveDto<RecordDto>
 
     public int Count { get; set; } = 1; // how many same birds together - may be useful in some events
 
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public double Accuracy { get; set; }
+    public string LocationDescribed { get; set; } = string.Empty;
+
     public int BirdId { get; set; }
     public Bird Bird { get; set; } = null!;
 
@@ -23,6 +28,10 @@ public class Record : IHaveDto<RecordDto>
             WatcherId = WatcherId,
             Comment = Comment,
             Count = Count,
+            Latitude = Latitude,
+            Longitude = Longitude,
+            Accuracy = Accuracy,
+            LocationDescribed = LocationDescribed,
         };
 
         if (Bird is not null)
@@ -40,6 +49,10 @@ public class Record : IHaveDto<RecordDto>
             WatcherId = WatcherId,
             Comment = Comment,
             Count = Count,
+            Latitude = Latitude,
+            Longitude = Longitude,
+            Accuracy = Accuracy,
+            LocationDescribed = LocationDescribed,
         };
 
         if (Bird is not null)
