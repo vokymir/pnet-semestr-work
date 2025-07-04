@@ -1,0 +1,134 @@
+@page "/zaznam/{id:int}/upravit"
+@inject BirdApiClient BAC
+@inject NavigationManager Nav
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<h3>Upravit záznam</h3>
+
+@if (isLoading)
+{
+    <p>Načítám...</p>
+}
+else if (record is null)
+{
+    <div class="alert alert-danger">Záznam nebyl nalezen.</div>
+}
+else
+{
+    <EditForm Model="record" OnValidSubmit="SaveChanges">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Datum pozorování</label>
+            <InputDate class="form-control" @bind-Value="record.DateSeen" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Počet</label>
+            <InputNumber class="form-control" @bind-Value="record.Count" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Přesnost (m)</label>
+            <InputNumber class="form-control" @bind-Value="record.Accuracy" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Popis lokace</label>
+            <InputText class="form-control" @bind-Value="record.LocationDescribed" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Celý komentář</label>
+            <InputTextArea class="form-control" @bind-Value="record.Comment" rows="4" />
+        </div>
+
+        @if (CanEdit)
+        {
+            <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">Přidat komentář</label>
+                <InputTextArea class="form-control" @bind-Value="newComment" rows="3" />
+                <Button class="mt-2" Color="ButtonColor.Secondary" OnClick="AppendComment">📌 Přidat</Button>
+            </div>
+        }
+
+        @if (CanEdit)
+        {
+            <Button class="ms-2" Color="ButtonColor.Danger" OnClick="ShowDeleteConfirm">🗑 Smazat záznam</Button>
+        }
+
+        @if (confirmDelete)
+        {
+            <div class="alert alert-danger mt-3">
+                Opravdu chcete smazat tento záznam?<br />
+                <Button class="mt-2" Color="ButtonColor.Danger" Disabled="@isDeleting" OnClick="DeleteRecord">✅ Ano, smazat</Button>
+                <Button class="mt-2 ms-2" Color="ButtonColor.Secondary" @onclick="(() => confirmDelete = false)">Zrušit</Button>
+            </div>
+        }
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private UserDto? userDto;
+    private RecordDto? record;
+    private string newComment = "";
+    private bool isLoading = true;
+    private bool confirmDelete = false;
+    private bool isDeleting = false;
+
+    private bool CanEdit => userDto?.IsAdmin == true || userDto?.Id == record?.Watcher?.Id;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            userDto = await LocalStorage.GetItemAsync<UserDto>("userDto");
+        }
+        catch{
+            throw new Exception("User is not logged in.");
+        }
+        try
+        {
+            record = await BAC.Record_GetByIdAsync(id);
+        }
+        catch
+        {
+            record = null;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SaveChanges()
+    {
+        if (record == null) return;
+
+        await BAC.Record_UpdateAsync(record.Id, record);
+        Nav.NavigateTo($"/zaznam/{record.Id}");
+    }
+
+    private async Task AppendComment()
+    {
+        if (string.IsNullOrWhiteSpace(newComment)) return;
+
+        await BAC.Record_AppendCommentAsync(id, new CommentUpdateDto(newComment));
+        record!.Comment += newComment;
+        newComment = "";
+    }
+
+    private void ShowDeleteConfirm() => confirmDelete = true;
+
+    private async Task DeleteRecord()
+    {
+        isDeleting = true;
+        await BAC.Record_DeleteAsync(id);
+        Nav.NavigateTo("/zaznamy");
+    }
+}

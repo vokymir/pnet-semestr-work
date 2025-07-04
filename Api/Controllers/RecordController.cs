@@ -177,5 +177,97 @@ namespace BirdWatching.Api.Controllers
                 return Problem("Failed to update comment.");
             }
         }
+
+        /// <summary>Update a full record</summary>
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
+        [ProducesResponseType(typeof(ProblemDetails), 403)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public async Task<IActionResult> Update(int id, [FromBody] RecordDto dto)
+        {
+            if (id <= 0 || dto == null || id != dto.Id)
+                return BadRequest(new ProblemDetails { Title = "Invalid input" });
+
+            var record = await _recordRepo.GetByIdAsync(id);
+            if (record == null)
+                return NotFound(new ProblemDetails { Title = "Record not found" });
+
+            var userId = GetCurrentUserId();
+            if (userId is null)
+                return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+
+            var isCurator = record.Watcher.Curators.Any(u => u.Id == userId);
+            if (!isCurator && !User.IsInRole("Admin"))
+                return Forbid();
+
+            // Update fields
+            record.DateSeen = dto.DateSeen;
+            record.Comment = dto.Comment;
+            record.Latitude = dto.Latitude;
+            record.Longitude = dto.Longitude;
+            record.Accuracy = dto.Accuracy;
+            record.LocationDescribed = dto.LocationDescribed;
+            record.Count = dto.Count;
+
+            if (dto.BirdId != record.Bird.Id)
+            {
+                var newBird = await _birdRepo.GetByIdAsync(dto.BirdId);
+                if (newBird == null)
+                    return NotFound(new ProblemDetails { Title = "Bird not found" });
+
+                record.Bird = newBird;
+            }
+
+            try
+            {
+                await _recordRepo.UpdateAsync(record);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update record {RecordId}", id);
+                return Problem("Failed to update the record.");
+            }
+        }
+
+        /// <summary>Delete a record</summary>
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
+        [ProducesResponseType(typeof(ProblemDetails), 403)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+                return BadRequest(new ProblemDetails { Title = "Invalid ID" });
+
+            var record = await _recordRepo.GetByIdAsync(id);
+            if (record == null)
+                return NotFound(new ProblemDetails { Title = "Record not found" });
+
+            var userId = GetCurrentUserId();
+            if (userId is null)
+                return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
+
+            var isCurator = record.Watcher.Curators.Any(u => u.Id == userId);
+            if (!isCurator && !User.IsInRole("Admin"))
+                return Forbid();
+
+            try
+            {
+                await _recordRepo.DeleteAsync(record.Id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to delete record {RecordId}", id);
+                return Problem("Failed to delete the record.");
+            }
+        }
     }
 }

@@ -59,9 +59,11 @@ else
                                 <ul class="list-group">
                                     @foreach (var record in watcher.ValidRecords)
                                     {
-                                        <li class="list-group-item">
-                                            <strong>@record.Bird?.BinomicName</strong> — @record.DateSeen.ToString("F");
-                                        </li>
+                                        <a href=@($"/zaznam/{record.Id}")>
+                                            <li class="list-group-item">
+                                                <strong>@record.Bird?.BinomicName</strong> — @record.DateSeen.ToString("F");
+                                            </li>
+                                        </a>
                                     }
                                 </ul>
                             }

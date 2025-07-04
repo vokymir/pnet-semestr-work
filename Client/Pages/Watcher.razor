@@ -69,6 +69,7 @@ else
                     <th>Druh</th>
                     <th>Datum</th>
                     <th>Počet</th>
+                    <th>Akce</th>
                 </tr>
             </thead>
             <tbody>
@@ -78,6 +79,7 @@ else
                         <td>@(record.Bird?.FullName ?? "Problém s načítáním záznamu")</td>
                         <td>@record.DateSeen.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
                         <td>@record.Count</td>
+                        <td><a href="@($"/zaznam/{record.Id}")">Podrobnosti</a></td>
                     </tr>
                 }
             </tbody>

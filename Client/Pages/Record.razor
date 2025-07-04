@@ -1,0 +1,77 @@
+@page "/zaznam/{id:int}"
+@inject BirdApiClient BAC
+@inject NavigationManager NavigationManager
+
+<h3>Detail záznamu</h3>
+
+@if (isLoading)
+{
+    <p>Načítám...</p>
+}
+else if (record is null)
+{
+    <div class="alert alert-danger">
+        Záznam s tímto ID se nepodařilo najít.
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">
+                👀 Pozorování ptáčka: <strong>@record.Bird?.BinomicName</strong>
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+                👤 @record.Watcher?.FirstName @record.Watcher?.LastName — @record.DateSeen.ToString("dd.MM.yyyy HH:mm")
+            </h6>
+
+            <dl class="row">
+                <dt class="col-sm-3">Počet jedinců</dt>
+                <dd class="col-sm-9">@record.Count</dd>
+
+                <dt class="col-sm-3">Poloha</dt>
+                <dd class="col-sm-9">@record.Latitude.ToString("0.000000"), @record.Longitude.ToString("0.000000")</dd>
+
+                @if (record.Accuracy > 0)
+                {
+                    <dt class="col-sm-3">Přesnost</dt>
+                    <dd class="col-sm-9">± @record.Accuracy.ToString("0.0") m</dd>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(record.LocationDescribed))
+                {
+                    <dt class="col-sm-3">Popis místa</dt>
+                    <dd class="col-sm-9">@record.LocationDescribed</dd>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(record.Comment))
+                {
+                    <dt class="col-sm-3">Poznámka</dt>
+                    <dd class="col-sm-9">@record.Comment</dd>
+                }
+            </dl>
+
+            <Button Color="ButtonColor.Primary" To=@($"/zaznam/{id}/upravit") Type="ButtonType.Link">Upravit</Button>
+        </div>
+    </div>
+}
+@code {
+    [Parameter] public int id { get; set; }
+
+    private RecordDto? record;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            record = await BAC.Record_GetByIdAsync(id);
+        }
+        catch
+        {
+            record = null;
+        }
+
+        isLoading = false;
+    }
+}
