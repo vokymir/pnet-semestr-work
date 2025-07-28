@@ -1,0 +1,142 @@
+@page "/ptackar/uprava/{WatcherId:int}"
+@inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
+
+<h3>Editace ptáčkaře</h3>
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
+
+@if (watcher == null)
+{
+    <p>Načítání ptáčkaře…</p>
+}
+else
+{
+    <EditForm Model="watcher" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="firstName" class="form-label">Jméno</label>
+            <InputText id="firstName" class="form-control" @bind-Value="watcher.FirstName" />
+        </div>
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Příjmení</label>
+            <InputText id="lastName" class="form-control" @bind-Value="watcher.LastName" />
+        </div>
+
+        @if (canEdit)
+        {
+            <button class="btn btn-primary" type="submit">Upravit</button>
+        }
+        else
+        {
+            <p class="text-danger">Nemáte oprávnění upravovat tohoto ptáčkaře.</p>
+        }
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int WatcherId { get; set; }
+
+    private WatcherDto? watcher;
+    private UserDto? currentUser;
+    private bool canEdit = false;
+    private List<ToastMessage> messages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await LocalStorage.GetItemAsync<UserDto>("userDto");
+        if (currentUser is null)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Title = "Chyba",
+                Message = "Musíte být přihlášeni pro úpravu ptáčkaře.",
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = true
+            });
+            return;
+        }
+
+        try
+        {
+            var watcherDto = await BAC.Watcher_GetByIdAsync(WatcherId);
+            if (watcherDto is null)
+            {
+                messages.Add(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Title = "Nenalezeno",
+                    Message = "Ptáčkař nebyl nalezen.",
+                    HelpText = DateTime.Now.ToString("g"),
+                    AutoHide = true
+                });
+                return;
+            }
+
+            watcher = watcherDto;
+
+            // Ověření, zda je currentUser v seznamu kurátorů
+            canEdit = watcher.Curators?.Any(c => c.Id == currentUser.Id) ?? false;
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Title = "Chyba při načítání",
+                Message = ex.Message,
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = false
+            });
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!canEdit || watcher is null)
+            return;
+
+        try
+        {
+            await BAC.Watcher_UpdateWatcherAsync(watcher.Id, watcher);
+
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Success,
+                Title = "Hotovo",
+                Message = "Ptáčkař byl úspěšně upraven.",
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = true
+            });
+
+            NavManager.NavigateTo($"/ptackar/{watcher.PublicIdentifier}/{watcher.Id}");
+        }
+        catch (ApiException<ProblemDetails> ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Title = "Chyba při ukládání",
+                Message = ex.Result?.Detail ?? "Nastala chyba při ukládání.",
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = false
+            });
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Title = "Neočekávaná chyba",
+                Message = ex.Message,
+                HelpText = DateTime.Now.ToString("g"),
+                AutoHide = false
+            });
+        }
+    }
+}

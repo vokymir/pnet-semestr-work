@@ -1,6 +1,7 @@
 @page "/ptackar/{PublicIdentifier}/{Id:int}"
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject BirdApiClient BAC
+@inject NavigationManager NavManager
 
 <PageTitle>Ptáčkař: @watcher?.FirstName @watcher?.LastName</PageTitle>
 @if (watcher == null)
@@ -13,6 +14,10 @@ else
     <h1>@watcher.FirstName @watcher.LastName</h1>
 
     <h3>Kód ptáčkaře: @PublicIdentifier</h3>
+
+<button class="btn btn-secondary" @onclick='() => NavManager.NavigateTo($"/ptackar/uprava/{watcher.Id}")'>
+    Upravit ptáčkaře
+</button>
 
     <h5 class="mt-4">Kurátoři</h5>
     @if (watcher is not null && watcher.Curators is not null && watcher.Curators.Any())
