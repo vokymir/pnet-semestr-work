@@ -21,6 +21,7 @@ public class Event : IHaveDto<EventDto>
     public User MainAdmin { get; set; } = null!;
 
     public ICollection<Watcher> Participants { get; set; } = new List<Watcher>();
+    public List<Record> NotValidRecords { get; set; } = new();
 
     public EventDto ToDto()
     {
@@ -66,6 +67,10 @@ public class Event : IHaveDto<EventDto>
         if (e.Participants is null) e.Participants = new List<WatcherDto>();
         foreach (var w in Participants)
             e.Participants.Add(w.ToDto());
+
+        if (e.NotValidRecords is null) e.NotValidRecords = new();
+        foreach (var r in NotValidRecords)
+            e.NotValidRecords.Add(r.ToDto());
 
         return e;
     }

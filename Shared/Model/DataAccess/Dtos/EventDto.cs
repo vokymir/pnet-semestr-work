@@ -19,6 +19,7 @@ public class EventDto : IAmDto<Event>
 
     public int MainAdminId { get; set; }
     public UserDto? MainAdmin { get; set; }
+    public List<RecordDto> NotValidRecords { get; set; } = new();
 
     public ICollection<WatcherDto>? Participants { get; set; }
 
