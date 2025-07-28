@@ -184,7 +184,10 @@ namespace BirdWatching.Api.Controllers
             e.AllowDuplicates = dto.AllowDuplicates;
             e.GenusRegex = dto.GenusRegex;
             e.SpeciesRegex = dto.SpeciesRegex;
+            e.FamiliaRegex = dto.FamiliaRegex;
+            e.OrdoRegex = dto.OrdoRegex;
             e.IsPublic = dto.IsPublic;
+            e.Description = dto.Description;
 
             try
             {

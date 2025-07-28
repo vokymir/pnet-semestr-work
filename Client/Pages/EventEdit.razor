@@ -1,0 +1,128 @@
+@page "/soutez/edit/{Id}"
+@inject BirdApiClient BAC
+@inject NavigationManager NavManager
+
+<PageTitle>Úprava soutěže</PageTitle>
+
+<h3>Úprava soutěže</h3>
+
+@if (isLoading)
+{
+    <p>Načítání soutěže…</p>
+}
+else if (loadError is not null)
+{
+    <div class="alert alert-danger">@loadError</div>
+}
+else
+{
+    <EditForm Model="Event" OnValidSubmit="SaveEvent">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Název <span class="text-danger">*</span></label>
+            <InputText id="name" class="form-control" @bind-Value="Event.Name" />
+        </div>
+
+        <div class="mb-3">
+            <label for="desc" class="form-label">Popis</label>
+            <InputTextArea id="desc" class="form-control" @bind-Value="Event.Description" rows="3" />
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox id="isPublic" class="form-check-input" @bind-Value="Event.IsPublic" />
+            <label for="isPublic" class="form-check-label">Veřejná soutěž</label>
+            <small class="form-text text-muted">Pokud ano, může se kdokoliv připojit. Pokud ne, musí znát kód soutě
+                že.</small>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label for="start" class="form-label">Začátek <span class="text-danger">*</span></label>
+                <InputDate id="start" class="form-control" @bind-Value="Event.Start" />
+            </div>
+            <div class="col">
+                <label for="end" class="form-label">Konec <span class="text-danger">*</span></label>
+                <InputDate id="end" class="form-control" @bind-Value="Event.End" />
+            </div>
+        </div>
+
+        <h5>Kritéria filtrování</h5>
+        <div class="mb-3">
+            <label for="ordo" class="form-label">Řád regex</label>
+            <InputText id="ordo" class="form-control" @bind-Value="Event.OrdoRegex" />
+            <small class="form-text text-muted">Nechte <code>*</code> pro všechny řády.</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="familia" class="form-label">Čeleď regex</label>
+            <InputText id="familia" class="form-control" @bind-Value="Event.FamiliaRegex" />
+        </div>
+
+        <div class="mb-3">
+            <label for="genus" class="form-label">Rod regex</label>
+            <InputText id="genus" class="form-control" @bind-Value="Event.GenusRegex" />
+        </div>
+
+        <div class="mb-3">
+            <label for="species" class="form-label">Druh regex</label>
+            <InputText id="species" class="form-control" @bind-Value="Event.SpeciesRegex" />
+        </div>
+
+        <div class="form-check mb-4">
+            <InputCheckbox id="allowDuplicates" class="form-check-input" @bind-Value="Event.AllowDuplicates" />
+            <label for="allowDuplicates" class="form-check-label">Povolit duplicity</label>
+            <small class="form-text text-muted">
+                Duplicita znamená, že stejného ptáčkař vidí víckrát během soutěže a všechny záznamy se počítají.
+            </small>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Uložit změny</button>
+    </EditForm>
+
+    <div class="mt-3">
+        <strong>Veřejný identifikátor soutěže:</strong> @Event.PublicIdentifier
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private BirdWatching.Shared.Model.Event Event = new();
+    private bool isLoading = true;
+    private string? loadError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Načti event z API podle ID nebo PublicIdentifier
+            var dto = await BAC.Event_GetByPublicIdAsync(Id);
+            Event = dto.ToEntity();
+        }
+        catch (Exception ex)
+        {
+            loadError = $"Nepodařilo se načíst soutěž: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveEvent()
+    {
+        try
+        {
+            var dto = Event.ToFullDto();
+            await BAC.Event_UpdateAsync(dto.Id, dto);
+            NavManager.NavigateTo($"/soutez/{Event.PublicIdentifier}");
+        }
+        catch (Exception ex)
+        {
+            loadError = $"Chyba při ukládání: {ex.Message}";
+        }
+    }
+}

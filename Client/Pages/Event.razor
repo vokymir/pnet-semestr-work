@@ -18,6 +18,13 @@ else
                 <i class="bi bi-hash"></i> Veřejný kód soutěže: <code>@Evnt.PublicIdentifier</code>
             </div>
 
+            @if (U?.Id == Evnt.MainAdminId)
+            {
+                <button class="btn btn-sm btn-warning mb-3" @onclick="() => NavigateToEdit()">
+                    Upravit soutěž
+                </button>
+            }
+
             <p class="card-text">@Evnt.Description</p>
 
             <span class="badge bg-@((Evnt.IsPublic ? "success" : "secondary"))">
@@ -122,6 +129,14 @@ else
     private BirdWatching.Shared.Model.Event? Evnt;
     private List<BirdWatching.Shared.Model.WatcherOnLeaderboardDto> Leaderboard = new();
     private List<int> NotValidRecordIds = new();
+
+[Inject] private NavigationManager NavManager { get; set; } = default!;
+
+private void NavigateToEdit()
+{
+    if (Evnt is null) return;
+    NavManager.NavigateTo($"/soutez/edit/{Evnt.PublicIdentifier}");
+}
 
     protected override async Task OnInitializedAsync()
     {
