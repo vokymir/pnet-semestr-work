@@ -12,6 +12,8 @@
 else
 {
     <div class="mb-4">
+        <p>@Evnt.Description</p>
+        <strong>@(Evnt.IsPublic ? "Veřejná" : "Soukromá") soutěž</strong>
         <h5>Kritéria</h5>
         <ul>
             <li><strong>Řád:</strong> @Evnt.OrdoRegex</li>
@@ -62,6 +64,15 @@ else
                                         <a href=@($"/zaznam/{record.Id}")>
                                             <li class="list-group-item">
                                                 <strong>@record.Bird?.BinomicName</strong> — @record.DateSeen.ToString("F");
+
+                                                 @if (Evnt?.NotValidRecords?.Any(r => r.Id == record.Id) == true)
+                                                    {
+                                                        <span class="badge bg-danger ms-2">Neplatný</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-success ms-2">Platný</span>
+                                                    }
                                             </li>
                                         </a>
                                     }

@@ -22,6 +22,8 @@ public class RecordDto : IAmDto<Record>
     public int WatcherId { get; set; }
     public WatcherDto? Watcher { get; set; }
 
+    public List<EventDto> InvalidInEvents = new();
+
     public Record ToEntity()
     {
         var r = new Record() {

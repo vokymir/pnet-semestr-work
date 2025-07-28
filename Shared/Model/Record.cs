@@ -19,6 +19,8 @@ public class Record : IHaveDto<RecordDto>
     public int WatcherId { get; set; }
     public Watcher Watcher { get; set; } = null!;
 
+    public List<Event> InvalidInEvents = new();
+
     public RecordDto ToDto()
     {
         var r = new RecordDto() {
@@ -60,6 +62,13 @@ public class Record : IHaveDto<RecordDto>
 
         if (Watcher is not null)
             r.Watcher = Watcher.ToDto();
+
+        if (InvalidInEvents is not null)
+        {
+            r.InvalidInEvents = new();
+            foreach (var e in InvalidInEvents)
+                r.InvalidInEvents.Add(e.ToDto());
+        }
 
         return r;
     }

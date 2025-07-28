@@ -54,6 +54,12 @@ public class AppDbContext : DbContext
             .WithMany(w => w.Records)
             .HasForeignKey(r => r.WatcherId);
 
+        // Not valid records in event
+        modelBuilder.Entity<Event>()
+            .HasMany(e => e.NotValidRecords)
+            .WithMany(r => r.InvalidInEvents)
+            .UsingEntity(j => j.ToTable("InvalidRecordsInEvents"));
+
         var usr = new User() { Id = -1, IsAdmin = true, UserName = "string", PasswordHash = "string", DisplayName = "SUPER uživatel", };
 
         modelBuilder.Entity<User>().HasData(usr);
