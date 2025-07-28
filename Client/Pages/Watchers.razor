@@ -4,36 +4,49 @@
 
 <PageTitle>Ptáčkaři</PageTitle>
 
-<h1>Watchers</h1>
+<h1 class="mb-4">Ptáčkaři</h1>
 
-<Button Type="ButtonType.Link" To="/ptackar/novy" Color="ButtonColor.Primary">Vytvořit ptáčkaře</Button>
-<Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat existujícího</Button>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <Button Type="ButtonType.Link" To="/ptackar/novy" Color="ButtonColor.Primary" class="px-4">
+        ➕ Vytvořit ptáčkaře
+    </Button>
+    <Button Color="ButtonColor.Secondary" class="px-4" @onclick="ShowModal">
+        ➕ Přidat existujícího
+    </Button>
+</div>
+
 <AddWatcherModal @ref="AddModal" OnWatcherAdded="ReloadWatchers" />
 
-<div class="row mt-4">
-    @if (W is null || !W.Any())
-    {
-        <p>Žádní ptáčkaři...</p>
-    }
-    else
-    {
-        @foreach (var watcherDto in W ?? Array.Empty<WatcherDto>())
+@if (W == null || !W.Any())
+{
+    <div class="alert alert-info text-center">
+        Žádní ptáčkaři k zobrazení.
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var watcher in W)
         {
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                <Card class="h-100">
-                    <CardBody>
-                        <CardTitle>@watcherDto.FirstName @watcherDto.LastName</CardTitle>
-                        <CardText>@watcherDto.PublicIdentifier</CardText>
-                        <Button Color="ButtonColor.Primary" To=@($"/ptackar/{watcherDto.PublicIdentifier}/{watcherDto.Id}")
-                                Type="ButtonType.Link">Zobrazit</Button>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <Card class="h-100 shadow-sm border rounded">
+                    <CardBody class="d-flex flex-column justify-content-between">
+                        <div>
+                            <CardTitle class="fs-5 fw-semibold mb-1">@watcher.FirstName @watcher.LastName</CardTitle>
+                            <CardText class="text-muted mb-3"><code>@watcher.PublicIdentifier</code></CardText>
+                        </div>
+                        <Button Color="ButtonColor.Primary" To=@($"/ptackar/{watcher.PublicIdentifier}/{watcher.Id}")
+                            Type="ButtonType.Link" class="w-100">
+                            Zobrazit
+                        </Button>
                     </CardBody>
                 </Card>
             </div>
         }
-    }
-</div>
+    </div>
+}
 
-@code{
+@code {
     private ICollection<WatcherDto>? W = null;
     private AddWatcherModal? AddModal;
 

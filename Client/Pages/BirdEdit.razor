@@ -50,8 +50,9 @@ else
         {
             <div class="mb-3">
                 <label class="form-label">Přidat poznámku</label>
+                <small class="form-text text-muted">@bird.Comment</small>
                 <InputTextArea class="form-control" @bind-Value="newComment" Rows="4" />
-                <small class="form-text text-muted">Vaše poznámka bude připojena ke stávajícím.</small>
+                <small class="form-text text-muted"style="white-space: pre-wrap;">Vaše poznámka bude připojena ke stávajícím.</small>
             </div>
         }
 

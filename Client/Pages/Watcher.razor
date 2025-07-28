@@ -4,134 +4,150 @@
 @inject NavigationManager NavManager
 
 <PageTitle>Ptáčkař: @watcher?.FirstName @watcher?.LastName</PageTitle>
+
 @if (watcher == null)
 {
-    <h1>Detail ptáčkaře</h1>
-    <p>Načítání...</p>
+    <div class="text-center my-5">
+        <h1>Detail ptáčkaře</h1>
+        <p class="text-muted">Načítání...</p>
+    </div>
 }
 else
 {
-    <h1>@watcher.FirstName @watcher.LastName</h1>
-
-    <h3>Kód ptáčkaře: @PublicIdentifier</h3>
-
-<button class="btn btn-secondary" @onclick='() => NavManager.NavigateTo($"/ptackar/uprava/{watcher.Id}")'>
-    Upravit ptáčkaře
-</button>
-
-    <h5 class="mt-4">Kurátoři</h5>
-    @if (watcher is not null && watcher.Curators is not null && watcher.Curators.Any())
-    {
-        <ul>
-            @foreach (var curator in watcher.Curators)
-            {
-                <li>
-                    @if (curator.Id == watcher.MainCuratorId)
-                    {
-                        <b>@curator.DisplayName</b>
-                    }
-                    else
-                    {
-                        @curator.DisplayName
-                    }
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>Žádní kurátoři.</p>
-    }
-
-    <h5 class="mt-4">Soutěže</h5>
-    @if (watcher is not null && watcher.Participating is not null && watcher.Participating.Any())
-    {
-        <CardGroup>
-            @foreach (var ev in watcher.Participating)
-            {
-                <Card Style="width:18rem;">
-                    <CardBody>
-                        <CardTitle>@ev.Name</CardTitle>
-                        <CardText>@ev.PublicIdentifier</CardText>
-                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.PublicIdentifier}")
-                            Type="ButtonType.Link">Zobrazit</Button>
-                    </CardBody>
-                </Card>
-            }
-        </CardGroup>
-    }
-    else
-    {
-        <p>Nesoutěží nikde.</p>
-    }
-
-    <h5 class="mt-4">Záznamy</h5>
-    @if (watcher is not null && watcher.Records is not null && watcher.Records.Any() && records is not null)
-    {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Druh</th>
-                    <th>Datum</th>
-                    <th>Počet</th>
-                    <th>Akce</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var record in records)
-                {
-                    <tr>
-                        <td>@(record.Bird?.FullName ?? "Problém s načítáním záznamu")</td>
-                        <td>@record.DateSeen.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-                        <td>@record.Count</td>
-                        <td><a href="@($"/zaznam/{record.Id}")">Podrobnosti</a></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else if (watcher is null || watcher is not null && watcher.Records is not null && watcher.Records.Any() && records is
-    null)
-    {
-        <p>Načítání záznamů...</p>
-    }
-    else
-    {
-        <p>Žádné záznamy.</p>
-    }
-
-<div class="mt-4">
-    @if (!showDeleteConfirm)
-    {
-        <Button Color="ButtonColor.Danger" @onclick="@(() => showDeleteConfirm = true)">
-            🗑 Přestat spravovat ptáčkaře
-        </Button>
-    }
-    else
-    {
-        <div class="alert alert-danger" role="alert">
-            Opravdu chcete opustit ptáčkaře <strong>@watcher?.FirstName @watcher?.LastName</strong>?
-            <br />
-            <div class="mt-2">
-               <Button Color="ButtonColor.Danger" Disabled="@isDeleting" @onclick="RemoveWatcherAsync">
-                     ✅ Ano, opustit
-                </Button>
-               <Button Color="ButtonColor.Secondary" Disabled="@isDeleting" @onclick="@(() => showDeleteConfirm = false)"
-                   class="ms-2">
-                     Zrušit
-                </Button>
-            </div>
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+            <h1 class="fw-bold mb-0">@watcher.FirstName @watcher.LastName</h1>
+            <button class="btn btn-outline-secondary" @onclick='() => NavManager.NavigateTo($"/ptackar/uprava/{watcher.Id}")'>
+                ✏️ Upravit ptáčkaře
+            </button>
         </div>
-    }
-</div>
+
+        <h5 class="text-secondary mb-4">Kód ptáčkaře: <span class="fw-semibold">@PublicIdentifier</span></h5>
+
+        <section class="mb-5">
+            <h4>Kurátoři</h4>
+            @if (watcher.Curators?.Any() == true)
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var curator in watcher.Curators)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            @if (curator.Id == watcher.MainCuratorId)
+                            {
+                                <span class="fw-bold">@curator.DisplayName</span>
+                                <span class="badge bg-primary rounded-pill">Hlavní</span>
+                            }
+                            else
+                            {
+                                <span>@curator.DisplayName</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">Žádní kurátoři.</p>
+            }
+        </section>
+
+        <section class="mb-5">
+            <h4>Soutěže</h4>
+            @if (watcher.Participating?.Any() == true)
+            {
+                <div class="row g-3">
+                    @foreach (var ev in watcher.Participating)
+                    {
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">@ev.Name</h5>
+                                    <p class="card-text text-muted mb-4">@ev.PublicIdentifier</p>
+                                    <Button Color="ButtonColor.Primary" To=@($"/soutez/{ev.PublicIdentifier}") Type="ButtonType.Link" class="mt-auto">
+                                        Zobrazit
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">Nesoutěží nikde.</p>
+            }
+        </section>
+
+        <section class="mb-5">
+            <h4>Záznamy</h4>
+            @if (watcher.Records?.Any() == true && records != null)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead class="table">
+                            <tr>
+                                <th>Druh</th>
+                                <th>Datum</th>
+                                <th>Počet</th>
+                                <th>Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var record in records)
+                            {
+                                <tr>
+                                    <td>@(record.Bird?.FullName ?? "<i>Problém s načítáním záznamu</i>")</td>
+                                    <td>@record.DateSeen.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@record.Count</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-primary" href="@($"/zaznam/{record.Id}")">
+                                            Podrobnosti
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (watcher.Records?.Any() == true && records == null)
+            {
+                <p class="text-muted">Načítání záznamů...</p>
+            }
+            else
+            {
+                <p class="text-muted">Žádné záznamy.</p>
+            }
+        </section>
+
+        <section class="mb-5">
+            @if (!showDeleteConfirm)
+            {
+                <Button Color="ButtonColor.Danger" @onclick="@(() => showDeleteConfirm = true)" class="w-100">
+                    🗑 Přestat spravovat ptáčkaře
+                </Button>
+            }
+            else
+            {
+                <div class="alert alert-danger p-4 text-center" role="alert">
+                    <p>Opravdu chcete opustit ptáčkaře <strong>@watcher.FirstName @watcher.LastName</strong>?</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                        <Button Color="ButtonColor.Danger" Disabled="@isDeleting" @onclick="RemoveWatcherAsync" class="px-4">
+                            ✅ Ano, opustit
+                        </Button>
+                        <Button Color="ButtonColor.Secondary" Disabled="@isDeleting" @onclick="@(() => showDeleteConfirm = false)" class="px-4">
+                            Zrušit
+                        </Button>
+                    </div>
+                </div>
+            }
+        </section>
+    </div>
 }
 
 @code {
-    [Parameter]
-    public string PublicIdentifier { get; set; } = default!;
-
-    [Parameter]
-    public int Id { get; set; } = default!;
+    [Parameter] public string PublicIdentifier { get; set; } = default!;
+    [Parameter] public int Id { get; set; } = default!;
 
     private WatcherDto? watcher;
     private List<RecordDto>? records;
@@ -142,21 +158,19 @@ else
     {
         watcher = await BAC.Watcher_GetByIdAsync(Id);
 
-        if (watcher is not null)
+        if (watcher != null)
         {
             var r = await BAC.Record_GetByWatcherAsync(watcher.Id);
             records = r.ToList();
         }
     }
 
-    [Inject] private NavigationManager Nav { get; set; } = default!;
-
     private async Task RemoveWatcherAsync()
     {
         isDeleting = true;
         try
         {
-            if (watcher is null) return;
+            if (watcher == null) return;
 
             var user = await LocalStorage.GetItemAsync<UserDto>("userDto");
             if (user == null)
@@ -165,14 +179,11 @@ else
                 return;
             }
 
-            // Odeber aktuálního uživatele z kurátorů
-            watcher.Curators = watcher.Curators?
-            .Where(c => c.Id != user.Id)
-            .ToList();
+            watcher.Curators = watcher.Curators?.Where(c => c.Id != user.Id).ToList();
 
             await BAC.Watcher_UpdateWatcherAsync(watcher.Id, watcher);
 
-            Nav.NavigateTo("/ptackari");
+            NavManager.NavigateTo("/ptackari");
         }
         catch (Exception ex)
         {

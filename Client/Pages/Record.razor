@@ -46,7 +46,7 @@ else
                 @if (!string.IsNullOrWhiteSpace(record.Comment))
                 {
                     <dt class="col-sm-4">📝 Poznámka</dt>
-                    <dd class="col-sm-8">@record.Comment</dd>
+                    <dd class="col-sm-8" style="white-space: pre-wrap;">@record.Comment</dd>
                 }
             </dl>
         </div>

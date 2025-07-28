@@ -132,7 +132,7 @@ namespace BirdWatching.Api.Controllers
                 return Unauthorized(new ProblemDetails { Title = "Unauthorized" });
             var user = await _userRepo.GetByIdAsync((int) userId);
 
-            bird.Comment += $"{user?.DisplayName ?? "Anonym"}: {additional}";
+            bird.Comment += $"\n{DateTime.Now.ToString("dd.MM.yyyy HH:ss")} {user?.DisplayName ?? "Anonym"}: {additional} ";
             try
             {
                 await _birdRepo.UpdateAsync(bird);

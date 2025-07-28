@@ -4,36 +4,41 @@
 
 <PageTitle>Ptáčci</PageTitle>
 
-<h1>Birds</h1>
+<h1 class="mb-4">Ptáčci</h1>
 
-Blablabala.
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="mb-0 text-muted">Seznam všech zaregistrovaných ptáků ve vaší aplikaci.</p>
+    <Button Type="ButtonType.Link" To="/ptacek/novy" Color="ButtonColor.Primary">
+        ➕ Přidat ptáčka
+    </Button>
+</div>
 
-<Button Type="ButtonType.Link" To="/ptacek/novy" Color="ButtonColor.Primary">Vytvořit ptáčka</Button>
-
-<div class="row">
-    @if (B is null || !B.Any())
-    {
-        <p>Žádný ptáček...</p>
-    }
-    else
-    {
-        @foreach (var b in B ?? Array.Empty<BirdDto>())
+@if (B is null || !B.Any())
+{
+    <div class="alert alert-info">
+        Nebyl nalezen žádný ptáček.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var b in B)
         {
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                <Card class="h-100">
+                <Card class="h-100 shadow-sm border-0">
                     <CardBody>
-                        <CardTitle>@b.BinomicName</CardTitle>
-                        <CardText>@b.FullName</CardText>
-                        <Button Color="ButtonColor.Primary" To=@($"/ptacek/{b.Id}") Type="ButtonType.Link">
-                            Zobrazit
+                        <CardTitle class="fw-bold fs-5 mb-2">@b.BinomicName</CardTitle>
+                        <div class="text-muted fst-italic mb-3">@b.FullName</div>
+
+                        <Button Color="ButtonColor.Primary" To=@($"/ptacek/{b.Id}") Type="ButtonType.Link" class="w-100">
+                            Zobrazit detail
                         </Button>
                     </CardBody>
                 </Card>
             </div>
         }
-    }
-</div>
-
+    </div>
+}
 
 @code {
     private UserDto? U = null;
@@ -45,12 +50,9 @@ Blablabala.
         try
         {
             U = await LocalStorage.GetItemAsync<UserDto>("userDto");
-            if (U is null) throw new Exception("Cannot find userDto in local storage.");
-
-            var result = new List<BirdDto>();
+            if (U is null) throw new Exception("Nelze načíst userDto z local storage.");
 
             B = await BAC.Bird_GetAllAsync();
-
         }
         catch (Exception ex)
         {

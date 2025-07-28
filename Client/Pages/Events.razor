@@ -4,20 +4,26 @@
 
 <PageTitle>Soutěže</PageTitle>
 
-<h1>Soutěže</h1>
+<h1 class="mb-4">🕊️ Soutěže</h1>
 
-<div class="mb-3">
-    <label for="filter" class="form-label">Filtrovat:</label>
-    <select id="filter" class="form-select w-auto" @bind="SelectedFilter">
-        <option value="all">Všechny</option>
-        <option value="mine">Moje</option>
-        <option value="participating">Účastním se</option>
-    </select>
-</div>
+<div class="mb-3 d-flex flex-wrap align-items-end gap-3">
+    <div>
+        <label for="filter" class="form-label">🎯 Filtrovat soutěže:</label>
+        <select id="filter" class="form-select w-auto" @bind="SelectedFilter">
+            <option value="all">Všechny</option>
+            <option value="mine">Moje</option>
+            <option value="participating">Účastním se</option>
+        </select>
+    </div>
 
-<div class="mb-4">
-    <Button Type="ButtonType.Link" To="/soutez/nova" Color="ButtonColor.Primary">Vytvořit soutěž</Button>
-    <Button Color="ButtonColor.Secondary" @onclick="ShowModal">Přidat se do soutěže</Button>
+    <div class="ms-auto">
+        <Button Type="ButtonType.Link" To="/soutez/nova" Color="ButtonColor.Primary" class="me-2">
+            ➕ Vytvořit soutěž
+        </Button>
+        <Button Color="ButtonColor.Secondary" @onclick="ShowModal">
+            🔑 Přidat se do soutěže
+        </Button>
+    </div>
 </div>
 
 <JoinEventModal @ref="JoinModal" User="U" OnEventJoined="LoadEvents" />
@@ -25,34 +31,36 @@
 <div class="row">
     @if (FilteredEvents is null || !FilteredEvents.Any())
     {
-        <p>Žádné soutěže...</p>
+        <div class="text-muted">Žádné soutěže nebyly nalezeny.</div>
     }
     else
     {
         @foreach (var e in FilteredEvents)
         {
             var isMine = MyEventIds.Contains(e.Id);
-            var participatingWatchers = U?.Watchers?
-            .Where(w => e.Participants?.Any(p => p.Id == w.Id) == true)
-            .ToList() ?? new();
+            var myWatchers = U?.Watchers?
+                .Where(w => e.Participants?.Any(p => p.Id == w.Id) == true)
+                .ToList() ?? new();
 
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                <Card class="h-100">
+            <div class="col-12 col-sm-6 col-lg-4 mb-4">
+                <Card class="shadow-sm h-100">
                     <CardBody>
-                        <CardTitle>@e.Name</CardTitle>
+                        <CardTitle class="fs-5 fw-bold">@e.Name</CardTitle>
                         <CardText>
-                            <div><strong>Kód:</strong> @e.PublicIdentifier</div>
+                            <div><strong>🔗 Kód:</strong> @e.PublicIdentifier</div>
+                            <div><strong>🌍 Veřejná:</strong> @(e.IsPublic ? "Ano" : "Ne")</div>
 
                             @if (isMine)
                             {
-                                <div class="text-success">🟢 Moje soutěž</div>
+                                <div class="mt-2 badge bg-success">🟢 Moje soutěž</div>
                             }
-                            @if (participatingWatchers.Any())
+
+                            @if (myWatchers.Any())
                             {
-                                <div class="text-primary">
-                                    🐦 Účastní se:
-                                    <ul class="mb-0">
-                                        @foreach (var w in participatingWatchers)
+                                <div class="mt-2">
+                                    <strong>🐦 Účastní se moji pozorovatelé:</strong>
+                                    <ul class="ps-3 mb-0">
+                                        @foreach (var w in myWatchers)
                                         {
                                             <li>@w.FirstName @w.LastName</li>
                                         }
@@ -60,9 +68,17 @@
                                 </div>
                             }
                         </CardText>
-                        <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}")
-                            Type="ButtonType.Link">Zobrazit</Button>
-                        <Button Color="ButtonColor.Success" @onclick="() => OpenJoinModal(e.PublicIdentifier)">Soutěžit</Button>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <Button Color="ButtonColor.Primary" Type="ButtonType.Link"
+                                    To="@($"/soutez/{e.PublicIdentifier}")">
+                                🔍 Zobrazit
+                            </Button>
+                            <Button Color="ButtonColor.Success"
+                                    @onclick="() => OpenJoinModal(e.PublicIdentifier)">
+                                🏁 Soutěžit
+                            </Button>
+                        </div>
                     </CardBody>
                 </Card>
             </div>
