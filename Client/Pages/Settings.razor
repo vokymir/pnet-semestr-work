@@ -74,16 +74,12 @@ else
                             <td>@u.DisplayName</td>
                             <td>@(u.IsAdmin ? "Ano" : "Ne")</td>
                             <td>
-                                @if (u.Id != user.Id)
+                                @if (u.IsAdmin)
                                 {
-                                    @if (u.IsAdmin)
-                                    {
-                                        <button class="btn btn-sm btn-warning" @onclick="() => DemoteUserAsync(u.Id)" disabled="@actionLoading">Ponížit</button>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-sm btn-success" @onclick="() => PromoteUserAsync(u.Id)" disabled="@actionLoading">Vyvýšit</button>
-                                    }
+                                    <button class="btn btn-sm btn-warning" @onclick="() => DemoteUserAsync(u.Id)" disabled="@actionLoading">Ponížit</button>
+                                }
+                                else if (u.Id != user.Id){
+                                    <button class="btn btn-sm btn-success" @onclick="() => PromoteUserAsync(u.Id)" disabled="@actionLoading">Vyvýšit</button>
                                 }
                             </td>
                         </tr>
@@ -188,6 +184,8 @@ else
         finally
         {
             actionLoading = false;
+            if (userId == user?.Id)
+                NavManager.NavigateTo("/nastaveni");
         }
     }
 

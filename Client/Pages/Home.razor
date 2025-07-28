@@ -1,17 +1,56 @@
 @page "/"
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager Nav
 @inject BirdApiClient BAC
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Vítej</PageTitle>
 
-<h1>Hello, world! This is awesome...</h1>
+@if (UserDto is not null)
+{
+    <div class="text-center mt-5">
+        <h1 class="mb-4">Vítej, @UserDto.DisplayName! 🐦</h1>
 
-Welcome @(UserDto?.UserName ?? "here")!
+        <p class="lead">Vidíš ptáčka? Rychle ho běž zaznamenat!</p>
 
-@code{
+        <button class="btn btn-lg btn-success mt-3" @onclick="GoToNewRecord">
+            ➕ Přidat nový záznam
+        </button>
+
+        <div class="mt-5">
+            <details>
+                <summary class="text-muted">🛈 Jak aplikaci používat</summary>
+                <div class="mt-3 text-start mx-auto" style="max-width: 600px;">
+                  <p><strong>Záznamy:</strong> V menu "Záznamy" můžete přidávat, upravovat a prohlížet své záznamy pozorování
+                                           ptáků.</p>
+                    <p><strong>Ptáčkaři:</strong> Každý záznam je přiřazen k ptáčkaři. Můžete si vytvořit více ptáčkařů (např. pro každého
+                        člena rodiny).</p>
+                    <p><strong>Události:</strong> Jsou soutěže nebo pozorovací akce. Pokud jste správce, můžete označovat záznamy
+                        jako platné.</p>
+                      <p><strong>Nastavení:</strong> Změňte si jméno, e-mail nebo čas automatického odhlášení.</p>
+                    <p class="text-muted">Děkujeme, že přispíváte do databáze pozorování!</p>
+                </div>
+            </details>
+        </div>
+    </div>
+}
+else
+{
+    <div class="mt-5 text-center">
+        <h1 class="mb-4">Vítej v ptáčkové aplikaci! 🐦</h1>
+        <p>Pro používání aplikace se prosím přihlas.</p>
+    </div>
+}
+
+@code {
     private UserDto? UserDto = null;
 
-    protected override async Task OnInitializedAsync(){
+    protected override async Task OnInitializedAsync()
+    {
         UserDto = await LocalStorage.GetItemAsync<UserDto>("userDto");
+    }
+
+    private void GoToNewRecord()
+    {
+        Nav.NavigateTo("/zaznam/novy");
     }
 }
