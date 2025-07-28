@@ -19,6 +19,18 @@
     </div>
 
     <div class="mb-3">
+        <label for="desc" class="form-label">Popis</label>
+        <InputText id="desc" class="form-control" @bind-Value="Event.Description" />
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox id="isPublic" class="form-check-input" @bind-Value="Event.IsPublic" />
+        <label for="isPublic" class="form-check-label">Veřejná soutěž</label>
+        <small class="form-text text-muted">Pokud ano, může se kdokoliv připojit. Pokud ne, musí znát kód soutě
+            že.</small>
+    </div>
+
+    <div class="mb-3">
         <label for="start" class="form-label">Začátek</label>
         <InputDate id="start" class="form-control" @bind-Value="Event.Start" />
     </div>
@@ -53,6 +65,9 @@
         <InputCheckbox id="allowDuplicates" class="form-check-input" @bind-Value="Event.AllowDuplicates" />
         <label for="allowDuplicates" class="form-check-label">Povolit duplicity</label>
         <small class="form-text text-muted">Duplicita je, když ptáčkař vidí sýkorku v pondělí a úterý, obě dvě si zapíše, a o
+           
+
+
 
 
             bě dvě se mu počítají.</small>

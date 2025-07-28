@@ -148,6 +148,15 @@
                 }
             }
         }
+
+        // vsechny public
+        var evs = await BAC.Event_GetAllAsync();
+        foreach (var e in evs){
+            if (e.IsPublic && seenIds.Add(e.Id))
+            {
+                AllEvents.Add(e);
+            }
+        }
     }
 
     private void ApplyFilter()
