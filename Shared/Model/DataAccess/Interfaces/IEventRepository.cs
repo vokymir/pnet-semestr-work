@@ -6,6 +6,7 @@ public interface IEventRepository
     Task DeleteAsync(int id);
     Task UpdateAsync(Event @event);
     Task<Event?> GetByIdAsync(int id);
+    Task<Event?> GetByIdDetailedAsync(int id);
     Task<Event?> GetByPublicIdAsync(string publicId);
     Task<Event[]> GetAllAsync();
     Task<Event[]> GetByUserIdAsync(int userId);

@@ -38,6 +38,7 @@ public class EventDto : IAmDto<Event>
             SpeciesRegex = SpeciesRegex,
             Description = Description,
             IsPublic = IsPublic,
+            MainAdminId = MainAdminId,
         };
 
         return e;

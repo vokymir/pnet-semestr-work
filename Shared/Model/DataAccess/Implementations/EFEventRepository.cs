@@ -10,7 +10,9 @@ public class EFEventRepository : IEventRepository
         get {
             return _context.Events
                 .Include(e => e.Participants)
-                .Include(e => e.MainAdmin);
+                .Include(e => e.MainAdmin)
+                .Include(e => e.NotValidRecords)
+                ;
         }
         set { }
     }
@@ -49,6 +51,11 @@ public class EFEventRepository : IEventRepository
     }
 
     public async Task<Event?> GetByIdAsync(int id)
+    {
+        return await EventsWithDetails.FirstOrDefaultAsync(e => e.Id == id);
+    }
+
+    public async Task<Event?> GetByIdDetailedAsync(int id)
     {
         return await EventsWithDetails.FirstOrDefaultAsync(e => e.Id == id);
     }

@@ -220,21 +220,26 @@ namespace BirdWatching.Api.Controllers
         [OpenApiOperation("Event_ToggleRecordValidity")]
         public async Task<IActionResult> ToggleRecordValidity(int eventId, int recordId)
         {
-            try
+            var evnt = await _eventRepo.GetByIdDetailedAsync(eventId);
+
+            if (evnt == null)
+                return NotFound($"Event with ID {eventId} not found.");
+
+            var existingRecord = evnt.NotValidRecords.FirstOrDefault(r => r.Id == recordId);
+
+            if (existingRecord != null)
             {
-                Event e = (await _eventRepo.GetByIdAsync(eventId))!;
-                Record r = (await _recordRepo.GetByIdAsync(recordId))!;
-                if (!e.NotValidRecords.Remove(r))
-                {
-                    e.NotValidRecords.Add(r);
-                }
-                await _eventRepo.UpdateAsync(e);
-                return Ok();
+                evnt.NotValidRecords.Remove(existingRecord);
             }
-            catch
+            else
             {
-                return Problem("Failed to find event or record.");
+                var stub = new Record { Id = recordId };
+                _context.Attach(stub); // <<< DŮLEŽITÉ
+                evnt.NotValidRecords.Add(stub);
             }
+
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
