@@ -57,67 +57,82 @@ else
     }
     else
     {
-        <div class="accordion" id="leaderboardAccordion">
-            @foreach (var (watcher, index) in Leaderboard.Select((w, i) => (w, i)))
-            {
-                var collapseId = $"collapse{index}";
-                var headingId = $"heading{index}";
+<div class="accordion" id="leaderboardAccordion">
+    @foreach (var (watcher, index) in Leaderboard.Select((w, i) => (w, i)))
+    {
+        var collapseId = $"collapse{index}";
+        var headingId = $"heading{index}";
 
-                <div class="accordion-item" @key="watcher.Id">
-                    <h2 class="accordion-header" id="@headingId">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                            @watcher.Name ( @(CountReallyValidRecords(watcher))/@(watcher.ValidRecords?.Count ?? 0) záznamů platné)
-                        </button>
-                    </h2>
-                    <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId"
-                        data-bs-parent="#leaderboardAccordion">
-                        <div class="accordion-body">
-                            @if (watcher.ValidRecords is null)
-                            {
-                                <p>Načítání záznamů…</p>
-                            }
-                            else if (!watcher.ValidRecords.Any())
-                            {
-                                <p>Žádné platné záznamy.</p>
-                            }
-                            else
-                            {
-                                <ul class="list-group">
-                                    @foreach (var record in watcher.ValidRecords)
-                                    {
-                                            <li class="list-group-item">
-                                                <strong>@record.Bird?.BinomicName</strong> — @record.DateSeen.ToString("F");
+        <div class="accordion-item rounded shadow-sm mb-3" @key="watcher.Id">
+<h2 class="accordion-header" id="@headingId">
+    <button class="accordion-button collapsed px-4 py-3 d-flex justify-content-between align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#@collapseId"
+            aria-expanded="false"
+            aria-controls="@collapseId"
+            style="border-radius: 0.5rem;">
+        <div class="d-flex align-items-center gap-3">
+            <span class="fw-semibold h5 mb-0 text-start">
+                @watcher.Name
+            </span>
 
-                                                 @if (NotValidRecordIds.Contains(record.Id))
-                                                    {
-                                                        <span class="badge bg-danger ms-2">Neplatný</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-success ms-2">Platný</span>
-                                                    }
-
-                                                @if (U?.Id == Evnt?.MainAdminId)
-                                                {
-                                                    <button class="btn btn-sm btn-outline-secondary ms-2"
-                                                            @onclick="() => ToggleValidity(record)">
-                                                        @(NotValidRecordIds.Contains(record.Id) ? "✓ Udělat platný" : "✗ Udělat neplatný")
-                                                    </button>
-                                                }
-
-                                                <a href=@($"/zaznam/{record.Id}")>
-                                                Prohlédnout
-                                                </a>
-                                            </li>
-                                    }
-                                </ul>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
+            <span class="badge rounded-pill bg-primary fs-6"
+                  title=@($"{CountReallyValidRecords(watcher)}/{watcher.ValidRecords?.Count ?? 0} záznamů je validní.")>
+                ✅ @CountReallyValidRecords(watcher) / <small>📝 @(watcher.ValidRecords?.Count ?? 0)</small>
+            </span>
         </div>
+    </button>
+</h2>
+
+            <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId"
+                 data-bs-parent="#leaderboardAccordion">
+                <div class="accordion-body">
+                    @if (watcher.ValidRecords is null)
+                    {
+                        <p class="text-muted">Načítání záznamů…</p>
+                    }
+                    else if (!watcher.ValidRecords.Any())
+                    {
+                        <p class="text-muted">Žádné platné záznamy.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var record in watcher.ValidRecords)
+                            {
+                                <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start gap-2">
+                                    <div>
+                                        <div class="fw-bold">@record.Bird?.BinomicName</div>
+                                        <small class="text-muted">@record.DateSeen.ToString("f")</small>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span class="badge @(NotValidRecordIds.Contains(record.Id) ? "bg-danger" : "bg-success")">
+                                            @(NotValidRecordIds.Contains(record.Id) ? "Neplatný" : "Platný")
+                                        </span>
+
+                                        @if (U?.Id == Evnt?.MainAdminId)
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary"
+                                                    @onclick="() => ToggleValidity(record)">
+                                                @(NotValidRecordIds.Contains(record.Id) ? "✓ Udělat platný" : "✗ Udělat neplatný")
+                                            </button>
+                                        }
+
+                                        <a class="btn btn-sm btn-outline-info" href=@($"/zaznam/{record.Id}")>
+                                            Prohlédnout
+                                        </a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
     }
 }
 
@@ -167,6 +182,7 @@ private void NavigateToEdit()
             .Select(w => new WatcherOnLeaderboardDto
             {
                 Id = w.Id,
+                PublicIdentifier = w.PublicIdentifier,
                 Name = $"{w.FirstName} {w.LastName}",
                 ValidRecords = null,
             }).ToList() ?? new();

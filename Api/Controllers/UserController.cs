@@ -236,6 +236,9 @@ namespace BirdWatching.Api.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DemoteUser(int userId)
         {
+            if (userId == -1)
+                return Forbid("This is super user, you cannot demote them.");
+
             var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return NotFound(new ProblemDetails { Title = "User Not Found", Detail = $"User with ID {userId} not found." });
