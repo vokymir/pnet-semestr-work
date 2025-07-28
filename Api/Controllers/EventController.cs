@@ -184,6 +184,7 @@ namespace BirdWatching.Api.Controllers
             e.AllowDuplicates = dto.AllowDuplicates;
             e.GenusRegex = dto.GenusRegex;
             e.SpeciesRegex = dto.SpeciesRegex;
+            e.IsPublic = dto.IsPublic;
 
             try
             {
@@ -213,6 +214,27 @@ namespace BirdWatching.Api.Controllers
             var list = await _eventRepo.GetParticipantsAsync(eventId);
             var dtos = list?.Select(w => w.ToFullDto()).ToList() ?? new List<WatcherDto>();
             return Ok(dtos);
+        }
+
+        [HttpPatch("toggle-valid")]
+        [OpenApiOperation("Event_ToggleRecordValidity")]
+        public async Task<IActionResult> ToggleRecordValidity(int eventId, int recordId)
+        {
+            try
+            {
+                Event e = (await _eventRepo.GetByIdAsync(eventId))!;
+                Record r = (await _recordRepo.GetByIdAsync(recordId))!;
+                if (!e.NotValidRecords.Remove(r))
+                {
+                    e.NotValidRecords.Add(r);
+                }
+                await _eventRepo.UpdateAsync(e);
+                return Ok();
+            }
+            catch
+            {
+                return Problem("Failed to find event or record.");
+            }
         }
     }
 }

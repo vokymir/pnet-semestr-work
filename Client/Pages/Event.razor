@@ -1,5 +1,6 @@
 @page "/soutez/{PublicEventId}"
 @inject BirdApiClient BAC
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTitle>Soutěž</PageTitle>
 
@@ -73,6 +74,14 @@ else
                                                     {
                                                         <span class="badge bg-success ms-2">Platný</span>
                                                     }
+
+    @if (U?.Id == Evnt?.MainAdminId)
+    {
+        <button class="btn btn-sm btn-outline-secondary ms-2"
+                @onclick="() => ToggleValidity(record)">
+            @(Evnt.NotValidRecords.Any(r => r.Id == record.Id) ? "✓ Udělat platný" : "✗ Udělat neplatný")
+        </button>
+    }
                                             </li>
                                         </a>
                                     }
@@ -89,6 +98,7 @@ else
 @code {
     [Parameter]
     public string PublicEventId { get; set; } = default!;
+    private UserDto? U = null;
 
     private BirdWatching.Shared.Model.Event? Evnt;
     private List<BirdWatching.Shared.Model.WatcherOnLeaderboardDto> Leaderboard = new();
@@ -97,6 +107,9 @@ else
     {
         try
         {
+            U = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            if (U is null) throw new Exception("Cannot find userDto in local storage.");
+
             var edto = await BAC.Event_GetByPublicIdAsync(PublicEventId);
             if (edto is null) edto = new();
             Evnt = edto.ToEntity();
@@ -150,4 +163,19 @@ else
             Console.WriteLine($"Chyba při načítání záznamů pro {watcher.Name}: {ex.Message}");
         }
     }
+
+private async Task ToggleValidity(RecordDto record)
+{
+    if (Evnt is null || U is null) return;
+
+    try
+    {
+        await BAC.Event_ToggleRecordValidityAsync(Evnt.Id, record.Id);
+        await InvokeAsync(StateHasChanged);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Chyba při přepnutí validity: " + ex.Message);
+    }
+}
 }
