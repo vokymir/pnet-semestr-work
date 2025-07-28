@@ -70,8 +70,10 @@ namespace BirdWatching.Api.Controllers
             if (user == null)
                 return NotFound(new ProblemDetails { Title = "User Not Found", Detail = $"User with ID {userId} does not exist." });
 
-            user.UserName = userDto.UserName ?? user.UserName;
             user.PasswordHash = userDto.PasswordHash ?? user.PasswordHash;
+            user.DisplayName = userDto.DisplayName ?? user.DisplayName;
+            user.Email = userDto.Email ?? user.Email;
+            user.PreferenceLoginMinutes = userDto.PreferenceLoginMinutes;
 
             try
             {
@@ -193,6 +195,64 @@ namespace BirdWatching.Api.Controllers
             {
                 _logger.LogError(ex, "Failed to add curated watcher for user {UserId}.", user.Id);
                 return Problem("Failed to add curated watcher.");
+            }
+        }
+
+        /// <summary>Promotes a user to admin (admin only).</summary>
+        [HttpPost("{userId:int}/promote")]
+        [Authorize(Roles = "Admin")]
+        [OpenApiOperation("User_Promote", "Promotes a user to admin.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PromoteUser(int userId)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
+                return NotFound(new ProblemDetails { Title = "User Not Found", Detail = $"User with ID {userId} not found." });
+
+            if (user.IsAdmin)
+                return NoContent(); // Already admin
+
+            user.IsAdmin = true;
+            try
+            {
+                await _userRepo.UpdateAsync(user);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to promote user {UserId} to admin.", userId);
+                return Problem("Failed to promote user.");
+            }
+        }
+
+        /// <summary>Demotes an admin user to regular user (admin only).</summary>
+        [HttpPost("{userId:int}/demote")]
+        [Authorize(Roles = "Admin")]
+        [OpenApiOperation("User_Demote", "Demotes an admin user to regular user.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DemoteUser(int userId)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
+                return NotFound(new ProblemDetails { Title = "User Not Found", Detail = $"User with ID {userId} not found." });
+
+            if (!user.IsAdmin)
+                return NoContent(); // Already regular
+
+            user.IsAdmin = false;
+            try
+            {
+                await _userRepo.UpdateAsync(user);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to demote user {UserId} from admin.", userId);
+                return Problem("Failed to demote user.");
             }
         }
     }

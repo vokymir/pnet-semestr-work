@@ -1,18 +1,208 @@
 @page "/nastaveni"
+@using System.ComponentModel.DataAnnotations
+@inject BirdApiClient BAC
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
 
 <PageTitle>Nastavení</PageTitle>
 
-<h1>Settings</h1>
+<h1>Nastavení</h1>
 
 <Button Color="ButtonColor.Danger" Size="ButtonSize.ExtraLarge" @onclick="LogOut">Odhlásit se</Button>
-Welcome to your new app.
 
-@code{
+@if (user == null)
+{
+    <p><em>Načítám data...</em></p>
+}
+else
+{
+    <EditForm Model="editModel" OnValidSubmit="SaveSettingsAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    protected async override Task OnInitializedAsync(){
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="editModel.Email" />
+        </div>
 
+        <div class="mb-3">
+            <label for="password" class="form-label">Heslo <small>(změňte jen pokud chcete nové)</small></label>
+            <InputText id="password" type="password" class="form-control" @bind-Value="editModel.Password" />
+        </div>
+
+        <div class="mb-3">
+            <label for="displayName" class="form-label">Zobrazované jméno</label>
+            <InputText id="displayName" class="form-control" @bind-Value="editModel.DisplayName" />
+        </div>
+
+        <div class="mb-3">
+            <label for="loginMinutes" class="form-label">Doba přihlášení v minutách</label>
+            <InputNumber id="loginMinutes" class="form-control" @bind-Value="editModel.PreferenceLoginMinutes" />
+            <small class="form-text text-muted">Čím více minut, tím méně je třeba se znovu přihlašovat. Ale také víc hrozí útoky.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled="@saving">
+            @(saving ? "Ukládám..." : "Uložit nastavení")
+        </button>
+    </EditForm>
+
+    @if (isAdmin)
+    {
+        <hr />
+        <h2>Správa uživatelů (admin)</h2>
+
+        @if (allUsers == null)
+        {
+            <p><em>Načítám uživatele...</em></p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Zobrazované jméno</th>
+                        <th>Admin</th>
+                        <th>Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in allUsers)
+                    {
+                        <tr>
+                            <td>@u.Email</td>
+                            <td>@u.DisplayName</td>
+                            <td>@(u.IsAdmin ? "Ano" : "Ne")</td>
+                            <td>
+                                @if (u.Id != user.Id)
+                                {
+                                    @if (u.IsAdmin)
+                                    {
+                                        <button class="btn btn-sm btn-warning" @onclick="() => DemoteUserAsync(u.Id)" disabled="@actionLoading">Ponížit</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-success" @onclick="() => PromoteUserAsync(u.Id)" disabled="@actionLoading">Vyvýšit</button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+}
+
+@code {
+    private UserDto? user;
+    private List<UserDto>? allUsers;
+    private bool isAdmin = false;
+    private bool saving = false;
+    private bool actionLoading = false;
+
+    private EditUserModel editModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await LocalStorage.GetItemAsync<UserDto>("userDto");
+        if (user == null)
+        {
+            NavManager.NavigateTo("/login");
+            return;
+        }
+        user = await BAC.User_GetUserAsync(user.Id);
+
+        isAdmin = user.IsAdmin;
+
+        editModel.Email = user.Email;
+        editModel.DisplayName = user.DisplayName;
+        editModel.PreferenceLoginMinutes = user.PreferenceLoginMinutes;
+        editModel.Password = string.Empty;
+
+        if (isAdmin)
+        {
+            allUsers = (await BAC.User_GetAllUsersAsync()).ToList();
+        }
+    }
+
+    private async Task SaveSettingsAsync()
+    {
+        saving = true;
+
+        try
+        {
+            // Update fields
+            user!.Email = editModel.Email;
+            user.DisplayName = editModel.DisplayName;
+            user.PreferenceLoginMinutes = editModel.PreferenceLoginMinutes;
+
+            if (!string.IsNullOrWhiteSpace(editModel.Password))
+            {
+                user.PasswordHash = editModel.Password;
+            }
+
+            await BAC.User_UpdateUserAsync(user.Id, user);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Chyba při ukládání: {ex.Message}");
+        }
+        finally
+        {
+            saving = false;
+            NavManager.NavigateTo("/nastaveni");
+        }
+    }
+
+    private async Task PromoteUserAsync(int userId)
+    {
+        actionLoading = true;
+        try
+        {
+            await BAC.User_PromoteUserAsync(userId);
+            allUsers = (await BAC.User_GetAllUsersAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Chyba při povyšování: {ex.Message}");
+        }
+        finally
+        {
+            actionLoading = false;
+        }
+    }
+
+    private async Task DemoteUserAsync(int userId)
+    {
+        actionLoading = true;
+        try
+        {
+            await BAC.User_DemoteUserAsync(userId);
+            allUsers = (await BAC.User_GetAllUsersAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Chyba při snižování práv: {ex.Message}");
+        }
+        finally
+        {
+            actionLoading = false;
+        }
+    }
+
+    class EditUserModel
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; } = "";
+
+        public string Password { get; set; } = "";
+
+        [Required]
+        public string DisplayName { get; set; } = "";
+
+        [Range(5, int.MaxValue, ErrorMessage = "Minuty musí být >= 5")]
+        public int PreferenceLoginMinutes { get; set; } = 5;
     }
 
     private async Task LogOut(){
