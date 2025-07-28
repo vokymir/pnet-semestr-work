@@ -4,7 +4,7 @@
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ToggleSidebar"><Icon Name=@(IconNameCurrent) /></Button>
+        <GoBackButton />
         <ThemeSwitcher Class="ps-3 ps-lg-2 ms-auto" Position="DropdownMenuPosition.End" />
         <Button Type="ButtonType.Link" Color="ButtonColor.Secondary" To="/nastaveni"><Icon Name="IconName.PersonFill" /></Button>
     </HeaderSection>
@@ -25,7 +25,7 @@
     </ContentSection>
 
     <FooterSection>
-        Footer links...
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ToggleSidebar"><Icon Name=@(IconNameCurrent) />Velikost postranního panelu</Button>
     </FooterSection>
 </BlazorBootstrapLayout>
 

@@ -1,0 +1,10 @@
+@inject IJSRuntime JS
+
+<button class="btn btn-secondary" @onclick="GoBackClicked">Zpět</button>
+
+@code {
+    private async Task GoBackClicked()
+    {
+        await JS.InvokeVoidAsync("goBack");
+    }
+}
