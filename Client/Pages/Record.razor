@@ -2,59 +2,62 @@
 @inject BirdApiClient BAC
 @inject NavigationManager NavigationManager
 
-<h3>Detail záznamu</h3>
+<h2 class="mb-4">📄 Detail záznamu</h2>
 
 @if (isLoading)
 {
-    <p>Načítám...</p>
+    <div class="alert alert-info">🔄 Načítám záznam...</div>
 }
 else if (record is null)
 {
-    <div class="alert alert-danger">
-        Záznam s tímto ID se nepodařilo najít.
-    </div>
+    <div class="alert alert-danger">❌ Záznam s tímto ID nebyl nalezen.</div>
 }
 else
 {
-    <div class="card">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header ">
+              <h5 class="mb-0">👀 @record.Bird?.FullName</h5>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">
-                👀 Ptáček: <strong>@record.Bird?.BinomicName</strong>
-            </h5>
-            <h6 class="card-subtitle mb-2 text-muted">
-                👤 @record.Watcher?.FirstName @record.Watcher?.LastName — @record.DateSeen.ToString("dd.MM.yyyy HH:mm")
-            </h6>
+            <p class="text-muted mb-2">
+                👤 <strong>@record.Watcher?.FirstName @record.Watcher?.LastName</strong><br />
+                📅 @record.DateSeen.ToString("dd.MM.yyyy HH:mm")
+            </p>
 
-            <dl class="row">
-                <dt class="col-sm-3">Počet jedinců</dt>
-                <dd class="col-sm-9">@record.Count</dd>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">🕊️ Počet jedinců</dt>
+                <dd class="col-sm-8">@record.Count</dd>
 
-                <dt class="col-sm-3">Poloha</dt>
-                <dd class="col-sm-9">@record.Latitude.ToString("0.000000"), @record.Longitude.ToString("0.000000")</dd>
-
-                @if (record.Accuracy > 0)
-                {
-                    <dt class="col-sm-3">Přesnost</dt>
-                    <dd class="col-sm-9">± @record.Accuracy.ToString("0.0") m</dd>
-                }
+                <dt class="col-sm-4">📍 Souřadnice</dt>
+                <dd class="col-sm-8">
+                    @record.Latitude.ToString("0.000000"), @record.Longitude.ToString("0.000000")
+                    @if (record.Accuracy > 0)
+                    {
+                        <span class="text-muted">(±@record.Accuracy.ToString("0.0") m)</span>
+                    }
+                </dd>
 
                 @if (!string.IsNullOrWhiteSpace(record.LocationDescribed))
                 {
-                    <dt class="col-sm-3">Popis místa</dt>
-                    <dd class="col-sm-9">@record.LocationDescribed</dd>
+                    <dt class="col-sm-4">📌 Popis místa</dt>
+                    <dd class="col-sm-8">@record.LocationDescribed</dd>
                 }
 
                 @if (!string.IsNullOrWhiteSpace(record.Comment))
                 {
-                    <dt class="col-sm-3">Poznámka</dt>
-                    <dd class="col-sm-9">@record.Comment</dd>
+                    <dt class="col-sm-4">📝 Poznámka</dt>
+                    <dd class="col-sm-8">@record.Comment</dd>
                 }
             </dl>
-
-            <Button Color="ButtonColor.Primary" To=@($"/zaznam/{id}/upravit") Type="ButtonType.Link">Upravit</Button>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+             <Button Color="ButtonColor.Primary" To="@($"/zaznam/{id}/upravit")" Type="ButtonType.Link">
+                ✏️ Upravit záznam
+            </Button>
         </div>
     </div>
 }
+
 @code {
     [Parameter] public int id { get; set; }
 

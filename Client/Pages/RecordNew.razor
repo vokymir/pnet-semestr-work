@@ -10,67 +10,99 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="mb-3">
-        <label for="dateInput" class="form-label">Datum</label>
-        <InputDate id="dateInput" class="form-control" @bind-Value="datePart" />
-    </div>
+    <div class="row g-3">
+        <!-- Datum a čas -->
+        <div class="col-md-6">
+            <label for="dateInput" class="form-label">Datum</label>
+            <InputDate id="dateInput" class="form-control" @bind-Value="datePart" />
+        </div>
+        <div class="col-md-6">
+            <label for="timeInput" class="form-label">Čas</label>
+            <InputText id="timeInput" class="form-control" @bind-Value="timePartString" type="time" />
+        </div>
 
-    <div class="mb-3">
-        <label for="timeInput" class="form-label">Čas</label>
-        <InputText id="timeInput" class="form-control" @bind-Value="timePartString" type="time" />
-    </div>
-
-    <div class="mb-3">
-        <label for="bird" class="form-label">Ptáček</label>
-        <InputText id="bird" class="form-control" @bind-Value="birdSearch"
-               @oninput="OnBirdSearchInput" placeholder="Začněte psát..." />
-        <ul class="list-group">
+        <!-- Ptáček s našeptávačem -->
+        <div class="col-12">
+            <label for="bird" class="form-label">Ptáček</label>
+            <InputText id="bird" class="form-control" @bind-Value="birdSearch"
+                   @oninput="OnBirdSearchInput" placeholder="Začněte psát..." autocomplete="off" />
             @if (birdSuggestions is not null && birdSuggestions.Any())
             {
-                @foreach (var b in birdSuggestions)
-                {
-                    <li class="list-group-item list-group-item-action" style="cursor: pointer"
-                        @onclick="@(() => SelectBird(b))">@b.FullName</li>
-                }
+                <ul class="list-group position-absolute" style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                    @foreach (var b in birdSuggestions)
+                    {
+                        <li class="list-group-item list-group-item-action" style="cursor: pointer"
+                            @onclick="@(() => SelectBird(b))">@b.FullName</li>
+                    }
+                </ul>
             }
-        </ul>
-        @if (record.Bird is null)
-        {
-            <Button Color="ButtonColor.Secondary" To="/ptacek/novy" Type="ButtonType.Link">Vytvořit nového ptáčka</Button>
-        }
-    </div>
-
-    <div class="mb-3">
-        <label for="count" class="form-label">Počet</label>
-        <InputNumber id="count" class="form-control" @bind-Value="record.Count" />
-    </div>
-
-    <div class="mb-3">
-        <label for="comment" class="form-label">Poznámka</label>
-        <InputTextArea id="comment" class="form-control" @bind-Value="record.Comment" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Komu z pozorovatelů přidat záznam</label>
-        @if (watchers.Any())
-        {
-            @foreach (var w in watchers)
+            @if (record.Bird is null)
             {
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="watcher_@w.Id"
-                           value="@w.Id" @onchange="e => ToggleWatcher(w.Id, e.Value?.ToString())"
-                           checked="@selectedWatcherIds.Contains(w.Id)">
-                    <label class="form-check-label" for="watcher_@w.Id">@w.FirstName @w.LastName</label>
+                <Button Color="ButtonColor.Secondary" To="/ptacek/novy" Type="ButtonType.Link" class="mt-2">Vytvořit nového ptáčka</Button>
+            }
+        </div>
+
+        <!-- Počet -->
+        <div class="col-md-4">
+            <label for="count" class="form-label">Počet ptáčků</label>
+            <InputNumber id="count" class="form-control" @bind-Value="record.Count" />
+        </div>
+
+        <!-- Latitude, Longitude, Accuracy -->
+        <div class="col-md-4">
+            <label for="latitude" class="form-label">Zeměpisná šířka</label>
+            <InputNumber id="latitude" class="form-control" @bind-Value="record.Latitude" step="any" />
+        </div>
+        <div class="col-md-4">
+            <label for="longitude" class="form-label">Zeměpisná délka</label>
+            <InputNumber id="longitude" class="form-control" @bind-Value="record.Longitude" step="any" />
+        </div>
+        <div class="col-md-4">
+            <label for="accuracy" class="form-label">Přesnost polohy v metrech</label>
+            <InputNumber id="accuracy" class="form-control" @bind-Value="record.Accuracy" step="any" />
+        </div>
+
+        <!-- Popis místa -->
+        <div class="col-12">
+            <label for="locationDesc" class="form-label">Popis místa</label>
+            <InputTextArea id="locationDesc" class="form-control" @bind-Value="record.LocationDescribed" rows="2" />
+        </div>
+
+        <!-- Poznámka -->
+        <div class="col-12">
+            <label for="comment" class="form-label">Poznámka</label>
+            <InputTextArea id="comment" class="form-control" @bind-Value="record.Comment" rows="3" />
+        </div>
+
+        <!-- Výběr pozorovatelů -->
+        <div class="col-12">
+            <label class="form-label">Komu z pozorovatelů přidat záznam</label>
+            @if (watchers.Any())
+            {
+                <div class="row">
+                    @foreach (var w in watchers)
+                    {
+                        <div class="col-6 col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="watcher_@w.Id"
+                                       value="@w.Id" @onchange="e => ToggleWatcher(w.Id, e.Value?.ToString())"
+                                       checked="@selectedWatcherIds.Contains(w.Id)">
+                                <label class="form-check-label" for="watcher_@w.Id">@w.FirstName @w.LastName</label>
+                            </div>
+                        </div>
+                    }
                 </div>
             }
-        }
-        else
-        {
-            <p>Načítám ptáčkaře...</p>
-        }
+            else
+            {
+                <p>Načítám ptáčkaře...</p>
+            }
+        </div>
     </div>
 
-    <button class="btn btn-primary" type="submit">Uložit záznam</button>
+    <div class="mt-4">
+        <button class="btn btn-primary" type="submit">Uložit záznam</button>
+    </div>
 </EditForm>
 
 @code {
@@ -78,7 +110,7 @@
     private List<WatcherDto> watchers = new();
     private List<int> selectedWatcherIds = new();
     private string birdSearch = "";
-    private ICollection<BirdDto> birdSuggestions = new List<BirdDto>();
+    private ICollection<BirdDto> birdSuggestions = Array.Empty<BirdDto>();
     private DateTime datePart = DateTime.Today;
     private string timePartString = DateTime.Now.ToString("HH:mm");
     private List<ToastMessage> messages = new();
@@ -87,10 +119,10 @@
     protected override async Task OnInitializedAsync()
     {
         if (record.DateSeen != default)
-           {
-               datePart = record.DateSeen.Date;
-               timePartString = record.DateSeen.ToString("HH:mm");
-           }
+        {
+            datePart = record.DateSeen.Date;
+            timePartString = record.DateSeen.ToString("HH:mm");
+        }
 
         // načti pozorovatele
         var U = await LocalStorage.GetItemAsync<UserDto>("userDto");
@@ -104,10 +136,14 @@
                 Message = $"Problém s načítáním přihlášeného uživatele a ptáčkařů. Zkontrolujte, že jste přihlášeni.",
                 AutoHide = true
             });
-        }else
-            foreach(var w in U.Watchers){
+        }
+        else
+        {
+            foreach (var w in U.Watchers)
+            {
                 watchers.Add(await BAC.Watcher_GetByIdAsync(w.Id));
             }
+        }
 
         // zkus načíst watchersGroup z localstorage
         if (await LocalStorage.ContainKeyAsync("watchersGroup"))
@@ -184,7 +220,11 @@
                 Comment = record.Comment,
                 Count = record.Count,
                 BirdId = record.BirdId,
-                WatcherId = wid
+                WatcherId = wid,
+                Latitude = record.Latitude,
+                Longitude = record.Longitude,
+                Accuracy = record.Accuracy,
+                LocationDescribed = record.LocationDescribed
             };
 
             await BAC.Record_CreateAsync(newRecord);

@@ -3,81 +3,94 @@
 @inject NavigationManager Nav
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<h3>Upravit záznam</h3>
+<h2 class="mb-4">✏️ Úprava záznamu</h2>
 
 @if (isLoading)
 {
-    <p>Načítám...</p>
+    <div class="alert alert-info">🔄 Načítám záznam...</div>
 }
 else if (record is null)
 {
-    <div class="alert alert-danger">Záznam nebyl nalezen.</div>
+    <div class="alert alert-danger">❌ Záznam nebyl nalezen.</div>
 }
 else
 {
-    <h5 class="card-title">
-        👀 Ptáček: <strong>@record.Bird?.BinomicName</strong>
-    </h5>
-    <h6 class="card-subtitle mb-2 text-muted">
-        👤 @record.Watcher?.FirstName @record.Watcher?.LastName — @record.DateSeen.ToString("dd.MM.yyyy HH:mm")
-    </h6>
-
-    <EditForm Model="record" OnValidSubmit="SaveChanges">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div class="mb-3">
-            <label class="form-label">Datum pozorování</label>
-            <InputDate class="form-control" @bind-Value="record.DateSeen" Disabled="@(!CanEdit)" />
+    <div class="card shadow-sm">
+        <div class="card-header ">
+            <strong>👀 @record.Bird?.BinomicName</strong><br />
+            <span class="text-muted">
+                👤 @record.Watcher?.FirstName @record.Watcher?.LastName — 📅 @record.DateSeen.ToString("dd.MM.yyyy HH:mm")
+            </span>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Počet</label>
-            <InputNumber class="form-control" @bind-Value="record.Count" Disabled="@(!CanEdit)" />
+        <div class="card-body">
+            <EditForm Model="record" OnValidSubmit="SaveChanges">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label class="form-label">📅 Datum pozorování</label>
+                    <InputDate class="form-control" @bind-Value="datePart" Disabled="@(!CanEdit)" />
+                </div>
+
+<div class="mb-3">
+    <label class="form-label">🕒 Čas pozorování</label>
+    <input type="time"
+           class="form-control"
+           value="@timePart.ToString(@"hh\:mm")"
+           @oninput="HandleTimeInput"
+           disabled="@(!CanEdit)" />
+</div>
+
+                <div class="mb-3">
+                    <label class="form-label">🕊️ Počet</label>
+                    <InputNumber class="form-control" @bind-Value="record.Count" Disabled="@(!CanEdit)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📏 Přesnost (m)</label>
+                    <InputNumber class="form-control" @bind-Value="record.Accuracy" Disabled="@(!CanEdit)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📌 Popis lokace</label>
+                    <InputText class="form-control" @bind-Value="record.LocationDescribed" Disabled="@(!CanEdit)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📝 Komentář</label>
+                    <InputTextArea class="form-control" @bind-Value="record.Comment" Rows="4" Disabled="@(!CanEdit)" />
+                </div>
+
+                @if (CanEdit)
+                {
+                    <div class="d-flex justify-content-start gap-2">
+                        <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
+                        <Button Color="ButtonColor.Danger" @onclick="ShowDeleteConfirm">🗑 Smazat záznam</Button>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label">💬 Přidat komentář</label>
+                        <InputTextArea class="form-control" @bind-Value="newComment" Rows="3" />
+                        <Button class="mt-2" Color="ButtonColor.Secondary" @onclick="AppendComment">📌 Přidat</Button>
+                    </div>
+                }
+
+                @if (confirmDelete)
+                {
+                    <div class="alert alert-danger mt-4">
+                        <strong>⚠️ Opravdu chcete smazat tento záznam?</strong><br />
+                        <div class="mt-2 d-flex gap-2">
+                            <Button Color="ButtonColor.Danger" Disabled="@isDeleting" @onclick="DeleteRecord">✅ Ano, smazat</Button>
+                            <Button Color="ButtonColor.Secondary" @onclick="(() => confirmDelete = false)">Zrušit</Button>
+                        </div>
+                    </div>
+                }
+            </EditForm>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Přesnost (m)</label>
-            <InputNumber class="form-control" @bind-Value="record.Accuracy" Disabled="@(!CanEdit)" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Popis lokace</label>
-            <InputText class="form-control" @bind-Value="record.LocationDescribed" Disabled="@(!CanEdit)" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Celý komentář</label>
-            <InputTextArea class="form-control" @bind-Value="record.Comment" rows="4" Disabled="@(!CanEdit)" />
-        </div>
-
-        @if (CanEdit)
-        {
-            <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
-        }
-        else
-        {
-            <div class="mb-3">
-                <label class="form-label">Přidat komentář</label>
-                <InputTextArea class="form-control" @bind-Value="newComment" rows="3" />
-                <Button class="mt-2" Color="ButtonColor.Secondary" @onclick="AppendComment">📌 Přidat</Button>
-            </div>
-        }
-
-        @if (CanEdit)
-        {
-            <Button class="ms-2" Color="ButtonColor.Danger" @onclick="ShowDeleteConfirm">🗑 Smazat záznam</Button>
-        }
-
-        @if (confirmDelete)
-        {
-            <div class="alert alert-danger mt-3">
-                Opravdu chcete smazat tento záznam?<br />
-                <Button class="mt-2" Color="ButtonColor.Danger" Disabled="@isDeleting" @onclick="DeleteRecord">✅ Ano, smazat</Button>
-                <Button class="mt-2 ms-2" Color="ButtonColor.Secondary" @onclick="(() => confirmDelete = false)">Zrušit</Button>
-            </div>
-        }
-    </EditForm>
+    </div>
 }
 
 @code {
@@ -91,44 +104,75 @@ else
     private bool isDeleting = false;
 
     private bool CanEdit = false;
+private DateTime datePart;
+private TimeSpan timePart;
 
-    protected override async Task OnInitializedAsync()
+private string timePartString
+{
+    get => timePart.ToString(@"hh\:mm");
+    set
     {
-        try
+        if (TimeSpan.TryParse(value, out var result))
         {
-            userDto = await LocalStorage.GetItemAsync<UserDto>("userDto");
+            timePart = result;
         }
-        catch{
-            throw new Exception("User is not logged in.");
-        }
-        try
-        {
-            record = await BAC.Record_GetByIdAsync(id);
-        }
-        catch
-        {
-            record = null;
-        }
+    }
+}
 
-        isLoading = false;
+private void HandleTimeInput(ChangeEventArgs e)
+{
+    if (TimeSpan.TryParse(e.Value?.ToString(), out var result))
+    {
+        timePart = result;
+    }
+}
 
-        CanEdit = userDto?.IsAdmin ?? false;
-        if(!CanEdit)
-            foreach(var w in userDto?.Watchers ?? Array.Empty<WatcherDto>())
-                if(w.Id == record?.WatcherId){
-                    CanEdit = true;
-                    break;
-                }
-
+protected override async Task OnInitializedAsync()
+{
+    try
+    {
+        userDto = await LocalStorage.GetItemAsync<UserDto>("userDto");
+    }
+    catch
+    {
+        throw new Exception("User is not logged in.");
     }
 
-    private async Task SaveChanges()
+    try
     {
-        if (record == null) return;
-
-        await BAC.Record_UpdateAsync(record.Id, record);
-        Nav.NavigateTo($"/zaznam/{record.Id}");
+        record = await BAC.Record_GetByIdAsync(id);
+        if (record != null)
+        {
+            datePart = record.DateSeen.Date;
+            timePart = record.DateSeen.TimeOfDay;
+        }
     }
+    catch
+    {
+        record = null;
+    }
+
+    isLoading = false;
+
+    CanEdit = userDto?.IsAdmin ?? false;
+    if (!CanEdit)
+        foreach (var w in userDto?.Watchers ?? Array.Empty<WatcherDto>())
+            if (w.Id == record?.WatcherId)
+            {
+                CanEdit = true;
+                break;
+            }
+}
+
+private async Task SaveChanges()
+{
+    if (record == null) return;
+
+    record.DateSeen = datePart.Date + timePart;
+
+    await BAC.Record_UpdateAsync(record.Id, record);
+    Nav.NavigateTo($"/zaznam/{record.Id}");
+}
 
     private async Task AppendComment()
     {
