@@ -62,6 +62,7 @@
                         </CardText>
                         <Button Color="ButtonColor.Primary" To=@($"/soutez/{e.PublicIdentifier}")
                             Type="ButtonType.Link">Zobrazit</Button>
+                        <Button Color="ButtonColor.Success" @onclick="() => OpenJoinModal(e.PublicIdentifier)">Soutěžit</Button>
                     </CardBody>
                 </Card>
             </div>
@@ -175,5 +176,13 @@
     {
         if (JoinModal is not null)
             await JoinModal.ShowAsync(U);
+    }
+
+    private async Task OpenJoinModal(string publicIdentifier)
+    {
+        if (JoinModal is not null)
+        {
+            await JoinModal.ShowAsync(U, publicIdentifier);
+        }
     }
 }

@@ -53,10 +53,10 @@
     private string InputValue = string.Empty;
     private Dictionary<int, bool> WatcherSelections = new();
 
-    public async Task ShowAsync(UserDto? user)
+    public async Task ShowAsync(UserDto? user, string pubId = "")
     {
         User = user;
-        InputValue = string.Empty;
+        InputValue = pubId;
 
         if (await LocalStorage.ContainKeyAsync("watchersGroup"))
         {
