@@ -15,6 +15,7 @@ else
     <div class="mb-4">
         <p>@Evnt.Description</p>
         <strong>@(Evnt.IsPublic ? "Veřejná" : "Soukromá") soutěž</strong>
+        <p>@Evnt.Start - @Evnt.End </p>
         <h5>Kritéria</h5>
         <ul>
             <li><strong>Řád:</strong> @Evnt.OrdoRegex</li>
@@ -43,7 +44,7 @@ else
                     <h2 class="accordion-header" id="@headingId">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                            @watcher.Name (@(watcher.ValidRecords?.Count ?? 0) záznamů)
+                            @watcher.Name ( @(CountReallyValidRecords(watcher))/@(watcher.ValidRecords?.Count ?? 0) záznamů platné)
                         </button>
                     </h2>
                     <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId"
@@ -62,11 +63,10 @@ else
                                 <ul class="list-group">
                                     @foreach (var record in watcher.ValidRecords)
                                     {
-                                        <a href=@($"/zaznam/{record.Id}")>
                                             <li class="list-group-item">
                                                 <strong>@record.Bird?.BinomicName</strong> — @record.DateSeen.ToString("F");
 
-                                                 @if (Evnt?.NotValidRecords?.Any(r => r.Id == record.Id) == true)
+                                                 @if (NotValidRecordIds.Contains(record.Id))
                                                     {
                                                         <span class="badge bg-danger ms-2">Neplatný</span>
                                                     }
@@ -75,15 +75,18 @@ else
                                                         <span class="badge bg-success ms-2">Platný</span>
                                                     }
 
-    @if (U?.Id == Evnt?.MainAdminId)
-    {
-        <button class="btn btn-sm btn-outline-secondary ms-2"
-                @onclick="() => ToggleValidity(record)">
-            @(Evnt.NotValidRecords.Any(r => r.Id == record.Id) ? "✓ Udělat platný" : "✗ Udělat neplatný")
-        </button>
-    }
+                                                @if (U?.Id == Evnt?.MainAdminId)
+                                                {
+                                                    <button class="btn btn-sm btn-outline-secondary ms-2"
+                                                            @onclick="() => ToggleValidity(record)">
+                                                        @(NotValidRecordIds.Contains(record.Id) ? "✓ Udělat platný" : "✗ Udělat neplatný")
+                                                    </button>
+                                                }
+
+                                                <a href=@($"/zaznam/{record.Id}")>
+                                                Prohlédnout
+                                                </a>
                                             </li>
-                                        </a>
                                     }
                                 </ul>
                             }
@@ -102,6 +105,7 @@ else
 
     private BirdWatching.Shared.Model.Event? Evnt;
     private List<BirdWatching.Shared.Model.WatcherOnLeaderboardDto> Leaderboard = new();
+    private List<int> NotValidRecordIds = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,9 +114,22 @@ else
             U = await LocalStorage.GetItemAsync<UserDto>("userDto");
             if (U is null) throw new Exception("Cannot find userDto in local storage.");
 
+            await LoadEventAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Chyba při načítání: {ex.Message}");
+        }
+    }
+
+    private async Task LoadEventAsync(){
             var edto = await BAC.Event_GetByPublicIdAsync(PublicEventId);
             if (edto is null) edto = new();
             Evnt = edto.ToEntity();
+            NotValidRecordIds = new();
+            foreach (var r in edto.NotValidRecords)
+                NotValidRecordIds.Add(r.Id);
 
             // Create placeholder leaderboard entries from participants
             Leaderboard = edto.Participants?
@@ -124,18 +141,12 @@ else
             }).ToList() ?? new();
 
             Console.WriteLine(Leaderboard.Count());
-
             // Now load their records in parallel
             foreach (var watcher in Leaderboard)
             {
                 _ = LoadRecordsAsync(watcher); // fire and forget
             }
             await InvokeAsync(StateHasChanged);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Chyba při načítání: {ex.Message}");
-        }
     }
 
     private async Task LoadRecordsAsync(WatcherOnLeaderboardDto watcher)
@@ -151,7 +162,7 @@ else
                     target.ValidRecords = updated.ValidRecords;
 
                     Leaderboard = Leaderboard
-                    .OrderByDescending(w => w.ValidRecords?.Count ?? 0)
+                    .OrderByDescending(w => CountReallyValidRecords(w))
                     .ToList();
 
                     await InvokeAsync(StateHasChanged);
@@ -164,6 +175,20 @@ else
         }
     }
 
+    private int CountReallyValidRecords(WatcherOnLeaderboardDto watcher){
+        int count = 0;
+
+        if (watcher.ValidRecords is null)
+            return -1;
+        foreach(var r in watcher.ValidRecords){
+            if (!NotValidRecordIds.Contains(r.Id)){
+            count++;
+            }
+        }
+
+        return count;
+    }
+
 private async Task ToggleValidity(RecordDto record)
 {
     if (Evnt is null || U is null) return;
@@ -171,6 +196,8 @@ private async Task ToggleValidity(RecordDto record)
     try
     {
         await BAC.Event_ToggleRecordValidityAsync(Evnt.Id, record.Id);
+
+        await LoadEventAsync();
         await InvokeAsync(StateHasChanged);
     }
     catch (Exception ex)

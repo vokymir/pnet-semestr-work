@@ -21,9 +21,11 @@
                 @foreach (var watcher in User.Watchers)
                 {
                     var id = watcher.Id;
+                    var isSelected = WatcherSelections.TryGetValue(id, out var value) && value;
+
                     <div class="form-check">
                         <InputCheckbox class="form-check-input"
-                                       Value="WatcherSelections[id]"
+                                       Value="@isSelected"
                                        ValueChanged="val => WatcherSelections[id] = val"
                                        ValueExpression="() => WatcherSelections[id]" />
                         <label class="form-check-label">@watcher.FirstName @watcher.LastName</label>
