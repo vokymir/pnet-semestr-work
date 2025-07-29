@@ -43,7 +43,7 @@ Taky je možný nějakou soutěž založit. To se dělá na tlačítku s plusem 
         @foreach (var e in FilteredEvents)
         {
             var isMine = MyEventIds.Contains(e.Id);
-            var myWatchers = U?.Watchers?
+            var myWatchers = Watcherss
                 .Where(w => e.Participants?.Any(p => p.Id == w.Id) == true)
                 .ToList() ?? new();
 
@@ -97,6 +97,7 @@ Taky je možný nějakou soutěž založit. To se dělá na tlačítku s plusem 
     private List<EventDto> FilteredEvents = new();
     private HashSet<int> MyEventIds = new();
     private JoinEventModal? JoinModal;
+    private List<WatcherDto> Watcherss = new();
 
     private string selectedFilter = "all";
     private string SelectedFilter
@@ -129,6 +130,19 @@ Taky je možný nějakou soutěž založit. To se dělá na tlačítku s plusem 
     private async Task LoadUser(){
         U = await LocalStorage.GetItemAsync<UserDto>("userDto");
         if (U is null) throw new Exception("Nelze načíst userDto z local storage.");
+
+        Watcherss = U?.Watchers?.ToList() ?? new List<WatcherDto>();
+        if (U?.CuratedWatchers is not null)
+            foreach (var w in U.CuratedWatchers){
+                bool shouldAdd = true;
+                foreach (var ww in Watcherss)
+                    if (w.Id == ww.Id){
+                        shouldAdd = false;
+                        break;
+                    }
+                if (shouldAdd)
+                    Watcherss.Add(w);
+            }
     }
 
     private async Task LoadEvents(){
@@ -148,9 +162,10 @@ Taky je možný nějakou soutěž založit. To se dělá na tlačítku s plusem 
         }
 
         // Soutěže, kde se účastní moji ptáčkaři
-        if (U.Watchers is not null)
+
+        if (Watcherss is not null)
         {
-            foreach (var w in U.Watchers)
+            foreach (var w in Watcherss)
             {
                 var joined = await BAC.Event_GetByWatcherIdAsync(w.Id);
                 foreach (var e in joined)
@@ -187,7 +202,7 @@ Taky je možný nějakou soutěž založit. To se dělá na tlačítku s plusem 
         {
             "mine" => AllEvents.Where(e => MyEventIds.Contains(e.Id)).ToList(),
             "participating" => AllEvents
-            .Where(e => U?.Watchers?.Any(w => e.Participants?.Any(p => p.Id == w.Id) == true) == true)
+            .Where(e => Watcherss.Any(w => e.Participants?.Any(p => p.Id == w.Id) == true) == true)
             .ToList(),
             _ => AllEvents.ToList()
         };

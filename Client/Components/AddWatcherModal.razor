@@ -1,6 +1,7 @@
 @using BirdWatching.Shared.Model
 @inject BirdApiClient BAC
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject Manager Manager
 
 <Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
 <Modal @ref="ModalRef"
@@ -52,6 +53,7 @@
                 throw new Exception("Uživatel není přihlášen.");
 
             await BAC.User_AddCuratedWatcherAsync(InputCode);
+            await Manager.ReloadUserDto(LocalStorage,BAC);
             await OnWatcherAdded.InvokeAsync();
             await HideAsync();
         }

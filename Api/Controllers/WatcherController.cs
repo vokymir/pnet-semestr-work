@@ -278,6 +278,12 @@ public class WatcherController : BaseApiController
                         if (curator != null)
                             existingWatcher.Curators.Add(curator);
                     }
+                    if (existingWatcher.Curators.Count <= 0 || existingWatcher.MainCuratorId == user.Id)
+                    {
+                        var curator = await _userRepo.GetByIdAsync(user.Id);
+                        if (curator != null)
+                            existingWatcher.Curators.Add(curator);
+                    }
                 }
             }
             else if (watcherDto.Curators?.Any(c => c.Id == user.Id) == false)

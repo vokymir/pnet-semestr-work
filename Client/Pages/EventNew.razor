@@ -2,6 +2,7 @@
 @inject BirdApiClient BAC
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
+@inject Manager Manager
 
 <PageTitle>Nová soutěž</PageTitle>
 
@@ -64,13 +65,8 @@
     <div class="form-check mb-3">
         <InputCheckbox id="allowDuplicates" class="form-check-input" @bind-Value="Event.AllowDuplicates" />
         <label for="allowDuplicates" class="form-check-label">Povolit duplicity</label>
-        <small class="form-text text-muted">Duplicita je, když ptáčkař vidí sýkorku v pondělí a úterý, obě dvě si zapíše, a o
-           
-
-
-
-
-            bě dvě se mu počítají.</small>
+        <small class="form-text text-muted">Duplicita je, když ptáčkař vidí sýkorku v pondělí a úterý, obě dvě si zapíše, a
+        obě dvě se mu počítají.</small>
     </div>
 
     <button class="btn btn-primary" type="submit">Vytvořit soutěž</button>
@@ -87,6 +83,7 @@
             EventDto e = Event.ToFullDto();
             await BAC.Event_CreateAsync(e);
 
+            await Manager.ReloadUserDto(LocalStorage,BAC);
             NavManager.NavigateTo("/souteze");
         }
         catch (Exception ex)

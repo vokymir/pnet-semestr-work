@@ -44,7 +44,7 @@ else
 
 @code {
     private UserDto? U = null;
-    private ICollection<BirdDto>? B = null;
+    private List<BirdDto>? B = null;
     private List<ToastMessage> messages = new();
 
     protected override async Task OnInitializedAsync()
@@ -54,7 +54,8 @@ else
             U = await LocalStorage.GetItemAsync<UserDto>("userDto");
             if (U is null) throw new Exception("Nelze načíst userDto z local storage.");
 
-            B = await BAC.Bird_GetAllAsync();
+            B = (await BAC.Bird_GetAllAsync()).ToList();
+            B.Sort((b1, b2) => b1.BinomicName.CompareTo(b2.BinomicName));
         }
         catch (Exception ex)
         {

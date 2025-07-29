@@ -2,6 +2,7 @@
 @inject BirdApiClient BAC
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
+@inject Manager Manager
 
 <h3>Nový ptáčkař</h3>
 <Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
@@ -62,7 +63,8 @@
                 AutoHide = true
             });
 
-            NavManager.NavigateTo("/");
+            await Manager.ReloadUserDto(LocalStorage, BAC);
+            NavManager.NavigateTo("/ptackari");
         }
         catch (ApiException<ProblemDetails> ex)
         {

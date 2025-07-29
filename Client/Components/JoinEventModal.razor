@@ -1,6 +1,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
 @inject BirdApiClient BAC
+@inject Manager Manager
 
 <Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
 <Modal @ref="ModalRef"
@@ -16,9 +17,9 @@
 
         <div class="mb-3">
             <label>Vyberte ptáčkaře:</label>
-            @if (User?.Watchers is not null)
+            @if (Watcherss is not null)
             {
-                @foreach (var watcher in User.Watchers)
+                @foreach (var watcher in Watcherss)
                 {
                     var id = watcher.Id;
                     var isSelected = WatcherSelections.TryGetValue(id, out var value) && value;
@@ -52,10 +53,25 @@
 
     private string InputValue = string.Empty;
     private Dictionary<int, bool> WatcherSelections = new();
+    private List<WatcherDto> Watcherss = new();
 
     public async Task ShowAsync(UserDto? user, string pubId = "")
     {
         User = user;
+
+        Watcherss = User?.Watchers?.ToList() ?? new List<WatcherDto>();
+        if (User?.CuratedWatchers is not null)
+            foreach (var w in User.CuratedWatchers){
+                bool shouldAdd = true;
+                foreach (var ww in Watcherss)
+                    if (w.Id == ww.Id){
+                        shouldAdd = false;
+                        break;
+                    }
+                if (shouldAdd)
+                    Watcherss.Add(w);
+            }
+
         InputValue = pubId;
 
         if (await LocalStorage.ContainKeyAsync("watchersGroup"))
@@ -63,11 +79,11 @@
             try
             {
                 var selected = await LocalStorage.GetItemAsync<List<int>>("watchersGroup") ?? new();
-                WatcherSelections = User?.Watchers?.ToDictionary(w => w.Id, w => selected.Contains(w.Id)) ?? new();
+                WatcherSelections = Watcherss.ToDictionary(w => w.Id, w => selected.Contains(w.Id)) ?? new();
             }
             catch
             {
-                WatcherSelections = User?.Watchers?.ToDictionary(w => w.Id, w => User.Watchers.Count == 1) ?? new();
+                WatcherSelections = Watcherss.ToDictionary(w => w.Id, w => Watcherss.Count == 1) ?? new();
             }
         }
         if (ModalRef is not null)
@@ -87,10 +103,9 @@
         {
             foreach(var wId in selected)
             {
-                WatcherDto? w = User?.Watchers?.FirstOrDefault<WatcherDto>(w => w.Id == wId);
+                WatcherDto? w = Watcherss.FirstOrDefault<WatcherDto>(w => w.Id == wId);
                 if (w is null)
                     continue;
-
                 try{
                     await BAC.Watcher_JoinEventAsync(InputValue, wId);
                     messages.Add(new ToastMessage(){
@@ -120,6 +135,7 @@
             }
 
             await HideAsync();
+            await Manager.ReloadUserDto(LocalStorage, BAC);
             await OnEventJoined.InvokeAsync();
         }
     }

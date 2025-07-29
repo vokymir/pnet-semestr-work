@@ -126,7 +126,7 @@
 
         // načti pozorovatele
         var U = await LocalStorage.GetItemAsync<UserDto>("userDto");
-        if (U is null || U.Watchers is null)
+        if (U is null || U.CuratedWatchers is null)
         {
             messages.Add(new ToastMessage
             {
@@ -139,7 +139,7 @@
         }
         else
         {
-            foreach (var w in U.Watchers)
+            foreach (var w in U.CuratedWatchers)
             {
                 watchers.Add(await BAC.Watcher_GetByIdAsync(w.Id));
             }

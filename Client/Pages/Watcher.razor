@@ -2,6 +2,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject BirdApiClient BAC
 @inject NavigationManager NavManager
+@inject Manager Manager
 
 <PageTitle>Ptáčkař: @watcher?.FirstName @watcher?.LastName</PageTitle>
 
@@ -183,6 +184,7 @@ else
 
             await BAC.Watcher_UpdateWatcherAsync(watcher.Id, watcher);
 
+            await Manager.ReloadUserDto(LocalStorage,BAC);
             NavManager.NavigateTo("/ptackari");
         }
         catch (Exception ex)

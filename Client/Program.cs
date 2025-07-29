@@ -26,6 +26,8 @@ public class Program
             client.BaseAddress = new Uri("http://localhost:5069");
         }).AddHttpMessageHandler<AuthHeaderHandler>();
 
+        builder.Services.AddScoped<Manager>();
+
         await builder.Build().RunAsync();
     }
 }
